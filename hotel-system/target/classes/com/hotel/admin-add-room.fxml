@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+
+<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white; -fx-padding: 30;" 
+      stylesheets="@css/global.css, @css/admin.css" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.hotel.AdminAddRoomController">
+
+    <Label text="Dodaj Nowy Pokój" textFill="#2c3e50">
+        <font>
+            <Font name="Segoe UI Bold" size="20.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
+        <Label style="-fx-font-weight: bold;" text="Numer pokoju:" />
+        <TextField fx:id="roomNumberField" promptText="np. 101" />
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
+        <Label style="-fx-font-weight: bold;" text="Typ pokoju:" />
+        <ComboBox fx:id="roomTypeCombo" maxWidth="Infinity" promptText="Wybierz typ...">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Standard Jednoosobowy" />
+                    <String fx:value="Double Deluxe" />
+                    <String fx:value="Apartament" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
+        <Label style="-fx-font-weight: bold;" text="Cena za noc (PLN):" />
+        <TextField fx:id="roomPriceField" promptText="np. 350" />
+    </VBox>
+
+    <VBox VBox.vgrow="ALWAYS" />
+
+    <GridPane hgap="10.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="50.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+        
+        <Button maxWidth="Infinity" onAction="#onCancel" styleClass="btn-secondary" text="Anuluj" GridPane.columnIndex="0" />
+        <Button fx:id="saveBtn" maxWidth="Infinity" onAction="#onSave" styleClass="btn-primary" text="Zapisz pokój" GridPane.columnIndex="1" />
+    </GridPane>
+
+</VBox>

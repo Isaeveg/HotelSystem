@@ -74,3 +74,75 @@
 .btn-choose:hover {
     -fx-background-color: #005999;
 }
+
+.slider .track {
+    -fx-background-color: #dddddd;
+    -fx-pref-height: 4px;
+    -fx-background-radius: 5px;
+}
+
+.slider .thumb {
+    -fx-background-color: -color-primary; 
+    -fx-pref-width: 16px;
+    -fx-pref-height: 16px;
+    -fx-background-radius: 50%;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);
+}
+
+.slider .thumb:hover {
+    -fx-background-color: -color-primary-hover;
+    -fx-pref-width: 18px; 
+    -fx-pref-height: 18px;
+}
+
+.slider .axis {
+    -fx-tick-label-fill: #666666;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Segoe UI';
+}
+
+.btn-back-minimal {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -color-primary; 
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 5 0;
+    -fx-alignment: CENTER_LEFT;
+}
+.btn-back-minimal:hover {
+    -fx-underline: true; 
+}
+
+.btn-card-action {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px; 
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+.btn-card-action:hover {
+    -fx-background-color: -color-primary-hover;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.btn-star {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cccccc; 
+    -fx-font-size: 20px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+.btn-star:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.5), 5, 0, 0, 0);
+}
+
+.btn-star-active {
+    -fx-text-fill: #febb02; 
+}
+

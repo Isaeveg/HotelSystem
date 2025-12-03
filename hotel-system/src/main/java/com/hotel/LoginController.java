@@ -1,9 +1,6 @@
 package com.hotel;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -25,11 +22,11 @@ public class LoginController {
         }
 
         try {
+            Stage stage = (Stage) loginField.getScene().getWindow();
             if (login.equals("admin")) {
-                showAlert("Info", "Panel Admina"); 
-                // loadScene("admin-view.fxml");
+                SceneManager.switchScene(stage, "admin-view.fxml");
             } else {
-                loadScene("client-view.fxml");
+                SceneManager.switchScene(stage, "client-view.fxml");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,21 +36,8 @@ public class LoginController {
 
     @FXML
     protected void onRegisterButtonClick() throws IOException {
-        loadScene("register-view.fxml");
-    }
-
- 
-    private void loadScene(String fxmlFile) throws IOException {
-    
         Stage stage = (Stage) loginField.getScene().getWindow();
-        double width = stage.getScene().getWidth();
-        double height = stage.getScene().getHeight();
-
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxmlFile));
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, width, height);
-        
-        stage.setScene(scene);
+        SceneManager.switchScene(stage, "register-view.fxml");
     }
 
     private void showAlert(String title, String message) {

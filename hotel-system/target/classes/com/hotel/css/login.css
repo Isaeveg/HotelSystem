@@ -9,6 +9,13 @@
     -fx-padding: 40;
 }
 
+.header-label {
+    -fx-font-family: 'Segoe UI';
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #003580; 
+}
+
 .btn-link {
     -fx-background-color: transparent;
     -fx-text-fill: -color-primary; 

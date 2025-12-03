@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="700.0" prefWidth="1100.0" styleClass="admin-root" 
+            stylesheets="@css/global.css, @css/admin.css" 
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.hotel.AdminController">
+
+    <left>
+        <VBox prefWidth="260.0" styleClass="sidebar">
+            <Label maxWidth="Infinity" styleClass="brand-label" text="HotelAdmin" />
+            
+            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+                <padding><Insets top="10.0" /></padding>
+                
+                <Button fx:id="btnDash" maxWidth="Infinity" onAction="#showDashboard" styleClass="menu-btn, menu-btn-active" text="Dashboard" />
+                <Button fx:id="btnRooms" maxWidth="Infinity" onAction="#showRooms" styleClass="menu-btn" text="Pokoje" />
+                <Button fx:id="btnRes" maxWidth="Infinity" onAction="#showReservations" styleClass="menu-btn" text="Rezerwacje" />
+                <Button fx:id="btnClients" maxWidth="Infinity" onAction="#showClients" styleClass="menu-btn" text="Klienci" />
+                
+                <VBox VBox.vgrow="ALWAYS" />
+                <Button maxWidth="Infinity" onAction="#onLogout" styleClass="btn-admin-logout" text="Wyloguj" />
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox>
+            <HBox alignment="CENTER_RIGHT" styleClass="top-bar">
+                <Label text="Zalogowany: Administrator" textFill="#555555">
+                    <font><Font name="Segoe UI Bold" size="14.0" /></font>
+                </Label>
+            </HBox>
+
+            <StackPane fx:id="contentArea" style="-fx-padding: 30;">
+                
+                <VBox fx:id="viewDashboard" spacing="20.0">
+                    <Label text="Dashboard" textFill="#2c3e50">
+                        <font><Font name="Segoe UI Bold" size="24.0" /></font>
+                    </Label>
+                    <HBox spacing="20.0">
+                        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #007bff; -fx-border-width: 3 0 0 0;">
+                            <Label text="REZERWACJE DZISIAJ" textFill="#777" />
+                            <Label text="12" textFill="#333"><font><Font name="Segoe UI Bold" size="28.0" /></font></Label>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #28a745; -fx-border-width: 3 0 0 0;">
+                            <Label text="PRZYCHÓD (MSC)" textFill="#777" />
+                            <Label text="45,200 zł" textFill="#333"><font><Font name="Segoe UI Bold" size="28.0" /></font></Label>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="viewRooms" spacing="15.0" visible="false">
+                    <HBox alignment="CENTER_LEFT" spacing="20.0">
+                        <Label text="Zarządzanie Pokojami" textFill="#2c3e50">
+                            <font><Font name="Segoe UI Bold" size="24.0" /></font>
+                        </Label>
+                        <HBox HBox.hgrow="ALWAYS" />
+                        
+                        <Button styleClass="btn-primary" text="+ Dodaj pokój" onAction="#onAddRoomClick" />
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
+                        <TextField promptText="Szukaj po numerze..." HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <Button styleClass="btn-primary" text="Szukaj" />
+                    </HBox>
+                    <TableView VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn text="Nr Pokoju" prefWidth="100.0" />
+                            <TableColumn text="Typ" prefWidth="150.0" />
+                            <TableColumn text="Cena" prefWidth="100.0" />
+                            <TableColumn text="Status" prefWidth="120.0" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <VBox fx:id="viewReservations" spacing="15.0" visible="false">
+                    <Label text="Rezerwacje" textFill="#2c3e50">
+                        <font><Font name="Segoe UI Bold" size="24.0" /></font>
+                    </Label>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
+                        <TextField promptText="Szukaj po nazwisku..." HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <Button styleClass="btn-primary" text="Szukaj" />
+                    </HBox>
+                    <TableView VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn text="ID" prefWidth="50.0" />
+                            <TableColumn text="Klient" prefWidth="200.0" />
+                            <TableColumn text="Pokój" prefWidth="80.0" />
+                            <TableColumn text="Data Od" prefWidth="120.0" />
+                            <TableColumn text="Data Do" prefWidth="120.0" />
+                            <TableColumn text="Status" prefWidth="100.0" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+                <VBox fx:id="viewClients" spacing="15.0" visible="false">
+                    <Label text="Baza Klientów" textFill="#2c3e50">
+                        <font><Font name="Segoe UI Bold" size="24.0" /></font>
+                    </Label>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
+                        <TextField promptText="Imię, Nazwisko lub Email..." HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <Button styleClass="btn-primary" text="Szukaj" />
+                    </HBox>
+                    <TableView VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn text="ID" prefWidth="50.0" />
+                            <TableColumn text="Imię i Nazwisko" prefWidth="200.0" />
+                            <TableColumn text="Email" prefWidth="200.0" />
+                            <TableColumn text="Telefon" prefWidth="150.0" />
+                        </columns>
+                    </TableView>
+                </VBox>
+
+            </StackPane>
+        </VBox>
+    </center>
+</BorderPane>
