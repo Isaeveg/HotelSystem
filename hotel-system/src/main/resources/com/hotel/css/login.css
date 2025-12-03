@@ -1,0 +1,28 @@
+.bg-gradient {
+    -fx-background-color: linear-gradient(to bottom right, #003580, #0066cc);
+}
+
+.auth-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 10);
+    -fx-padding: 40;
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-primary; 
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-underline: true;
+    -fx-border-color: transparent;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+}
+
+.btn-link:hover {
+    -fx-text-fill: -color-primary-hover;
+    -fx-background-color: #f0f8ff;
+    -fx-border-color: #cce5ff;
+    -fx-border-radius: 3px;
+}

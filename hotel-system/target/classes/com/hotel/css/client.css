@@ -1,0 +1,76 @@
+.client-root {
+    -fx-background-color: -color-bg;
+}
+
+.header-blue {
+    -fx-background-color: -color-primary;
+    -fx-padding: 15 50;
+}
+
+.header-yellow {
+    -fx-background-color: -color-accent;
+    -fx-padding: 15 50;
+}
+
+.btn-logout {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-border-color: rgba(255,255,255,0.7);
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 5 15;
+}
+
+.btn-logout:hover {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-border-color: white;
+}
+
+.btn-search {
+    -fx-background-color: #0071c2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 25;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+}
+.btn-search:hover {
+    -fx-background-color: #005bb5;
+}
+
+.btn-filter {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-border-radius: 4px;
+}
+.btn-filter:hover {
+    -fx-background-color: rgba(255,255,255,0.4);
+}
+
+.hotel-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+.hotel-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+.btn-choose {
+    -fx-background-color: #0071c2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+}
+.btn-choose:hover {
+    -fx-background-color: #005999;
+}

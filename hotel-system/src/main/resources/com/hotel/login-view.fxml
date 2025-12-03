@@ -1,72 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.hotel.LoginController"
-           style="-fx-background-color: linear-gradient(to bottom right, #003580, #0066cc);">
+<StackPane styleClass="bg-gradient" 
+           stylesheets="@css/global.css, @css/login.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.hotel.LoginController">
 
-    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" 
-          style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 10); -fx-padding: 40;">
+    <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="auth-card">
+
         
-        <Label text="HotelSystem" textFill="#003580">
+        <Label text="HotelSystem v2.0" textFill="#003580">
             <font>
-                <Font name="Segoe UI Bold" size="24.0"/>
+                <Font name="Segoe UI Bold" size="24.0" />
             </font>
             <VBox.margin>
-                <Insets bottom="20.0"/>
+                <Insets bottom="20.0" />
             </VBox.margin>
         </Label>
 
-        <TextField fx:id="loginField" promptText="Email lub Login" 
-                   style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 8;">
+        <TextField fx:id="loginField" promptText="Email lub Login">
             <VBox.margin>
-                <Insets bottom="10.0"/>
+                <Insets bottom="10.0" />
             </VBox.margin>
-            <font>
-                <Font size="14.0"/>
-            </font>
         </TextField>
 
-        <PasswordField fx:id="passwordField" promptText="Hasło" 
-                       style="-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 8;">
+        <PasswordField fx:id="passwordField" promptText="Hasło">
             <VBox.margin>
-                <Insets bottom="20.0"/>
+                <Insets bottom="20.0" />
             </VBox.margin>
-            <font>
-                <Font size="14.0"/>
-            </font>
         </PasswordField>
 
-        <Button text="Zaloguj się" onAction="#onLoginButtonClick" maxWidth="Infinity"
-                style="-fx-background-color: #003580; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10; -fx-border-color: transparent; -fx-border-width: 2;">
-            <font>
-                <Font size="14.0"/>
-            </font>
-        </Button>
+        <Button maxWidth="Infinity" onAction="#onLoginButtonClick" styleClass="btn-primary" text="Zaloguj się" />
 
-        <Button text="Załóż konto" onAction="#onRegisterButtonClick" maxWidth="Infinity"
-                style="-fx-background-color: transparent; -fx-text-fill: #003580; -fx-cursor: hand; -fx-padding: 10; -fx-border-color: transparent; -fx-border-width: 2; -fx-underline: true;">
+        <Button maxWidth="Infinity" onAction="#onRegisterButtonClick" styleClass="btn-link" text="Załóż konto">
             <VBox.margin>
-                <Insets top="5.0"/>
+                <Insets top="10.0" />
             </VBox.margin>
         </Button>
 
         <Label text="Admin: admin | Każdy inny: Gość" textFill="#aaaaaa">
             <VBox.margin>
-                <Insets top="15.0"/>
+                <Insets top="15.0" />
             </VBox.margin>
             <font>
-                <Font size="12.0"/>
+                <Font size="12.0" />
             </font>
-        </Label> 
+        </Label>
 
     </VBox>
 </StackPane>

@@ -1,0 +1,41 @@
+.root {
+    -color-primary: #003580;
+    -color-primary-hover: #004ec2;
+    -color-accent: #febb02;
+    -color-bg: #f5f7fa;
+    -color-text: #333333;
+    -color-white: #ffffff;
+    
+    -fx-font-family: 'Segoe UI';
+}
+
+.text-field, .password-field {
+    -fx-background-color: -color-white;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: -color-primary;
+}
+
+.btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: -color-white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 10px;
+    -fx-background-radius: 4px;
+    
+    -fx-border-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+}
+
+.btn-primary:hover {
+    -fx-background-color: -color-primary-hover;
+    -fx-border-color: #66a3ff;
+}

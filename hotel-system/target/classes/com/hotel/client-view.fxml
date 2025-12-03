@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -12,31 +12,32 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.hotel.ClientController"
-            prefHeight="700.0" prefWidth="1000.0"
-            style="-fx-background-color: #f5f7fa;">
+<BorderPane prefHeight="700.0" prefWidth="1000.0" 
+            styleClass="client-root" 
+            stylesheets="@css/global.css, @css/client.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="com.hotel.ClientController">
 
     <top>
         <VBox>
-            <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-background-color: #003580; -fx-padding: 15 50;">
+            <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-blue">
                 <Label text="BookingApp" textFill="WHITE">
                     <font>
-                        <Font name="Segoe UI Bold" size="20.0"/>
+                        <Font name="Segoe UI Bold" size="20.0" />
                     </font>
                 </Label>
                 <HBox HBox.hgrow="ALWAYS" />
                 
-                <Button text="Wyloguj" onAction="#onLogoutClick"
-                        style="-fx-background-color: transparent; -fx-text-fill: white; -fx-cursor: hand; -fx-font-size: 14; -fx-border-color: white; -fx-border-radius: 5; -fx-background-radius: 5; -fx-border-width: 1.5; -fx-padding: 10 30;"/>
+                <Button onAction="#onLogoutClick" styleClass="btn-logout" text="Wyloguj" />
             </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #febb02; -fx-padding: 15 50;">
-                <TextField promptText="Dokąd jedziesz?" prefWidth="200.0" style="-fx-padding: 10; -fx-background-radius: 2;"/>
-                <DatePicker promptText="Data od" prefWidth="150.0" style="-fx-padding: 5;"/>
-                <DatePicker promptText="Data do" prefWidth="150.0" style="-fx-padding: 5;"/>
-                <Button text="Szukaj" style="-fx-background-color: #0071c2; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 25; -fx-cursor: hand;"/>
-                <Button text="Filtry" style="-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2; -fx-text-fill: #333; -fx-font-weight: bold; -fx-padding: 8 15; -fx-cursor: hand;"/>
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header-yellow">
+                <TextField prefWidth="200.0" promptText="Dokąd jedziesz?" text="Warszawa" />
+                <DatePicker prefWidth="150.0" promptText="Data od" />
+                <DatePicker prefWidth="150.0" promptText="Data do" />
+                
+                <Button styleClass="btn-search" text="Szukaj" />
+                <Button styleClass="btn-filter" text="Filtry" />
             </HBox>
         </VBox>
     </top>
@@ -47,11 +48,11 @@
                 <VBox spacing="20.0">
                     <Label text="Dostępne obiekty:" textFill="#333333">
                         <font>
-                            <Font name="Segoe UI Bold" size="22.0"/>
+                            <Font name="Segoe UI Bold" size="22.0" />
                         </font>
                     </Label>
                     
-                    <FlowPane fx:id="hotelsContainer" hgap="20.0" vgap="20.0"/>
+                    <FlowPane fx:id="hotelsContainer" hgap="20.0" vgap="20.0" />
                 </VBox>
             </content>
         </ScrollPane>
