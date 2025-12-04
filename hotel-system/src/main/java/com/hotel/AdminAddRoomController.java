@@ -13,7 +13,7 @@ public class AdminAddRoomController {
     @FXML private TextField roomNumberField;
     @FXML private ComboBox<String> roomTypeCombo;
     @FXML private TextField roomPriceField;
-    @FXML private TextField roomCodeField; // Новое поле
+    @FXML private TextField roomCodeField; 
     
     @FXML private CheckBox checkBreakfast;
     @FXML private CheckBox checkParking;
