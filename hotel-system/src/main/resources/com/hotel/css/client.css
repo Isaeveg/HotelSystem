@@ -23,7 +23,6 @@
     -fx-border-width: 1.5px;
     -fx-padding: 5 15;
 }
-
 .btn-logout:hover {
     -fx-background-color: rgba(255,255,255,0.2);
     -fx-border-color: white;
@@ -92,8 +91,7 @@
 
 .slider .thumb:hover {
     -fx-background-color: -color-primary-hover;
-    -fx-pref-width: 18px; 
-    -fx-pref-height: 18px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 1);
 }
 
 .slider .axis {
@@ -141,8 +139,19 @@
 .btn-star:hover {
     -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.5), 5, 0, 0, 0);
 }
-
 .btn-star-active {
     -fx-text-fill: #febb02; 
 }
 
+.btn-profile {
+    -fx-background-color: white;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 10 25;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+.btn-profile:hover {
+    -fx-background-color: #f0f8ff;
+}

@@ -25,18 +25,20 @@
                 <Label text="BookingApp" textFill="WHITE">
                     <font><Font name="Segoe UI Bold" size="20.0" /></font>
                 </Label>
+                
+                <HBox HBox.hgrow="ALWAYS" />
+                
+                <Button text="👤 Mój Profil" onAction="#onOpenProfile" styleClass="btn-profile" />
+                        
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header-yellow">
                 <TextField prefWidth="200.0" promptText="Dokąd jedziesz?" text="Warszawa" />
                 <DatePicker prefWidth="150.0" promptText="Data od" />
                 <DatePicker prefWidth="150.0" promptText="Data do" />
-                
                 <Button styleClass="btn-search" text="Szukaj" />
                 <Button onAction="#onOpenFilters" styleClass="btn-filter" text="Filtry" />
-
                 <HBox HBox.hgrow="ALWAYS" />
-
                 <Button text="Wyloguj" onAction="#onLogoutClick" styleClass="btn-filter" />
             </HBox>
         </VBox>
@@ -60,7 +62,6 @@
                             <Label text="Dostępne obiekty:" textFill="#333333">
                                 <font><Font name="Segoe UI Bold" size="22.0" /></font>
                             </Label>
-                            
                             <FlowPane fx:id="hotelsContainer" hgap="20.0" vgap="20.0" />
                         </VBox>
                     </VBox>

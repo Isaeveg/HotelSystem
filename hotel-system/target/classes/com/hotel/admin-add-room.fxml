@@ -3,6 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.collections.FXCollections?>
 
-<VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: white; -fx-padding: 30;" 
+<VBox alignment="TOP_CENTER" spacing="15.0" style="-fx-background-color: white; -fx-padding: 30;" 
       stylesheets="@css/global.css, @css/admin.css" 
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.AdminAddRoomController">
@@ -22,6 +23,9 @@
         <font>
             <Font name="Segoe UI Bold" size="20.0" />
         </font>
+        <VBox.margin>
+            <Insets bottom="10.0" />
+        </VBox.margin>
     </Label>
 
     <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
@@ -45,6 +49,30 @@
     <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
         <Label style="-fx-font-weight: bold;" text="Cena za noc (PLN):" />
         <TextField fx:id="roomPriceField" promptText="np. 350" />
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
+        <Label style="-fx-font-weight: bold;" text="Kod do drzwi (PIN):" />
+        <TextField fx:id="roomCodeField" promptText="np. 1234" />
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="8.0">
+        <Label style="-fx-font-weight: bold;" text="Udogodnienia w pokoju:" />
+        <GridPane hgap="10.0" vgap="5.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+                <RowConstraints vgrow="SOMETIMES" />
+            </rowConstraints>
+            
+            <CheckBox fx:id="checkBreakfast" text="Śniadanie" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <CheckBox fx:id="checkParking" text="Parking" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <CheckBox fx:id="checkWifi" text="Wi-Fi" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <CheckBox fx:id="checkAC" text="Klimatyzacja" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        </GridPane>
     </VBox>
 
     <VBox VBox.vgrow="ALWAYS" />

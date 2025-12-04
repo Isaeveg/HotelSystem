@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -115,8 +116,65 @@ public class ClientController {
         detailTitle.setText(name);
         detailPrice.setText(price);
         detailImageBox.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 4;");
+        
+        // Очищаем старые и добавляем новые варианты номеров
+        detailRoomsContainer.getChildren().clear();
+        
+        // Добавляем фейковые данные для примера (в реальности брали бы из БД)
+        addRoomVariant("Standard Jednoosobowy", price, "Max 1 os.");
+        addRoomVariant("Double Deluxe", "500 zł", "Max 2 os.");
+        
         listView.setVisible(false);
         detailsView.setVisible(true);
+    }
+
+    // Метод для создания красивой плашки с выбором номера
+    private void addRoomVariant(String type, String price, String desc) {
+        HBox row = new HBox(10);
+        row.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 15;");
+        row.setAlignment(Pos.CENTER_LEFT);
+
+        VBox info = new VBox(5);
+        Label typeLbl = new Label(type);
+        typeLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        Label descLbl = new Label(desc);
+        descLbl.setStyle("-fx-text-fill: #666; -fx-font-size: 12px;");
+        info.getChildren().addAll(typeLbl, descLbl);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        VBox action = new VBox(5);
+        action.setAlignment(Pos.CENTER_RIGHT);
+        Label priceLbl = new Label(price);
+        priceLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #333;");
+        
+        Button bookBtn = new Button("Wybierz");
+        bookBtn.getStyleClass().add("btn-choose"); 
+        bookBtn.setOnAction(e -> openBookingModal(type, price));
+
+        action.getChildren().addAll(priceLbl, bookBtn);
+
+        row.getChildren().addAll(info, spacer, action);
+        detailRoomsContainer.getChildren().add(row);
+    }
+
+    private void openBookingModal(String type, String price) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("booking-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 400, 550);
+            
+            BookingController controller = fxmlLoader.getController();
+            controller.setRoomData(type, price);
+
+            Stage stage = new Stage();
+            stage.setTitle("Rezerwacja");
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -131,6 +189,17 @@ public class ClientController {
         Scene scene = new Scene(fxmlLoader.load(), 400, 500);
         Stage stage = new Stage();
         stage.setTitle("Filtry");
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+    }
+
+    @FXML
+    protected void onOpenProfile() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("user-profile.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 450, 700);
+        Stage stage = new Stage();
+        stage.setTitle("Mój Profil");
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
