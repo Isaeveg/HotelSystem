@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane styleClass="bg-gradient"
+           stylesheets="@css/global.css, @css/login.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.hotel.client.RegisterController">
+
+    <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" spacing="15.0" styleClass="auth-card" style="-fx-min-width: 450;">
+
+        <Label text="Rejestracja" styleClass="header-label">
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </Label>
+
+        <Label text="Имя пользователя (Login)" />
+        <TextField fx:id="loginField" promptText="Придумайте логин" />
+
+        <Label text="Пароль" />
+        <PasswordField fx:id="passwordField" promptText="******" />
+
+        <Button maxWidth="Infinity" onAction="#onRegisterConfirm" styleClass="btn-primary" text="Зарегистрироваться">
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </Button>
+
+        <Button maxWidth="Infinity" onAction="#onBackClick" styleClass="btn-link" text="Вернуться ко входу" />
+
+        <Label fx:id="errorLabel" textFill="RED" visible="false"/>
+
+    </VBox>
+</StackPane>

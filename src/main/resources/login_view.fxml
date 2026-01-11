@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane prefHeight="550.0" prefWidth="800.0" styleClass="root-pane" stylesheets="@css/global.css, @css/login.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hotel.client.LoginController">
+
+    <HBox maxHeight="-Infinity" maxWidth="-Infinity" styleClass="login-card">
+        <VBox alignment="CENTER" prefWidth="350.0" styleClass="brand-side">
+            <Label text="HotelSystem" textFill="WHITE">
+                <font><Font name="Segoe UI Bold" size="28.0" /></font>
+            </Label>
+            <Text fill="#e0e0e0" text="Comfort &amp; Luxury" textAlignment="CENTER">
+                <font><Font size="14.0" /></font>
+                <VBox.margin><Insets top="10.0" /></VBox.margin>
+            </Text>
+        </VBox>
+
+        <VBox alignment="CENTER_LEFT" prefWidth="400.0" spacing="20.0" styleClass="form-side">
+            <padding><Insets bottom="40" left="40" right="40" top="40" /></padding>
+
+            <Label styleClass="header-label" text="Witaj ponownie!" textFill="#333">
+                <font><Font name="Segoe UI Bold" size="24.0" /></font>
+            </Label>
+            <Label text="Zaloguj się, aby kontynuować" textFill="#777" />
+
+            <VBox spacing="15.0">
+                <VBox spacing="5.0">
+                    <Label styleClass="input-label" text="Email / Login" />
+                    <TextField fx:id="usernameField" promptText="Wpisz login" styleClass="text-field-custom" />
+                </VBox>
+
+                <VBox spacing="5.0">
+                    <Label styleClass="input-label" text="Hasło" />
+                    <PasswordField fx:id="passwordField" promptText="Wpisz hasło" styleClass="text-field-custom" />
+                </VBox>
+            </VBox>
+
+            <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true"/>
+
+            <Button fx:id="loginButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#onLoginClick" styleClass="btn-primary" text="ZALOGUJ SIĘ">
+                <padding><Insets bottom="12" top="12" /></padding>
+            </Button>
+
+            <HBox alignment="CENTER" spacing="5.0">
+                <Label text="Nie masz konta?" textFill="#777" />
+                <Hyperlink onAction="#onRegisterLinkClick" text="Zarejestruj się" textFill="#3498db" />
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>
