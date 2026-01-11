@@ -5,7 +5,7 @@ import com.hotel.common.RequestType;
 import com.hotel.common.Response;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.PasswordField; 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.io.IOException;
 public class LoginController {
 
     @FXML private TextField loginField;
-    @FXML private PasswordField passwordField;
+    @FXML private PasswordField passwordField; 
 
     @FXML
     protected void onLoginButtonClick() {
@@ -32,7 +32,7 @@ public class LoginController {
             String role = (String) resp.getData(); 
             try {
                 Stage stage = (Stage) loginField.getScene().getWindow();
-                if ("ADMIN".equals(role)) {
+                if ("ADMIN".equalsIgnoreCase(role)) {
                     SceneManager.switchScene(stage, "admin-view.fxml");
                 } else {
                     SceneManager.switchScene(stage, "client-view.fxml");
@@ -52,7 +52,7 @@ public class LoginController {
             SceneManager.switchScene(stage, "register-view.fxml");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Błąd", "Nie udało się załadowть окно регистрации");
+            showAlert("Błąd", "Nie udało się załadować okna rejestracji");
         }
     }
 

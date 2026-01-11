@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHandler {
-    // Настройки подключения (укажите свои данные)
+    // Коллега должен будет заменить эти данные на актуальные
     private static final String URL = "jdbc:postgresql://localhost:5432/hotel_db";
     private static final String USER = "postgres";
     private static final String PASSWORD = "your_password";
@@ -35,9 +35,9 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Database error during login: " + e.getMessage());
         }
-        return null; // Если пользователь не найден или ошибка
+        return null;
     }
 
     public static List<Room> getAllRooms() {
@@ -58,7 +58,7 @@ public class DatabaseHandler {
                 ));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Database error fetching rooms: " + e.getMessage());
         }
         return rooms;
     }

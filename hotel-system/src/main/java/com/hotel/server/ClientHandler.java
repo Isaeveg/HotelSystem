@@ -33,7 +33,7 @@ public class ClientHandler implements Runnable {
                     if (user != null) {
                         response = new Response(true, "Успешно", user.getRole());
                     } else {
-                        response = new Response(false, "Неверный логин или пароль", null);
+                        response = new Response(false, "Błędny login lub hasło", null);
                     }
                     break;
 
@@ -43,7 +43,7 @@ public class ClientHandler implements Runnable {
                     break;
 
                 default:
-                    response = new Response(false, "Неизвестный запрос", null);
+                    response = new Response(false, "Nieznane zapytanie", null);
             }
 
             out.writeObject(response);
