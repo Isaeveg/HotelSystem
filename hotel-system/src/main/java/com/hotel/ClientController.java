@@ -1,25 +1,26 @@
 package com.hotel;
 
+import com.hotel.common.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.io.IOException;
+import java.util.List;
 
 public class ClientController {
 
@@ -37,14 +38,31 @@ public class ClientController {
 
     @FXML
     public void initialize() {
-        addHotelCard("Grand Hotel Central", "350 zł", "#e0e0e0");
-        addHotelCard("Sea Resort Spa", "620 zł", "#e0f7fa");
-        addHotelCard("Hostel Student", "80 zł", "#fff3e0");
-        addHotelCard("Mountain View", "450 zł", "#e8f5e9");
-        addHotelCard("City Center", "200 zł", "#f3e5f5"); 
+        checkFavSectionVisibility();
+        loadRooms();
     }
 
-    private void addHotelCard(String name, String price, String colorHex) {
+    private void loadRooms() {
+        Request req = new Request(RequestType.GET_ROOMS, null);
+        Response resp = NetworkClient.sendRequest(req);
+
+        if (resp != null && resp.isSuccess()) {
+            List<Room> rooms = (List<Room>) resp.getData();
+            hotelsContainer.getChildren().clear();
+
+            for (Room room : rooms) {
+                String colorHex = room.getStatus().equals("FREE") ? "#e8f5e9" : "#f3e5f5";
+                addHotelCard(room, colorHex);
+            }
+        } else {
+            System.err.println("Błąd ładowania pokoi: " + (resp != null ? resp.getMessage() : "Brak połączenia"));
+        }
+    }
+
+    private void addHotelCard(Room room, String colorHex) {
+        String name = "Pokój " + room.getNumber() + " (" + room.getType() + ")";
+        String priceStr = room.getPrice() + " zł";
+
         VBox card = new VBox();
         card.setPrefWidth(300);  
         card.setPrefHeight(340); 
@@ -54,7 +72,7 @@ public class ClientController {
         imagePlaceholder.setPrefHeight(160);
         imagePlaceholder.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 8 8 0 0;");
         imagePlaceholder.setAlignment(Pos.CENTER);
-        imagePlaceholder.getChildren().add(new Label("Hotel Icon"));
+        imagePlaceholder.getChildren().add(new Label(room.getType()));
 
         VBox body = new VBox(5); 
         body.setPadding(new Insets(15));
@@ -65,7 +83,7 @@ public class ClientController {
         title.setTextFill(Color.web("#333333"));
         title.setWrapText(true); 
 
-        Label priceLabel = new Label(price);
+        Label priceLabel = new Label(priceStr);
         priceLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 22));
         priceLabel.setTextFill(Color.web("#333333"));
 
@@ -74,11 +92,10 @@ public class ClientController {
 
         HBox actions = new HBox(10);
         actions.setAlignment(Pos.CENTER_LEFT);
-        actions.setPadding(new Insets(0, 0, 0, 0)); 
 
         Button viewBtn = new Button("Wybierz");
         viewBtn.getStyleClass().add("btn-card-action");
-        viewBtn.setOnAction(e -> openDetails(name, price, colorHex));
+        viewBtn.setOnAction(e -> openDetails(room, colorHex));
 
         Region hSpacer = new Region();
         HBox.setHgrow(hSpacer, Priority.ALWAYS);
@@ -112,23 +129,19 @@ public class ClientController {
         favSection.setManaged(hasFavorites);
     }
 
-    private void openDetails(String name, String price, String colorHex) {
-        detailTitle.setText(name);
-        detailPrice.setText(price);
+    private void openDetails(Room room, String colorHex) {
+        detailTitle.setText("Pokój " + room.getNumber());
+        detailPrice.setText(room.getPrice() + " zł / noc");
         detailImageBox.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 4;");
         
-        // Очищаем старые и добавляем новые варианты номеров
         detailRoomsContainer.getChildren().clear();
         
-        // Добавляем фейковые данные для примера (в реальности брали бы из БД)
-        addRoomVariant("Standard Jednoosobowy", price, "Max 1 os.");
-        addRoomVariant("Double Deluxe", "500 zł", "Max 2 os.");
+        addRoomVariant(room.getType(), room.getPrice() + " zł", "Status: " + room.getStatus());
         
         listView.setVisible(false);
         detailsView.setVisible(true);
     }
 
-    // Метод для создания красивой плашки с выбором номера
     private void addRoomVariant(String type, String price, String desc) {
         HBox row = new HBox(10);
         row.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 15;");
@@ -184,30 +197,8 @@ public class ClientController {
     }
 
     @FXML
-    protected void onOpenFilters() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("filter-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 400, 500);
-        Stage stage = new Stage();
-        stage.setTitle("Filtry");
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-    }
-
-    @FXML
-    protected void onOpenProfile() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("user-profile.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 450, 700);
-        Stage stage = new Stage();
-        stage.setTitle("Mój Profil");
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-    }
-
-    @FXML
-    protected void onLogoutClick() throws IOException {
-        Stage stage = (Stage) hotelsContainer.getScene().getWindow();
+    protected void onLogoutClick(ActionEvent event) throws IOException {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         SceneManager.switchScene(stage, "login-view.fxml");
     }
 }
