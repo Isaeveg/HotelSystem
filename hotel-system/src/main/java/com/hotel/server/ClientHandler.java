@@ -22,13 +22,19 @@ public class ClientHandler implements Runnable {
 
             switch (request.getType()) {
                 case LOGIN:
-                    // В твоем текущем фронте передается строка (логин)
-                    String login = (String) request.getData();
-                    System.out.println("Попытка входа: " + login);
+                    String[] credentials = (String[]) request.getData();
+                    String login = credentials[0];
+                    String password = credentials[1];
                     
-                    // Заглушка: админ или клиент
-                    String role = login.equalsIgnoreCase("admin") ? "ADMIN" : "CLIENT";
-                    response = new Response(true, "Авторизация успешна", role);
+                    System.out.println("Próba logowania: " + login);
+                    
+                    User user = DatabaseHandler.loginUser(login, password);
+                    
+                    if (user != null) {
+                        response = new Response(true, "Успешно", user.getRole());
+                    } else {
+                        response = new Response(false, "Неверный логин или пароль", null);
+                    }
                     break;
 
                 case GET_ROOMS:
