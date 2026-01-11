@@ -9,7 +9,7 @@ public class NetworkClient {
     private static final String HOST = "localhost";
     private static final int PORT = 8189;
 
-    public Response sendRequest(Request request) {
+    public static Response sendRequest(Request request) {
         try (Socket socket = new Socket(HOST, PORT);
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
