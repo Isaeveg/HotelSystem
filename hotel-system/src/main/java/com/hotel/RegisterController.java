@@ -5,7 +5,7 @@ import com.hotel.common.RequestType;
 import com.hotel.common.Response;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.PasswordField; // Не забудь импорт!
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -13,29 +13,34 @@ import java.io.IOException;
 public class RegisterController {
 
     @FXML
-    private TextField nameField;
+    private TextField firstNameField;
+    @FXML
+    private TextField lastNameField;
     @FXML
     private TextField emailField;
     @FXML
-    private PasswordField passField; // Этого поля не было в коде, хотя в FXML оно есть
+    private TextField phoneField;
+    @FXML
+    private PasswordField passField;
 
     @FXML
     protected void onRegisterConfirm() {
-        String name = nameField.getText();
+        String firstName = firstNameField.getText();
+        String lastName = lastNameField.getText();
         String email = emailField.getText();
+        String phone = phoneField.getText();
         String password = passField.getText();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            showAlert("Заполни все поля! (Uzupełnij dane)");
+        if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
+            showAlert("Заполни все поля! (Uzupełnij wszystkie dane)");
             return;
         }
 
-        // Формируем запрос на сервер
-        // Шлем массив строк: [email (как логин), пароль, имя]
-        String[] registrationData = { email, password, name };
+        // Шлем массив строк: [имя, фамилия, email, телефон, пароль]
+        // Порядок важен, он должен совпадать с тем, как мы читаем в ClientHandler
+        String[] registrationData = { firstName, lastName, email, phone, password };
         Request request = new Request(RequestType.REGISTER, registrationData);
 
-        // Отправляем
         Response response = NetworkClient.sendRequest(request);
 
         if (response != null && response.isSuccess()) {
@@ -57,7 +62,7 @@ public class RegisterController {
     }
 
     private void goBackToLogin() throws IOException {
-        Stage stage = (Stage) nameField.getScene().getWindow();
+        Stage stage = (Stage) emailField.getScene().getWindow();
         SceneManager.switchScene(stage, "login-view.fxml");
     }
 

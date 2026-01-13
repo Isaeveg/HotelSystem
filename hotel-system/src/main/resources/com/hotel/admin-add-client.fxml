@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="15.0" style="-fx-padding: 20;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.hotel.AdminAddClientController">
+
+    <Label text="Dane klienta" textFill="#2c3e50">
+        <font><Font name="Segoe UI Bold" size="18.0" /></font>
+    </Label>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Imię:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="firstNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Nazwisko:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="lastNameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Email (Login):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        
+        <Label text="Telefon:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="phoneField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Hasło:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <PasswordField fx:id="passwordField" promptText="Wymagane przy dodawaniu" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Anuluj" onAction="#onCancel" />
+        <Button fx:id="saveBtn" text="Dodaj" onAction="#onSave" style="-fx-background-color: #007bff; -fx-text-fill: white;"/>
+    </HBox>
+</VBox>

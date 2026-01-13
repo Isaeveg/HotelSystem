@@ -75,6 +75,9 @@
                 </VBox>
 
                 <VBox fx:id="viewRooms" spacing="15.0" visible="false">
+                    <Label text="Zarządzanie Pokojami" textFill="#2c3e50">
+                        <font><Font name="Segoe UI Bold" size="24.0" /></font>
+                    </Label>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
                         <TextField fx:id="searchRoomField" 
                                 promptText="Szukaj hotelu..." 
@@ -101,9 +104,8 @@
                             <TableColumn fx:id="colRoomNr" text="Nr Pokoju" />
                             <TableColumn fx:id="colRoomType" text="Typ" />
                             <TableColumn fx:id="colRoomPrice" text="Cena" />
-                            <TableColumn fx:id="colRoomCode" text="Kod drzwi" />
+                            <TableColumn fx:id="colRoomDesc" text="Opis" />
                             <TableColumn fx:id="colRoomStatus" text="Status" />
-                            <TableColumn fx:id="colRoomAction" text="Akcja" /> 
                         </columns>
                     </TableView>
                 </VBox>
@@ -134,20 +136,28 @@
                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                     </Label>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
-                        <TextField promptText="Imię, Nazwisko lub Email..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
-                        <Button styleClass="btn-primary" text="Szukaj" />
+                        <TextField fx:id="searchClientField" promptText="Imię, Nazwisko lub Email..." 
+                                maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <Button styleClass="btn-primary" text="Szukaj" onAction="#onSearchClient"/>
+                        
+                        <HBox HBox.hgrow="ALWAYS" />
+
+                        <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                            <Button text="Edytuj" onAction="#onEditClientClick" styleClass="btn-action, btn-edit" />
+                            <Button text="Usuń" onAction="#onDeleteClientClick" styleClass="btn-action, btn-delete" />
+                            <Button text="+ Dodaj" onAction="#onAddClientClick" styleClass="btn-action, btn-add" />
+                        </HBox>
                     </HBox>
-                    <TableView VBox.vgrow="ALWAYS">
+                    
+                    <TableView fx:id="clientsTable" VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                         <columns>
-                           <TableColumn text="ID" />
-                           <TableColumn text="Imię" />
-                           <TableColumn text="Email" />
-                           <TableColumn text="Akcja" />
-                        </columns>
+                           <TableColumn fx:id="colClientId" text="ID" />
+                           <TableColumn fx:id="colClientFirstName" text="Imię" />
+                           <TableColumn fx:id="colClientLastName" text="Nazwisko" /> <TableColumn fx:id="colClientEmail" text="Email" />
+                           </columns>
                     </TableView>
                 </VBox>
-
             </StackPane>
         </VBox>
     </center>

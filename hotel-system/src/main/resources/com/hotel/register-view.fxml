@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -8,7 +7,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <StackPane styleClass="bg-gradient" 
            stylesheets="@css/global.css, @css/login.css"
@@ -23,11 +21,17 @@
             </VBox.margin>
         </Label>
 
-        <Label text="Imię i Nazwisko" />
-        <TextField fx:id="nameField" promptText="Jan Kowalski" />
+        <Label text="Imię" />
+        <TextField fx:id="firstNameField" promptText="Jan" />
+
+        <Label text="Nazwisko" />
+        <TextField fx:id="lastNameField" promptText="Kowalski" />
 
         <Label text="Email" />
         <TextField fx:id="emailField" promptText="jan@example.com" />
+
+        <Label text="Telefon" />
+        <TextField fx:id="phoneField" promptText="+48 123 456 789" />
 
         <Label text="Hasło" />
         <PasswordField fx:id="passField" promptText="******" />

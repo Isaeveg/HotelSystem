@@ -44,26 +44,26 @@ public class ClientHandler implements Runnable {
 
                 case REGISTER:
                     String[] regData = (String[]) request.getData();
-                    // regData[0] - email (login)
-                    // regData[1] - password
-                    // regData[2] - full name (Имя Фамилия)
+                    // Ожидаем: [0]=firstName, [1]=lastName, [2]=email, [3]=phone, [4]=password
 
-                    if (regData.length < 3) {
+                    if (regData.length < 5) {
                         response = new Response(false, "Неполные данные", null);
                         break;
                     }
 
-                    String regEmail = regData[0];
-                    String regPass = regData[1];
-                    String regName = regData[2];
+                    String regFirst = regData[0];
+                    String regLast = regData[1];
+                    String regEmail = regData[2];
+                    String regPhone = regData[3];
+                    String regPass = regData[4];
 
-                    // Вызываем обновленный метод (передаем имя)
-                    boolean isRegistered = DatabaseHandler.registerUser(regEmail, regPass, regName);
+                    // Вызываем обновленный метод регистрации
+                    boolean isRegistered = DatabaseHandler.registerUser(regFirst, regLast, regEmail, regPhone, regPass);
 
                     if (isRegistered) {
                         response = new Response(true, "Аккаунт создан успешно!", null);
                     } else {
-                        response = new Response(false, "Ошибка регистрации (возможно, email занят)", null);
+                        response = new Response(false, "Ошибка регистрации (email занят?)", null);
                     }
                     break;
 
@@ -126,6 +126,34 @@ public class ClientHandler implements Runnable {
                     } catch (Exception e) {
                         response = new Response(false, "Ошибка данных: " + e.getMessage(), null);
                     }
+                    break;
+
+                case GET_CLIENTS:
+                    List<Client> clients = DatabaseHandler.getAllClients();
+                    response = new Response(true, "Список клиентов", clients);
+                    break;
+
+                case ADD_CLIENT:
+                    String[] addCData = (String[]) request.getData();
+                    // [0]=first, [1]=last, [2]=email, [3]=phone, [4]=password
+                    boolean added = DatabaseHandler.addClient(addCData[0], addCData[1], addCData[2], addCData[4],
+                            addCData[3]);
+                    response = new Response(added, added ? "Klient dodany" : "Błąd dodawania (email zajęty?)", null);
+                    break;
+
+                case DELETE_CLIENT:
+                    int idToDelete = Integer.parseInt((String) request.getData());
+                    boolean deletedC = DatabaseHandler.deleteClient(idToDelete);
+                    response = new Response(deletedC, deletedC ? "Klient usunięty" : "Błąd usuwania", null);
+                    break;
+
+                case UPDATE_CLIENT:
+                    String[] updCData = (String[]) request.getData();
+                    // [0]=id, [1]=first, [2]=last, [3]=email, [4]=phone
+                    boolean updatedC = DatabaseHandler.updateClient(
+                            Integer.parseInt(updCData[0]),
+                            updCData[1], updCData[2], updCData[3], updCData[4]);
+                    response = new Response(updatedC, updatedC ? "Dane zaktualizowane" : "Błąd aktualizacji", null);
                     break;
 
                 default:

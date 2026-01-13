@@ -21,12 +21,30 @@ public class AdminController {
     private TableColumn<Room, String> colHotel, colRoomNr, colRoomType, colRoomStatus;
     @FXML
     private TableColumn<Room, String> colRoomPrice;
+    @FXML
+    private TableColumn<Room, String> colRoomDesc;
 
     private ObservableList<Room> masterRoomData = FXCollections.observableArrayList();
 
     @FXML
+    private TableView<Client> clientsTable;
+    @FXML
+    private TableColumn<Client, Integer> colClientId;
+    @FXML
+    private TableColumn<Client, String> colClientFirstName;
+    @FXML
+    private TableColumn<Client, String> colClientLastName;
+    @FXML
+    private TableColumn<Client, String> colClientEmail;
+    @FXML
+    private TextField searchClientField;
+
+    private ObservableList<Client> masterClientData = FXCollections.observableArrayList();
+
+    @FXML
     public void initialize() {
         setupRoomsTable();
+        setupClientsTable(); // <--- Добавили вызов настройки таблицы клиентов
         loadRoomsFromServer();
     }
 
@@ -36,6 +54,14 @@ public class AdminController {
         colRoomType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colRoomPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colRoomStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colRoomDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+    }
+
+    private void setupClientsTable() {
+        colClientId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colClientFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        colClientLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        colClientEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
     }
 
     private void loadRoomsFromServer() {
@@ -48,6 +74,18 @@ public class AdminController {
             masterRoomData.setAll(rooms);
             // И показываем их в таблице
             roomsTable.setItems(masterRoomData);
+        }
+    }
+
+    private void loadClientsFromServer() {
+        Request req = new Request(RequestType.GET_CLIENTS, null);
+        Response resp = NetworkClient.sendRequest(req);
+        if (resp.isSuccess()) {
+            List<Client> clients = (List<Client>) resp.getData();
+            masterClientData.setAll(clients);
+            clientsTable.setItems(masterClientData);
+        } else {
+            showError("Nie udało się pobrać listy klientów: " + resp.getMessage());
         }
     }
 
@@ -70,6 +108,21 @@ public class AdminController {
     }
 
     @FXML
+    protected void onSearchClient() {
+        String query = searchClientField.getText().toLowerCase().trim();
+        if (query.isEmpty()) {
+            clientsTable.setItems(masterClientData);
+        } else {
+            ObservableList<Client> filtered = masterClientData.stream()
+                    .filter(c -> c.getEmail().toLowerCase().contains(query) ||
+                            c.getFirstName().toLowerCase().contains(query) ||
+                            c.getLastName().toLowerCase().contains(query))
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+            clientsTable.setItems(filtered);
+        }
+    }
+
+    @FXML
     protected void showDashboard() {
         switchView(viewDashboard);
     }
@@ -87,6 +140,7 @@ public class AdminController {
     @FXML
     protected void showClients() {
         switchView(viewClients);
+        loadClientsFromServer(); // <--- Грузим данные при переключении
     }
 
     @FXML
@@ -139,6 +193,57 @@ public class AdminController {
         } catch (Exception e) {
             e.printStackTrace();
             showError("Nie udało się otworzyć edycji: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    protected void onAddClientClick() {
+        try {
+            SceneManager.openModal("admin-add-client.fxml", "Dodaj klienta");
+            loadClientsFromServer(); // Обновить таблицу после закрытия окна
+        } catch (Exception e) {
+            showError("Błąd otwierania okna: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    protected void onEditClientClick() {
+        Client selected = clientsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Wybierz klienta do edycji!");
+            return;
+        }
+        try {
+            SceneManager.openModal("admin-add-client.fxml", "Edytuj klienta", (AdminAddClientController controller) -> {
+                controller.setClientData(selected);
+            });
+            loadClientsFromServer();
+        } catch (Exception e) {
+            showError("Błąd edycji: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    protected void onDeleteClientClick() {
+        Client selected = clientsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Wybierz klienta do usunięcia!");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Czy usunąć klienta " + selected.getEmail() + "? \nTo usunie również konto użytkownika!",
+                ButtonType.YES, ButtonType.NO);
+        alert.showAndWait();
+
+        if (alert.getResult() == ButtonType.YES) {
+            Request req = new Request(RequestType.DELETE_CLIENT, String.valueOf(selected.getId()));
+            Response resp = NetworkClient.sendRequest(req);
+            if (resp.isSuccess()) {
+                loadClientsFromServer();
+            } else {
+                showError("Błąd usuwania: " + resp.getMessage());
+            }
         }
     }
 
