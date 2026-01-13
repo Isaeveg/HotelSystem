@@ -15,7 +15,7 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
             Request request = (Request) in.readObject();
             Response response;
@@ -25,11 +25,11 @@ public class ClientHandler implements Runnable {
                     String[] credentials = (String[]) request.getData();
                     String login = credentials[0];
                     String password = credentials[1];
-                    
+
                     System.out.println("Próba logowania: " + login);
-                    
+
                     User user = DatabaseHandler.loginUser(login, password);
-                    
+
                     if (user != null) {
                         response = new Response(true, "Успешно", user.getRole());
                     } else {
@@ -42,8 +42,95 @@ public class ClientHandler implements Runnable {
                     response = new Response(true, "Список получен", rooms);
                     break;
 
+                case REGISTER:
+                    String[] regData = (String[]) request.getData();
+                    // regData[0] - email (login)
+                    // regData[1] - password
+                    // regData[2] - full name (Имя Фамилия)
+
+                    if (regData.length < 3) {
+                        response = new Response(false, "Неполные данные", null);
+                        break;
+                    }
+
+                    String regEmail = regData[0];
+                    String regPass = regData[1];
+                    String regName = regData[2];
+
+                    // Вызываем обновленный метод (передаем имя)
+                    boolean isRegistered = DatabaseHandler.registerUser(regEmail, regPass, regName);
+
+                    if (isRegistered) {
+                        response = new Response(true, "Аккаунт создан успешно!", null);
+                    } else {
+                        response = new Response(false, "Ошибка регистрации (возможно, email занят)", null);
+                    }
+                    break;
+
+                case GET_HOTELS:
+                    List<Hotel> hotels = DatabaseHandler.getHotels();
+                    response = new Response(true, "Список отелей", hotels);
+                    break;
+
+                case ADD_ROOM:
+                    // Теперь мы ждем, что клиент пришлет данные так:
+                    // [0] - hotelId (строка)
+                    // [1] - номер
+                    // [2] - тип
+                    // [3] - цена
+                    // [4] - описание
+                    String[] roomData = (String[]) request.getData();
+
+                    try {
+                        int hId = Integer.parseInt(roomData[0]); // Парсим ID отеля
+                        boolean success = DatabaseHandler.addRoom(hId, roomData[1], roomData[2], roomData[3],
+                                roomData[4]);
+
+                        if (success) {
+                            response = new Response(true, "Комната создана!", null);
+                        } else {
+                            response = new Response(false, "Ошибка: возможно номер занят в этом отеле", null);
+                        }
+                    } catch (NumberFormatException e) {
+                        response = new Response(false, "Некорректный ID отеля", null);
+                    }
+                    break;
+
+                case DELETE_ROOM:
+                    String idStr = (String) request.getData();
+                    try {
+                        int roomId = Integer.parseInt(idStr);
+                        boolean deleted = DatabaseHandler.deleteRoom(roomId);
+                        if (deleted) {
+                            response = new Response(true, "Pokój usunięty", null);
+                        } else {
+                            response = new Response(false, "Nie udało się usunąć pokoju", null);
+                        }
+                    } catch (NumberFormatException e) {
+                        response = new Response(false, "Błędne ID pokoju", null);
+                    }
+                    break;
+
+                case UPDATE_ROOM:
+                    String[] updateData = (String[]) request.getData();
+                    // Структура данных: [id, number, type, price, description]
+                    try {
+                        int rId = Integer.parseInt(updateData[0]);
+                        boolean updated = DatabaseHandler.updateRoom(rId, updateData[1], updateData[2], updateData[3],
+                                updateData[4]);
+                        if (updated) {
+                            response = new Response(true, "Комната обновлена!", null);
+                        } else {
+                            response = new Response(false, "Ошибка обновления", null);
+                        }
+                    } catch (Exception e) {
+                        response = new Response(false, "Ошибка данных: " + e.getMessage(), null);
+                    }
+                    break;
+
                 default:
                     response = new Response(false, "Nieznane zapytanie", null);
+                    break;
             }
 
             out.writeObject(response);
@@ -52,7 +139,11 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try { socket.close(); } catch (IOException e) { e.printStackTrace(); }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

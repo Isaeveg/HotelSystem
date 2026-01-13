@@ -24,17 +24,26 @@ import java.util.List;
 
 public class ClientController {
 
-    @FXML private FlowPane hotelsContainer;
-    @FXML private FlowPane favContainer; 
-    @FXML private VBox favSection;       
-    
-    @FXML private ScrollPane listView;
-    @FXML private ScrollPane detailsView;
-    
-    @FXML private Label detailTitle;
-    @FXML private Label detailPrice;
-    @FXML private VBox detailImageBox;
-    @FXML private VBox detailRoomsContainer;
+    @FXML
+    private FlowPane hotelsContainer;
+    @FXML
+    private FlowPane favContainer;
+    @FXML
+    private VBox favSection;
+
+    @FXML
+    private ScrollPane listView;
+    @FXML
+    private ScrollPane detailsView;
+
+    @FXML
+    private Label detailTitle;
+    @FXML
+    private Label detailPrice;
+    @FXML
+    private VBox detailImageBox;
+    @FXML
+    private VBox detailRoomsContainer;
 
     @FXML
     public void initialize() {
@@ -64,8 +73,8 @@ public class ClientController {
         String priceStr = room.getPrice() + " zł";
 
         VBox card = new VBox();
-        card.setPrefWidth(300);  
-        card.setPrefHeight(340); 
+        card.setPrefWidth(300);
+        card.setPrefHeight(340);
         card.getStyleClass().add("hotel-card");
 
         VBox imagePlaceholder = new VBox();
@@ -74,14 +83,14 @@ public class ClientController {
         imagePlaceholder.setAlignment(Pos.CENTER);
         imagePlaceholder.getChildren().add(new Label(room.getType()));
 
-        VBox body = new VBox(5); 
+        VBox body = new VBox(5);
         body.setPadding(new Insets(15));
-        VBox.setVgrow(body, Priority.ALWAYS); 
-        
+        VBox.setVgrow(body, Priority.ALWAYS);
+
         Label title = new Label(name);
         title.setFont(Font.font("Segoe UI", FontWeight.BOLD, 18));
         title.setTextFill(Color.web("#333333"));
-        title.setWrapText(true); 
+        title.setWrapText(true);
 
         Label priceLabel = new Label(priceStr);
         priceLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 22));
@@ -102,13 +111,13 @@ public class ClientController {
 
         Button starBtn = new Button("★");
         starBtn.getStyleClass().add("btn-star");
-        
+
         starBtn.setOnAction(e -> {
             boolean isFav = starBtn.getStyleClass().contains("btn-star-active");
             if (isFav) {
                 starBtn.getStyleClass().remove("btn-star-active");
                 favContainer.getChildren().remove(card);
-                hotelsContainer.getChildren().add(card); 
+                hotelsContainer.getChildren().add(card);
             } else {
                 starBtn.getStyleClass().add("btn-star-active");
                 hotelsContainer.getChildren().remove(card);
@@ -133,11 +142,11 @@ public class ClientController {
         detailTitle.setText("Pokój " + room.getNumber());
         detailPrice.setText(room.getPrice() + " zł / noc");
         detailImageBox.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 4;");
-        
+
         detailRoomsContainer.getChildren().clear();
-        
+
         addRoomVariant(room.getType(), room.getPrice() + " zł", "Status: " + room.getStatus());
-        
+
         listView.setVisible(false);
         detailsView.setVisible(true);
     }
@@ -161,9 +170,9 @@ public class ClientController {
         action.setAlignment(Pos.CENTER_RIGHT);
         Label priceLbl = new Label(price);
         priceLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #333;");
-        
+
         Button bookBtn = new Button("Wybierz");
-        bookBtn.getStyleClass().add("btn-choose"); 
+        bookBtn.getStyleClass().add("btn-choose");
         bookBtn.setOnAction(e -> openBookingModal(type, price));
 
         action.getChildren().addAll(priceLbl, bookBtn);
@@ -176,7 +185,7 @@ public class ClientController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("booking-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 400, 550);
-            
+
             BookingController controller = fxmlLoader.getController();
             controller.setRoomData(type, price);
 
@@ -200,5 +209,25 @@ public class ClientController {
     protected void onLogoutClick(ActionEvent event) throws IOException {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         SceneManager.switchScene(stage, "login-view.fxml");
+    }
+
+    @FXML
+    protected void onOpenProfile() {
+        try {
+            // Открываем профиль как модальное окно
+            SceneManager.openModal("user-profile.fxml", "Profil użytkownika");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    protected void onOpenFilters() {
+        try {
+            // Открываем фильтры как модальное окно
+            SceneManager.openModal("filter-view.fxml", "Filtry");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

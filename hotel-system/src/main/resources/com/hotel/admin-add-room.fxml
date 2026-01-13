@@ -29,6 +29,11 @@
     </Label>
 
     <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
+        <Label style="-fx-font-weight: bold;" text="Hotel:" />
+        <ComboBox fx:id="hotelCombo" maxWidth="Infinity" promptText="Wybierz hotel..." />
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="5.0">
         <Label style="-fx-font-weight: bold;" text="Numer pokoju:" />
         <TextField fx:id="roomNumberField" promptText="np. 101" />
     </VBox>

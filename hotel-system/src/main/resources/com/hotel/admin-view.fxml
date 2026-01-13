@@ -75,21 +75,29 @@
                 </VBox>
 
                 <VBox fx:id="viewRooms" spacing="15.0" visible="false">
-                    <HBox alignment="CENTER_LEFT" spacing="20.0">
-                        <Label text="Zarządzanie Pokojami" textFill="#2c3e50">
-                            <font><Font name="Segoe UI Bold" size="24.0" /></font>
-                        </Label>
-                        <HBox HBox.hgrow="ALWAYS" />
-                        <Button styleClass="btn-primary" text="+ Dodaj pokój" onAction="#onAddRoomClick" />
-                    </HBox>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
-                        <TextField promptText="Szukaj po numerze..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
-                        <Button styleClass="btn-primary" text="Szukaj" />
+                        <TextField fx:id="searchRoomField" 
+                                promptText="Szukaj hotelu..." 
+                                maxWidth="300.0" 
+                                HBox.hgrow="ALWAYS" 
+                                style="-fx-background-color: transparent;" />
+                        <Button text="Szukaj" styleClass="btn-primary" onAction="#onSearchRoom" />
+
+                        <HBox HBox.hgrow="ALWAYS" />
+
+                        <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                            <Button text="Edytuj" onAction="#onEditRoomClick" styleClass="btn-action, btn-edit" />
+                            <Button text="Usuń" onAction="#onDeleteRoomClick" styleClass="btn-action, btn-delete" />
+                            <Button text="+ Dodaj" onAction="#onAddRoomClick" styleClass="btn-action, btn-add" />
+                        </HBox>
                     </HBox>
+
+                    
                     
                     <TableView fx:id="roomsTable" VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                         <columns>
+                            <TableColumn fx:id="colHotel" text="Miasto / Hotel" />
                             <TableColumn fx:id="colRoomNr" text="Nr Pokoju" />
                             <TableColumn fx:id="colRoomType" text="Typ" />
                             <TableColumn fx:id="colRoomPrice" text="Cena" />
