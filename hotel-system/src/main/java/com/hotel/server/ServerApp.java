@@ -9,11 +9,11 @@ public class ServerApp {
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Сервер отеля запущен на порту " + PORT);
+            System.out.println("Server hotela został włączony na porcie " + PORT);
 
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Новое подключение клиента...");
+                System.out.println("Nowe połączenie klienta...");
                 new Thread(new ClientHandler(socket)).start();
             }
         } catch (IOException e) {

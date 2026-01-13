@@ -32,27 +32,25 @@ public class RegisterController {
         String password = passField.getText();
 
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-            showAlert("Заполни все поля! (Uzupełnij wszystkie dane)");
+            showAlert("Uzupełnij wszystkie dane!");
             return;
         }
 
-        // Шлем массив строк: [имя, фамилия, email, телефон, пароль]
-        // Порядок важен, он должен совпадать с тем, как мы читаем в ClientHandler
         String[] registrationData = { firstName, lastName, email, phone, password };
         Request request = new Request(RequestType.REGISTER, registrationData);
 
         Response response = NetworkClient.sendRequest(request);
 
         if (response != null && response.isSuccess()) {
-            showAlert("Успех! " + response.getMessage());
+            showAlert("Sukces! " + response.getMessage());
             try {
                 goBackToLogin();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            String errorMsg = (response != null) ? response.getMessage() : "Ошибка соединения";
-            showAlert("Ошибка регистрации: " + errorMsg);
+            String errorMsg = (response != null) ? response.getMessage() : "Błąd połączenia";
+            showAlert("Błąd rejestracji: " + errorMsg);
         }
     }
 

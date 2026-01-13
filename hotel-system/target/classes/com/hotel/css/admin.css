@@ -134,20 +134,19 @@
     -fx-border-color: #ccc;
 }
 
-/* Базовый стиль для всех кнопок действий (размер, шрифт, отступы) */
+
 .btn-action {
-    -fx-min-width: 130px;       /* Минимальная ширина */
-    -fx-pref-width: 130px;      /* Предпочтительная ширина (гарантирует одинаковый размер) */
+    -fx-min-width: 130px;      
+    -fx-pref-width: 130px;      
     -fx-padding: 8 15;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-background-radius: 5;
-    -fx-alignment: center;      /* Текст по центру */
+    -fx-alignment: center;     
 }
 
-/* Зеленая кнопка (Добавить) */
 .btn-add {
     -fx-background-color: #27ae60;
 }
@@ -155,7 +154,6 @@
     -fx-background-color: #2ecc71;
 }
 
-/* Синяя кнопка (Редактировать) */
 .btn-edit {
     -fx-background-color: #2980b9;
 }
@@ -163,7 +161,6 @@
     -fx-background-color: #3498db;
 }
 
-/* Красная кнопка (Удалить) */
 .btn-delete {
     -fx-background-color: #c0392b;
 }

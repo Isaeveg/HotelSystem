@@ -39,7 +39,6 @@ public class AdminAddRoomController {
         }
     }
 
-    // Метод для заполнения формы данными существующей комнаты
     public void setRoomData(com.hotel.common.Room room) {
         this.editingRoomId = room.getId();
         this.roomNumberField.setText(room.getNumber());
@@ -53,13 +52,12 @@ public class AdminAddRoomController {
             }
         }
 
-        // Парсим описание, чтобы выставить галочки
         String desc = room.getDescription();
         if (desc != null) {
-            checkBreakfast.setSelected(desc.contains("Завтрак"));
-            checkParking.setSelected(desc.contains("Парковка"));
+            checkBreakfast.setSelected(desc.contains("Śniadanie"));
+            checkParking.setSelected(desc.contains("Parking"));
             checkWifi.setSelected(desc.contains("Wi-Fi"));
-            checkAC.setSelected(desc.contains("Кондиционер"));
+            checkAC.setSelected(desc.contains("Klimatyzacja"));
         }
 
         this.saveBtn.setText("Zapisz zmiany");
@@ -67,10 +65,9 @@ public class AdminAddRoomController {
 
     @FXML
     protected void onSave() {
-        // Проверка
         if (roomNumberField.getText().isEmpty() || hotelCombo.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Выберите отель, номер и цену!");
+            alert.setContentText("Wybierz hotel, numer i cenę!");
             alert.showAndWait();
             return;
         }
@@ -79,12 +76,11 @@ public class AdminAddRoomController {
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
-        // Проверяем каждый чекбокс. Если выбран — добавляем текст.
         if (checkWifi.isSelected()) {
-            descriptionBuilder.append("WiFi, ");
+            descriptionBuilder.append("Wi-Fi, ");
         }
         if (checkBreakfast.isSelected()) {
-            descriptionBuilder.append("Breakfast, ");
+            descriptionBuilder.append("Śniadanie, ");
         }
         if (checkParking.isSelected()) {
             descriptionBuilder.append("Parking, ");
@@ -95,32 +91,25 @@ public class AdminAddRoomController {
 
         String description = descriptionBuilder.toString();
 
-        // Если хочешь убрать последнюю запятую (для красоты):
         if (description.endsWith(", ")) {
             description = description.substring(0, description.length() - 2);
         }
 
-        // И если вообще ничего не выбрали, можно задать дефолт
         if (description.isEmpty()) {
-            description = "No special amenities";
+            description = "Brak dodatkowych udogodnień";
         }
 
         Request req;
         if (editingRoomId == null) {
-            // РЕЖИМ ДОБАВЛЕНИЯ
             String[] data = {
-                    String.valueOf(selectedHotel.getId()), // [0] - ID отеля
-                    roomNumberField.getText(), // [1]
-                    roomTypeCombo.getValue(), // [2]
-                    roomPriceField.getText(), // [3]
-                    description // [4]
+                    String.valueOf(selectedHotel.getId()),
+                    roomNumberField.getText(),
+                    roomTypeCombo.getValue(),
+                    roomPriceField.getText(),
+                    description
             };
             req = new Request(RequestType.ADD_ROOM, data);
         } else {
-            // РЕЖИМ РЕДАКТИРОВАНИЯ (Тут логика чуть другая, можно отель не менять)
-            // ... (твой код обновления)
-            // Но лучше тоже передавать ID отеля, если вдруг комнату перенесли в другой
-            // филиал (маловероятно, но всё же)
             String[] data = {
                     String.valueOf(editingRoomId),
                     roomNumberField.getText(),
@@ -135,12 +124,12 @@ public class AdminAddRoomController {
 
         if (resp != null && resp.isSuccess()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Успех: " + resp.getMessage());
+            alert.setContentText("Sukces: " + resp.getMessage());
             alert.showAndWait();
             closeModal();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Ошибка: " + (resp != null ? resp.getMessage() : "Нет связи"));
+            alert.setContentText("Błąd: " + (resp != null ? resp.getMessage() : "Brak połączenia"));
             alert.showAndWait();
         }
     }

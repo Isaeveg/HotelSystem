@@ -27,6 +27,6 @@ public class Hotel implements Serializable {
 
     @Override
     public String toString() {
-        return city + " - " + name; // Это будет отображаться в выпадающем списке
+        return city + " - " + name;
     }
 }

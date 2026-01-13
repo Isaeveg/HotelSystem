@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private int id;
-    private String email; // Вместо username
+    private String email;
     private String role;
 
     public User(int id, String email, String role) {
