@@ -17,6 +17,7 @@ public class AdminController {
     private Button btnDash, btnRooms, btnRes, btnClients;
     @FXML
     private Label lblMaxPrice, lblMinPrice, lblAvgPrice;
+
     @FXML
     private TextField searchRoomField;
     @FXML
@@ -46,9 +47,31 @@ public class AdminController {
     private ObservableList<Client> masterClientData = FXCollections.observableArrayList();
 
     @FXML
+    private TableView<Booking> bookingsTable;
+    @FXML
+    private TableColumn<Booking, Integer> colBookId;
+    @FXML
+    private TableColumn<Booking, String> colBookClient;
+    @FXML
+    private TableColumn<Booking, String> colBookRoom;
+    @FXML
+    private TableColumn<Booking, String> colBookIn;
+    @FXML
+    private TableColumn<Booking, String> colBookOut;
+    @FXML
+    private TableColumn<Booking, String> colBookStatus;
+    @FXML
+    private TableColumn<Booking, String> colBookPrice;
+    @FXML
+    private TextField searchBookingField;
+
+    private ObservableList<Booking> masterBookingData = FXCollections.observableArrayList();
+
+    @FXML
     public void initialize() {
         setupRoomsTable();
         setupClientsTable();
+        setupBookingsTable();
         loadRoomsFromServer();
     }
 
@@ -68,6 +91,16 @@ public class AdminController {
         colClientEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
     }
 
+    private void setupBookingsTable() {
+        colBookId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colBookClient.setCellValueFactory(new PropertyValueFactory<>("clientEmail"));
+        colBookRoom.setCellValueFactory(new PropertyValueFactory<>("roomNumber"));
+        colBookIn.setCellValueFactory(new PropertyValueFactory<>("checkInDate"));
+        colBookOut.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
+        colBookStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colBookPrice.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+    }
+
     private void loadRoomsFromServer() {
         Request req = new Request(RequestType.GET_ROOMS, null);
         Response resp = NetworkClient.sendRequest(req);
@@ -78,24 +111,6 @@ public class AdminController {
             roomsTable.setItems(masterRoomData);
             calculateStats(rooms);
         }
-    }
-
-    private void calculateStats(List<Room> rooms) {
-        if (rooms.isEmpty()) return;
-        
-        double max = rooms.stream()
-                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
-                .max().orElse(0);
-        double min = rooms.stream()
-                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
-                .min().orElse(0);
-        double avg = rooms.stream()
-                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
-                .average().orElse(0);
-
-        lblMaxPrice.setText(String.format("%.2f zł", max));
-        lblMinPrice.setText(String.format("%.2f zł", min));
-        lblAvgPrice.setText(String.format("%.2f zł", avg));
     }
 
     private void loadClientsFromServer() {
@@ -109,6 +124,32 @@ public class AdminController {
         } else {
             showError("Nie udało się pobrać listy klientów: " + resp.getMessage());
         }
+    }
+
+    private void loadBookingsFromServer() {
+        Request req = new Request(RequestType.GET_BOOKINGS, null);
+        Response resp = NetworkClient.sendRequest(req);
+        if (resp.isSuccess()) {
+            @SuppressWarnings("unchecked")
+            List<Booking> list = (List<Booking>) resp.getData();
+            masterBookingData.setAll(list);
+            bookingsTable.setItems(masterBookingData);
+        } else {
+            showError("Nie udało się pobrać rezerwacji.");
+        }
+    }
+
+    private void calculateStats(List<Room> rooms) {
+        if (rooms.isEmpty())
+            return;
+
+        double max = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).max().orElse(0);
+        double min = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).min().orElse(0);
+        double avg = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).average().orElse(0);
+
+        lblMaxPrice.setText(String.format("%.2f zł", max));
+        lblMinPrice.setText(String.format("%.2f zł", min));
+        lblAvgPrice.setText(String.format("%.2f zł", avg));
     }
 
     @FXML
@@ -141,6 +182,21 @@ public class AdminController {
     }
 
     @FXML
+    protected void onSearchBooking() {
+        String query = searchBookingField.getText().toLowerCase().trim();
+        if (query.isEmpty()) {
+            bookingsTable.setItems(masterBookingData);
+        } else {
+            ObservableList<Booking> filtered = masterBookingData.stream()
+                    .filter(b -> b.getClientEmail().toLowerCase().contains(query) ||
+                            b.getRoomNumber().toLowerCase().contains(query) ||
+                            b.getStatus().toLowerCase().contains(query))
+                    .collect(Collectors.toCollection(FXCollections::observableArrayList));
+            bookingsTable.setItems(filtered);
+        }
+    }
+
+    @FXML
     protected void showDashboard() {
         switchView(viewDashboard);
         updateActiveButton(btnDash);
@@ -155,6 +211,7 @@ public class AdminController {
     @FXML
     protected void showReservations() {
         switchView(viewReservations);
+        loadBookingsFromServer();
         updateActiveButton(btnRes);
     }
 
@@ -171,6 +228,23 @@ public class AdminController {
         btnRes.getStyleClass().remove("menu-btn-active");
         btnClients.getStyleClass().remove("menu-btn-active");
         activeBtn.getStyleClass().add("menu-btn-active");
+    }
+
+    private void switchView(VBox view) {
+        viewDashboard.setVisible(false);
+        viewRooms.setVisible(false);
+        viewReservations.setVisible(false);
+        viewClients.setVisible(false);
+        view.setVisible(true);
+    }
+
+    @FXML
+    protected void onLogout() {
+        try {
+            SceneManager.switchScene("login-view.fxml");
+        } catch (Exception e) {
+            showError("Błąd: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -190,7 +264,8 @@ public class AdminController {
             showError("Wybierz pokój!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć pokój " + selectedRoom.getNumber() + "?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć pokój " + selectedRoom.getNumber() + "?",
+                ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_ROOM, String.valueOf(selectedRoom.getId()));
@@ -252,7 +327,8 @@ public class AdminController {
             showError("Wybierz klienta!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć klienta " + selected.getEmail() + "?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć klienta " + selected.getEmail() + "?",
+                ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_CLIENT, String.valueOf(selected.getId()));
@@ -264,20 +340,52 @@ public class AdminController {
     }
 
     @FXML
-    protected void onLogout() {
+    protected void onAddBookingClick() {
         try {
-            SceneManager.switchScene("login-view.fxml");
+            SceneManager.openModal("admin-add-booking.fxml", "Dodaj rezerwację");
+            loadBookingsFromServer();
         } catch (Exception e) {
             showError("Błąd: " + e.getMessage());
         }
     }
 
-    private void switchView(VBox view) {
-        viewDashboard.setVisible(false);
-        viewRooms.setVisible(false);
-        viewReservations.setVisible(false);
-        viewClients.setVisible(false);
-        view.setVisible(true);
+    @FXML
+    protected void onEditBookingClick() {
+        Booking selected = bookingsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Wybierz rezerwację!");
+            return;
+        }
+        try {
+            SceneManager.openModal("admin-add-booking.fxml", "Edytuj rezerwację",
+                    (AdminAddBookingController controller) -> {
+                        controller.setBookingData(selected);
+                    });
+            loadBookingsFromServer();
+        } catch (Exception e) {
+            showError("Błąd: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    protected void onDeleteBookingClick() {
+        Booking selected = bookingsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Wybierz rezerwację!");
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć rezerwację #" + selected.getId() + "?",
+                ButtonType.YES, ButtonType.NO);
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.YES) {
+            Request req = new Request(RequestType.DELETE_BOOKING, String.valueOf(selected.getId()));
+            Response resp = NetworkClient.sendRequest(req);
+            if (resp.isSuccess()) {
+                loadBookingsFromServer();
+            } else {
+                showError(resp.getMessage());
+            }
+        }
     }
 
     private void showError(String message) {

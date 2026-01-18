@@ -122,18 +122,27 @@
                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                     </Label>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
-                        <TextField promptText="Szukaj po nazwisku..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
-                        <Button styleClass="btn-primary" text="Szukaj" />
+                        <TextField fx:id="searchBookingField" promptText="Szukaj (Email, Pokój, Status)..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <Button styleClass="btn-primary" text="Szukaj" onAction="#onSearchBooking"/>
+                        <HBox HBox.hgrow="ALWAYS" />
+                        
+                        <HBox spacing="10.0" alignment="CENTER_RIGHT">
+                            <Button text="Edytuj" onAction="#onEditBookingClick" styleClass="btn-action, btn-edit" />
+                            <Button text="Usuń" onAction="#onDeleteBookingClick" styleClass="btn-action, btn-delete" />
+                            <Button text="+ Dodaj" onAction="#onAddBookingClick" styleClass="btn-action, btn-add" />
+                        </HBox>
                     </HBox>
-                    <TableView VBox.vgrow="ALWAYS">
+                    
+                    <TableView fx:id="bookingsTable" VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                         <columns>
-                           <TableColumn text="ID" />
-                           <TableColumn text="Klient" />
-                           <TableColumn text="Pokój" />
-                           <TableColumn text="Data" />
-                           <TableColumn text="Status" />
-                           <TableColumn text="Akcja" />
+                           <TableColumn fx:id="colBookId" text="ID" maxWidth="50"/>
+                           <TableColumn fx:id="colBookClient" text="Klient (Email)" />
+                           <TableColumn fx:id="colBookRoom" text="Pokój" />
+                           <TableColumn fx:id="colBookIn" text="Od" />
+                           <TableColumn fx:id="colBookOut" text="Do" />
+                           <TableColumn fx:id="colBookPrice" text="Cena" />
+                           <TableColumn fx:id="colBookStatus" text="Status" />
                         </columns>
                     </TableView>
                 </VBox>

@@ -16,7 +16,8 @@ public class AdminAddRoomController {
     @FXML
     private TextField roomPriceField;
     @FXML
-    private CheckBox checkBreakfast, checkParking, checkWifi, checkAC;
+    private TextArea descriptionField;
+
     @FXML
     private Button saveBtn;
 
@@ -28,6 +29,9 @@ public class AdminAddRoomController {
     @FXML
     public void initialize() {
         loadHotels();
+        if (roomTypeCombo.getItems().isEmpty()) {
+            roomTypeCombo.setItems(FXCollections.observableArrayList("Standard", "Double", "Suite", "Deluxe"));
+        }
     }
 
     private void loadHotels() {
@@ -45,6 +49,8 @@ public class AdminAddRoomController {
         this.roomTypeCombo.setValue(room.getType());
         this.roomPriceField.setText(room.getPrice());
 
+        this.descriptionField.setText(room.getDescription());
+
         for (Hotel h : hotelCombo.getItems()) {
             if (h.getId() == room.getHotelId()) {
                 hotelCombo.setValue(h);
@@ -52,20 +58,13 @@ public class AdminAddRoomController {
             }
         }
 
-        String desc = room.getDescription();
-        if (desc != null) {
-            checkBreakfast.setSelected(desc.contains("Śniadanie"));
-            checkParking.setSelected(desc.contains("Parking"));
-            checkWifi.setSelected(desc.contains("Wi-Fi"));
-            checkAC.setSelected(desc.contains("Klimatyzacja"));
-        }
-
         this.saveBtn.setText("Zapisz zmiany");
     }
 
     @FXML
     protected void onSave() {
-        if (roomNumberField.getText().isEmpty() || hotelCombo.getValue() == null) {
+        if (roomNumberField.getText().isEmpty() || hotelCombo.getValue() == null
+                || roomPriceField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Wybierz hotel, numer i cenę!");
             alert.showAndWait();
@@ -74,29 +73,9 @@ public class AdminAddRoomController {
 
         Hotel selectedHotel = hotelCombo.getValue();
 
-        StringBuilder descriptionBuilder = new StringBuilder();
-
-        if (checkWifi.isSelected()) {
-            descriptionBuilder.append("Wi-Fi, ");
-        }
-        if (checkBreakfast.isSelected()) {
-            descriptionBuilder.append("Śniadanie, ");
-        }
-        if (checkParking.isSelected()) {
-            descriptionBuilder.append("Parking, ");
-        }
-        if (checkAC.isSelected()) {
-            descriptionBuilder.append("AC, ");
-        }
-
-        String description = descriptionBuilder.toString();
-
-        if (description.endsWith(", ")) {
-            description = description.substring(0, description.length() - 2);
-        }
-
-        if (description.isEmpty()) {
-            description = "Brak dodatkowych udogodnień";
+        String description = descriptionField.getText();
+        if (description == null || description.trim().isEmpty()) {
+            description = "";
         }
 
         Request req;

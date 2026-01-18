@@ -144,6 +144,69 @@ public class ClientHandler implements Runnable {
                     response = new Response(updatedC, updatedC ? "Dane zaktualizowane" : "Błąd aktualizacji", null);
                     break;
 
+                case GET_BOOKINGS:
+                    List<Booking> bookings = DatabaseHandler.getAllBookings();
+                    response = new Response(true, "Lista rezerwacji", bookings);
+                    break;
+
+                case ADD_BOOKING:
+                    Object[] bDataObj = (Object[]) request.getData();
+
+                    int bClientId = Integer.parseInt((String) bDataObj[0]);
+                    int bRoomId = Integer.parseInt((String) bDataObj[1]);
+                    String bInDate = (String) bDataObj[2];
+                    String bOutDate = (String) bDataObj[3];
+                    String bPrice = (String) bDataObj[4];
+
+                    String bStatus = (String) bDataObj[5];
+
+                    @SuppressWarnings("unchecked")
+                    List<Integer> amenityIds = (List<Integer>) bDataObj[6];
+
+                    boolean bAdded = DatabaseHandler.addBooking(
+                            bClientId,
+                            bRoomId,
+                            bInDate,
+                            bOutDate,
+                            bPrice,
+                            bStatus,
+                            amenityIds);
+
+                    response = new Response(bAdded, bAdded ? "Rezerwacja dodana" : "Błąd dodawania", null);
+                    break;
+
+                case DELETE_BOOKING:
+                    int bIdDel = Integer.parseInt((String) request.getData());
+                    boolean bDel = DatabaseHandler.deleteBooking(bIdDel);
+                    response = new Response(bDel, bDel ? "Rezerwacja usunięta" : "Błąd usuwania", null);
+                    break;
+
+                case UPDATE_BOOKING:
+                    Object[] bUpd = (Object[]) request.getData();
+
+                    int uId = Integer.parseInt(String.valueOf(bUpd[0]));
+                    int uClientId = Integer.parseInt(String.valueOf(bUpd[1]));
+                    int uRoomId = Integer.parseInt(String.valueOf(bUpd[2]));
+                    String uIn = (String) bUpd[3];
+                    String uOut = (String) bUpd[4];
+                    String uPrice = (String) bUpd[5];
+                    String uStatus = (String) bUpd[6];
+
+                    @SuppressWarnings("unchecked")
+                    List<Integer> uAmIds = (List<Integer>) bUpd[7];
+
+                    boolean bUpdated = DatabaseHandler.updateBooking(
+                            uId, uClientId, uRoomId, uIn, uOut, uPrice, uStatus, uAmIds);
+
+                    response = new Response(bUpdated, bUpdated ? "Rezerwacja zaktualizowana" : "Błąd aktualizacji",
+                            null);
+                    break;
+
+                case GET_AMENITIES:
+                    List<Amenity> amenities = DatabaseHandler.getAllAmenities();
+                    response = new Response(true, "Lista usług", amenities);
+                    break;
+
                 default:
                     response = new Response(false, "Nieznane zapytanie", null);
                     break;

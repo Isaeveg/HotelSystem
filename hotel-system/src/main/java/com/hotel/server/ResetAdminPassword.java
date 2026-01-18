@@ -37,7 +37,6 @@ public class ResetAdminPassword {
                         try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                             updateStmt.setString(1, hashedPassword);
                             updateStmt.setString(2, email);
-                            int updated = updateStmt.executeUpdate();
                             System.out.println("✅ Hasło użytkownika '" + email + "' zaktualizowane pomyślnie!");
                         }
                     } else {
@@ -46,7 +45,6 @@ public class ResetAdminPassword {
                             insertStmt.setString(1, email);
                             insertStmt.setString(2, hashedPassword);
                             insertStmt.setString(3, role);
-                            int inserted = insertStmt.executeUpdate();
                             System.out.println("✅ Użytkownik '" + email + "' został pomyślnie utworzony!");
                         }
                     }
