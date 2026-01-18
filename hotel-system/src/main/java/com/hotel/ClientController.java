@@ -43,7 +43,9 @@ public class ClientController {
         Request req = new Request(RequestType.GET_ROOMS, null);
         Response resp = NetworkClient.sendRequest(req);
         if (resp != null && resp.isSuccess()) {
-            allRooms = (List<Room>) resp.getData();
+            @SuppressWarnings("unchecked")
+            List<Room> rooms = (List<Room>) resp.getData();
+            this.allRooms = rooms;
             showMainTab();
         }
     }
@@ -138,12 +140,12 @@ public class ClientController {
         detailPrice.setText(room.getPrice() + " zł / noc");
         detailImageBox.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 4;");
         detailRoomsContainer.getChildren().clear();
-        addRoomVariant(room, colorHex);
+        addRoomVariant(room);
         listView.setVisible(false);
         detailsView.setVisible(true);
     }
 
-    private void addRoomVariant(Room room, String colorHex) {
+    private void addRoomVariant(Room room) {
         HBox row = new HBox(10);
         row.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 15;");
         row.setAlignment(Pos.CENTER_LEFT);
@@ -164,7 +166,7 @@ public class ClientController {
         });
 
         row.getChildren().addAll(info, spacer, bookBtn);
-        detailRoomsContainer.add(row);
+        detailRoomsContainer.getChildren().add(row);
     }
 
     private void openBookingModal(String type, String price) {
@@ -181,7 +183,12 @@ public class ClientController {
     }
 
     @FXML protected void onBackToList() { detailsView.setVisible(false); listView.setVisible(true); }
-    @FXML protected void onLogoutClick(ActionEvent event) throws IOException { SceneManager.switchScene((Stage)((Node)event.getSource()).getScene().getWindow(), "login-view.fxml"); }
+    
+    @FXML protected void onLogoutClick(ActionEvent event) throws IOException { 
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        SceneManager.switchScene(stage, "login-view.fxml"); 
+    }
+
     @FXML protected void onOpenProfile() { try { SceneManager.openModal("user-profile.fxml", "Profil użytkownika"); } catch (IOException e) { e.printStackTrace(); } }
     @FXML protected void onOpenFilters() { try { SceneManager.openModal("filter-view.fxml", "Filtry"); } catch (IOException e) { e.printStackTrace(); } }
 }

@@ -82,9 +82,16 @@ public class AdminController {
 
     private void calculateStats(List<Room> rooms) {
         if (rooms.isEmpty()) return;
-        double max = rooms.stream().mapToDouble(Room::getPrice).max().orElse(0);
-        double min = rooms.stream().mapToDouble(Room::getPrice).min().orElse(0);
-        double avg = rooms.stream().mapToDouble(Room::getPrice).average().orElse(0);
+        
+        double max = rooms.stream()
+                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
+                .max().orElse(0);
+        double min = rooms.stream()
+                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
+                .min().orElse(0);
+        double avg = rooms.stream()
+                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
+                .average().orElse(0);
 
         lblMaxPrice.setText(String.format("%.2f zł", max));
         lblMinPrice.setText(String.format("%.2f zł", min));
@@ -172,7 +179,7 @@ public class AdminController {
             SceneManager.openModal("admin-add-room.fxml", "Dodaj nowy pokój");
             loadRoomsFromServer();
         } catch (Exception e) {
-            showError("Nie udało się otworzyć okna dodawania pokoju: " + e.getMessage());
+            showError("Nie udało się otworzyć okna: " + e.getMessage());
         }
     }
 
@@ -180,18 +187,16 @@ public class AdminController {
     protected void onDeleteRoomClick() {
         Room selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
         if (selectedRoom == null) {
-            showError("Wybierz pokój do usunięcia!");
+            showError("Wybierz pokój!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć pokój " + selectedRoom.getNumber() + "?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć pokój " + selectedRoom.getNumber() + "?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_ROOM, String.valueOf(selectedRoom.getId()));
             Response resp = NetworkClient.sendRequest(req);
             if (resp.isSuccess()) {
                 loadRoomsFromServer();
-            } else {
-                showError("Błąd usuwania: " + resp.getMessage());
             }
         }
     }
@@ -200,7 +205,7 @@ public class AdminController {
     protected void onEditRoomClick() {
         Room selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
         if (selectedRoom == null) {
-            showError("Wybierz pokój do edycji!");
+            showError("Wybierz pokój!");
             return;
         }
         try {
@@ -209,7 +214,7 @@ public class AdminController {
             });
             loadRoomsFromServer();
         } catch (Exception e) {
-            showError("Nie udało się otworzyć edycji: " + e.getMessage());
+            showError("Błąd edycji: " + e.getMessage());
         }
     }
 
@@ -219,7 +224,7 @@ public class AdminController {
             SceneManager.openModal("admin-add-client.fxml", "Dodaj klienta");
             loadClientsFromServer();
         } catch (Exception e) {
-            showError("Błąd otwierania okna: " + e.getMessage());
+            showError("Błąd: " + e.getMessage());
         }
     }
 
@@ -227,7 +232,7 @@ public class AdminController {
     protected void onEditClientClick() {
         Client selected = clientsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz klienta do edycji!");
+            showError("Wybierz klienta!");
             return;
         }
         try {
@@ -236,7 +241,7 @@ public class AdminController {
             });
             loadClientsFromServer();
         } catch (Exception e) {
-            showError("Błąd edycji: " + e.getMessage());
+            showError("Błąd: " + e.getMessage());
         }
     }
 
@@ -244,18 +249,16 @@ public class AdminController {
     protected void onDeleteClientClick() {
         Client selected = clientsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz klienta do usunięcia!");
+            showError("Wybierz klienta!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Czy usunąć klienta " + selected.getEmail() + "? \nTo usunie również konto użytkownika!", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć klienta " + selected.getEmail() + "?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_CLIENT, String.valueOf(selected.getId()));
             Response resp = NetworkClient.sendRequest(req);
             if (resp.isSuccess()) {
                 loadClientsFromServer();
-            } else {
-                showError("Błąd usuwania: " + resp.getMessage());
             }
         }
     }
@@ -265,7 +268,7 @@ public class AdminController {
         try {
             SceneManager.switchScene("login-view.fxml");
         } catch (Exception e) {
-            showError("Błąd podczas wylogowywania: " + e.getMessage());
+            showError("Błąd: " + e.getMessage());
         }
     }
 
@@ -279,8 +282,6 @@ public class AdminController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Błąd");
-        alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }
