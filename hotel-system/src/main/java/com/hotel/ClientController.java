@@ -214,7 +214,6 @@ public class ClientController {
     @FXML
     protected void onOpenProfile() {
         try {
-            // Открываем профиль как модальное окно
             SceneManager.openModal("user-profile.fxml", "Profil użytkownika");
         } catch (IOException e) {
             e.printStackTrace();
@@ -224,7 +223,6 @@ public class ClientController {
     @FXML
     protected void onOpenFilters() {
         try {
-            // Открываем фильтры как модальное окно
             SceneManager.openModal("filter-view.fxml", "Filtry");
         } catch (IOException e) {
             e.printStackTrace();

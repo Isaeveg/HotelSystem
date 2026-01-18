@@ -41,7 +41,7 @@ public class LoginController {
                 e.printStackTrace();
             }
         } else {
-            showAlert("Błąd", resp != null ? resp.getMessage() : "Brak połączenia с serwerem");
+            showAlert("Błąd", resp != null ? resp.getMessage() : "Brak połączenia z serwerem");
         }
     }
 

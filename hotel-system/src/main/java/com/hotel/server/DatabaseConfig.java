@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * Класс для загрузки конфигурации базы данных из файла properties
- */
 public class DatabaseConfig {
     private static final Logger logger = LogManager.getLogger(DatabaseConfig.class);
     private static final String CONFIG_FILE = "database.properties";
@@ -26,16 +23,16 @@ public class DatabaseConfig {
                 .getResourceAsStream(CONFIG_FILE)) {
 
             if (input == null) {
-                logger.warn("Файл конфигурации {} не найден, используются значения по умолчанию", CONFIG_FILE);
+                logger.warn("Plik konfiguracji {} nie znaleziony, używane wartości domyślne", CONFIG_FILE);
                 setDefaultProperties();
                 return;
             }
 
             properties.load(input);
-            logger.info("Конфигурация базы данных успешно загружена");
+            logger.info("Konfiguracja bazy danych załadowana pomyślnie");
 
         } catch (IOException e) {
-            logger.error("Ошибка загрузки конфигурации: {}", e.getMessage());
+            logger.error("Błąd ładowania konfiguracji: {}", e.getMessage());
             setDefaultProperties();
         }
     }

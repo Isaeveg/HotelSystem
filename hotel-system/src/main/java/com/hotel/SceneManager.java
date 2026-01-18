@@ -22,7 +22,7 @@ public class SceneManager {
 
         URL resource = App.class.getResource(fxmlFile);
         if (resource == null) {
-            throw new IOException("Файл не найден в ресурсах: " + fxmlFile);
+            throw new IOException("Plik nie znaleziony w zasobach: " + fxmlFile);
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(resource);
@@ -34,26 +34,23 @@ public class SceneManager {
 
     public static void switchScene(String fxmlFile) throws IOException {
         if (primaryStage == null) {
-            throw new IllegalStateException("Primary stage не установлен. Вызовите setPrimaryStage() сначала.");
+            throw new IllegalStateException("Primary stage nie został ustawiony. Najpierw wywołaj setPrimaryStage().");
         }
         switchScene(primaryStage, fxmlFile);
     }
 
-    // --- ИСПРАВЛЕНИЕ: Добавляем метод для старых вызовов (2 аргумента) ---
     public static void openModal(String fxmlFile, String title) throws IOException {
         openModal(fxmlFile, title, null);
     }
 
-    // Основной метод (3 аргумента)
     public static <T> void openModal(String fxmlFile, String title, Consumer<T> controllerSetup) throws IOException {
         URL resource = App.class.getResource(fxmlFile);
         if (resource == null)
-            throw new IOException("File not found: " + fxmlFile);
+            throw new IOException("Plik nie znaleziony: " + fxmlFile);
 
         FXMLLoader fxmlLoader = new FXMLLoader(resource);
         Parent root = fxmlLoader.load();
 
-        // Получаем контроллер и даем возможность его настроить ДО показа окна
         T controller = fxmlLoader.getController();
         if (controllerSetup != null) {
             controllerSetup.accept(controller);

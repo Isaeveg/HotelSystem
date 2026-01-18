@@ -7,15 +7,14 @@ public class Client implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    private String phone; // <--- 1. Добавляем поле
+    private String phone;
 
-    // 2. Обновляем конструктор
     public Client(int id, String firstName, String lastName, String email, String phone) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.phone = phone; // <--- Сохраняем
+        this.phone = phone;
     }
 
     public int getId() {
@@ -38,7 +37,6 @@ public class Client implements Serializable {
         return phone;
     }
 
-    // Для удобного отображения полного имени, если понадобится
     public String getFullName() {
         return firstName + " " + lastName;
     }

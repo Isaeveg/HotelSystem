@@ -44,7 +44,7 @@ public class AdminController {
     @FXML
     public void initialize() {
         setupRoomsTable();
-        setupClientsTable(); // <--- Добавили вызов настройки таблицы клиентов
+        setupClientsTable();
         loadRoomsFromServer();
     }
 
@@ -68,11 +68,10 @@ public class AdminController {
         Request req = new Request(RequestType.GET_ROOMS, null);
         Response resp = NetworkClient.sendRequest(req);
         if (resp.isSuccess()) {
+            @SuppressWarnings("unchecked")
             List<Room> rooms = (List<Room>) resp.getData();
 
-            // Сохраняем все данные в master-список
             masterRoomData.setAll(rooms);
-            // И показываем их в таблице
             roomsTable.setItems(masterRoomData);
         }
     }
@@ -81,7 +80,9 @@ public class AdminController {
         Request req = new Request(RequestType.GET_CLIENTS, null);
         Response resp = NetworkClient.sendRequest(req);
         if (resp.isSuccess()) {
+            @SuppressWarnings("unchecked")
             List<Client> clients = (List<Client>) resp.getData();
+
             masterClientData.setAll(clients);
             clientsTable.setItems(masterClientData);
         } else {
@@ -94,10 +95,8 @@ public class AdminController {
         String query = searchRoomField.getText().toLowerCase().trim();
 
         if (query.isEmpty()) {
-            // Если пусто, возвращаем полный список
             roomsTable.setItems(masterRoomData);
         } else {
-            // Фильтруем список: ищем совпадение в названии отеля
             ObservableList<Room> filteredList = masterRoomData.stream()
                     .filter(room -> room.getHotelName() != null &&
                             room.getHotelName().toLowerCase().contains(query))
@@ -140,7 +139,7 @@ public class AdminController {
     @FXML
     protected void showClients() {
         switchView(viewClients);
-        loadClientsFromServer(); // <--- Грузим данные при переключении
+        loadClientsFromServer();
     }
 
     @FXML
@@ -200,7 +199,7 @@ public class AdminController {
     protected void onAddClientClick() {
         try {
             SceneManager.openModal("admin-add-client.fxml", "Dodaj klienta");
-            loadClientsFromServer(); // Обновить таблицу после закрытия окна
+            loadClientsFromServer();
         } catch (Exception e) {
             showError("Błąd otwierania okna: " + e.getMessage());
         }

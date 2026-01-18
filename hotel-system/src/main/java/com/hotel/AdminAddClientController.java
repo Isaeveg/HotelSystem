@@ -33,8 +33,6 @@ public class AdminAddClientController {
         firstNameField.setText(client.getFirstName());
         lastNameField.setText(client.getLastName());
         emailField.setText(client.getEmail());
-
-        // Раскомментируй и используй геттер!
         phoneField.setText(client.getPhone());
 
         passwordField.setPromptText("Pozostaw puste, aby nie zmieniać");
@@ -56,7 +54,6 @@ public class AdminAddClientController {
 
         Request req;
         if (editingClientId == null) {
-            // Добавление
             if (pass.isEmpty()) {
                 showAlert("Błąd", "Podaj hasło dla nowego użytkownika!");
                 return;
@@ -64,8 +61,6 @@ public class AdminAddClientController {
             String[] data = { fName, lName, email, phone, pass };
             req = new Request(RequestType.ADD_CLIENT, data);
         } else {
-            // Редактирование (пароль пока игнорируем при редактировании для простоты,
-            // или реализуй смену пароля отдельным запросом)
             String[] data = { String.valueOf(editingClientId), fName, lName, email, phone };
             req = new Request(RequestType.UPDATE_CLIENT, data);
         }

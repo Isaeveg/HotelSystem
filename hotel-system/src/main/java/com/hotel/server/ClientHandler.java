@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
                     User user = DatabaseHandler.loginUser(login, password);
 
                     if (user != null) {
-                        response = new Response(true, "Успешно", user.getRole());
+                        response = new Response(true, "Sukces", user.getRole());
                     } else {
                         response = new Response(false, "Błędny login lub hasło", null);
                     }
@@ -39,15 +39,13 @@ public class ClientHandler implements Runnable {
 
                 case GET_ROOMS:
                     List<Room> rooms = DatabaseHandler.getAllRooms();
-                    response = new Response(true, "Список получен", rooms);
+                    response = new Response(true, "Lista pobrana", rooms);
                     break;
 
                 case REGISTER:
                     String[] regData = (String[]) request.getData();
-                    // Ожидаем: [0]=firstName, [1]=lastName, [2]=email, [3]=phone, [4]=password
-
                     if (regData.length < 5) {
-                        response = new Response(false, "Неполные данные", null);
+                        response = new Response(false, "Niekompletne dane", null);
                         break;
                     }
 
@@ -57,42 +55,35 @@ public class ClientHandler implements Runnable {
                     String regPhone = regData[3];
                     String regPass = regData[4];
 
-                    // Вызываем обновленный метод регистрации
                     boolean isRegistered = DatabaseHandler.registerUser(regFirst, regLast, regEmail, regPhone, regPass);
 
                     if (isRegistered) {
-                        response = new Response(true, "Аккаунт создан успешно!", null);
+                        response = new Response(true, "Konto utworzone pomyślnie!", null);
                     } else {
-                        response = new Response(false, "Ошибка регистрации (email занят?)", null);
+                        response = new Response(false, "Błąd rejestracji (email zajęty?)", null);
                     }
                     break;
 
                 case GET_HOTELS:
                     List<Hotel> hotels = DatabaseHandler.getHotels();
-                    response = new Response(true, "Список отелей", hotels);
+                    response = new Response(true, "Lista hoteli", hotels);
                     break;
 
                 case ADD_ROOM:
-                    // Теперь мы ждем, что клиент пришлет данные так:
-                    // [0] - hotelId (строка)
-                    // [1] - номер
-                    // [2] - тип
-                    // [3] - цена
-                    // [4] - описание
                     String[] roomData = (String[]) request.getData();
 
                     try {
-                        int hId = Integer.parseInt(roomData[0]); // Парсим ID отеля
+                        int hId = Integer.parseInt(roomData[0]);
                         boolean success = DatabaseHandler.addRoom(hId, roomData[1], roomData[2], roomData[3],
                                 roomData[4]);
 
                         if (success) {
-                            response = new Response(true, "Комната создана!", null);
+                            response = new Response(true, "Pokój utworzony!", null);
                         } else {
-                            response = new Response(false, "Ошибка: возможно номер занят в этом отеле", null);
+                            response = new Response(false, "Błąd: numer może być zajęty w tym hotelu", null);
                         }
                     } catch (NumberFormatException e) {
-                        response = new Response(false, "Некорректный ID отеля", null);
+                        response = new Response(false, "Nieprawidłowe ID hotelu", null);
                     }
                     break;
 
@@ -113,29 +104,27 @@ public class ClientHandler implements Runnable {
 
                 case UPDATE_ROOM:
                     String[] updateData = (String[]) request.getData();
-                    // Структура данных: [id, number, type, price, description]
                     try {
                         int rId = Integer.parseInt(updateData[0]);
                         boolean updated = DatabaseHandler.updateRoom(rId, updateData[1], updateData[2], updateData[3],
                                 updateData[4]);
                         if (updated) {
-                            response = new Response(true, "Комната обновлена!", null);
+                            response = new Response(true, "Pokój zaktualizowany!", null);
                         } else {
-                            response = new Response(false, "Ошибка обновления", null);
+                            response = new Response(false, "Błąd aktualizacji", null);
                         }
                     } catch (Exception e) {
-                        response = new Response(false, "Ошибка данных: " + e.getMessage(), null);
+                        response = new Response(false, "Błąd danych: " + e.getMessage(), null);
                     }
                     break;
 
                 case GET_CLIENTS:
                     List<Client> clients = DatabaseHandler.getAllClients();
-                    response = new Response(true, "Список клиентов", clients);
+                    response = new Response(true, "Lista klientów", clients);
                     break;
 
                 case ADD_CLIENT:
                     String[] addCData = (String[]) request.getData();
-                    // [0]=first, [1]=last, [2]=email, [3]=phone, [4]=password
                     boolean added = DatabaseHandler.addClient(addCData[0], addCData[1], addCData[2], addCData[4],
                             addCData[3]);
                     response = new Response(added, added ? "Klient dodany" : "Błąd dodawania (email zajęty?)", null);
@@ -149,7 +138,6 @@ public class ClientHandler implements Runnable {
 
                 case UPDATE_CLIENT:
                     String[] updCData = (String[]) request.getData();
-                    // [0]=id, [1]=first, [2]=last, [3]=email, [4]=phone
                     boolean updatedC = DatabaseHandler.updateClient(
                             Integer.parseInt(updCData[0]),
                             updCData[1], updCData[2], updCData[3], updCData[4]);

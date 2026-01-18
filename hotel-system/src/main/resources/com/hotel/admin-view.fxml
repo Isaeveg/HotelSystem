@@ -19,7 +19,7 @@
 
     <left>
         <VBox prefWidth="260.0" styleClass="sidebar">
-            <Label maxWidth="Infinity" styleClass="brand-label" text="HotelAdmin" />
+            <Label maxWidth="Infinity" styleClass="brand-label" text="Panel Admina" />
             
             <VBox spacing="5.0" VBox.vgrow="ALWAYS">
                 <padding><Insets top="10.0" /></padding>
