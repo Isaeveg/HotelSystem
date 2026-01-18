@@ -136,16 +136,17 @@
 
 
 .btn-action {
-    -fx-min-width: 130px;      
-    -fx-pref-width: 130px;      
+    -fx-min-width: 130px;
+    -fx-pref-width: 130px;
     -fx-padding: 8 15;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-cursor: hand;
     -fx-background-radius: 5;
-    -fx-alignment: center;     
+    -fx-alignment: center;
 }
+
 
 .btn-add {
     -fx-background-color: #27ae60;
@@ -154,12 +155,14 @@
     -fx-background-color: #2ecc71;
 }
 
+
 .btn-edit {
     -fx-background-color: #2980b9;
 }
 .btn-edit:hover {
     -fx-background-color: #3498db;
 }
+
 
 .btn-delete {
     -fx-background-color: #c0392b;

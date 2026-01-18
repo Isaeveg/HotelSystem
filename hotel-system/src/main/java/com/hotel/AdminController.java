@@ -68,6 +68,7 @@ public class AdminController {
         Request req = new Request(RequestType.GET_ROOMS, null);
         Response resp = NetworkClient.sendRequest(req);
         if (resp.isSuccess()) {
+            @SuppressWarnings("unchecked")
             List<Room> rooms = (List<Room>) resp.getData();
 
             masterRoomData.setAll(rooms);
@@ -79,13 +80,17 @@ public class AdminController {
         Request req = new Request(RequestType.GET_CLIENTS, null);
         Response resp = NetworkClient.sendRequest(req);
         if (resp.isSuccess()) {
-            roomsTable.setItems(masterRoomData);
+            @SuppressWarnings("unchecked")
+            List<Client> clients = (List<Client>) resp.getData();
+
+            masterClientData.setAll(clients);
             clientsTable.setItems(masterClientData);
-            ObservableList<Room> filteredList = masterRoomData.stream()
+        } else {
             showError("Nie udało się pobrać listy klientów: " + resp.getMessage());
         }
     }
-            roomsTable.setItems(filteredList);
+
+    @FXML
     protected void onSearchRoom() {
         String query = searchRoomField.getText().toLowerCase().trim();
 

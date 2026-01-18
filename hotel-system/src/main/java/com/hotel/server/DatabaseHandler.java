@@ -140,8 +140,7 @@ public class DatabaseHandler {
                         rs.getString("price_per_night"),
                         rs.getString("status"),
                         rs.getString("description"),
-                        fullHotelName
-                ));
+                        fullHotelName));
             }
         } catch (SQLException e) {
             logger.error("Błąd DB podczas pobierania listy pokoi: {}", e.getMessage(), e);
@@ -228,8 +227,7 @@ public class DatabaseHandler {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("email"),
-                        rs.getString("phone")
-                ));
+                        rs.getString("phone")));
             }
         } catch (SQLException e) {
             logger.error("Błąd pobierania listy klientów: {}", e.getMessage());
@@ -361,5 +359,7 @@ public class DatabaseHandler {
             }
         } catch (SQLException e) {
             logger.error("Błąd połączenia: {}", e.getMessage());
+            return false;
+        }
     }
 }
