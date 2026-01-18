@@ -15,8 +15,22 @@ public class AdminController {
     private VBox viewDashboard, viewRooms, viewReservations, viewClients;
     @FXML
     private Button btnDash, btnRooms, btnRes, btnClients;
+
+    @FXML
+    private Label lblResToday;
+    @FXML
+    private Label lblIncomeMonth;
     @FXML
     private Label lblMaxPrice, lblMinPrice, lblAvgPrice;
+
+    @FXML
+    private TableView<DashboardData.ActivityEntry> dashboardTable;
+    @FXML
+    private TableColumn<DashboardData.ActivityEntry, String> colTime;
+    @FXML
+    private TableColumn<DashboardData.ActivityEntry, String> colDesc;
+    @FXML
+    private TableColumn<DashboardData.ActivityEntry, String> colStatus;
 
     @FXML
     private TextField searchRoomField;
@@ -72,7 +86,17 @@ public class AdminController {
         setupRoomsTable();
         setupClientsTable();
         setupBookingsTable();
+        setupDashboardTable();
+
         loadRoomsFromServer();
+        loadDashboardFromServer();
+    }
+
+    private void setupDashboardTable() {
+        colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
+        colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        dashboardTable.setPlaceholder(new Label("Brak ostatniej aktywności"));
     }
 
     private void setupRoomsTable() {
@@ -99,6 +123,28 @@ public class AdminController {
         colBookOut.setCellValueFactory(new PropertyValueFactory<>("checkOutDate"));
         colBookStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colBookPrice.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+    }
+
+    private void loadDashboardFromServer() {
+        Request req = new Request(RequestType.GET_DASHBOARD, null);
+        Response resp = NetworkClient.sendRequest(req);
+
+        if (resp.isSuccess() && resp.getData() instanceof DashboardData) {
+            DashboardData data = (DashboardData) resp.getData();
+
+            if (lblResToday != null) {
+                lblResToday.setText(String.valueOf(data.getReservationsToday()));
+            }
+            if (lblIncomeMonth != null) {
+                lblIncomeMonth.setText(String.format("%,.2f zł", data.getIncomeMonth()));
+            }
+
+            if (dashboardTable != null) {
+                dashboardTable.setItems(FXCollections.observableArrayList(data.getRecentActivities()));
+            }
+        } else {
+            System.err.println("Błąd pobierania danych dashboardu: " + resp.getMessage());
+        }
     }
 
     private void loadRoomsFromServer() {
@@ -140,8 +186,12 @@ public class AdminController {
     }
 
     private void calculateStats(List<Room> rooms) {
-        if (rooms.isEmpty())
+        if (rooms.isEmpty()) {
+            lblMaxPrice.setText("0.00 zł");
+            lblMinPrice.setText("0.00 zł");
+            lblAvgPrice.setText("0.00 zł");
             return;
+        }
 
         double max = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).max().orElse(0);
         double min = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).min().orElse(0);
@@ -200,6 +250,8 @@ public class AdminController {
     protected void showDashboard() {
         switchView(viewDashboard);
         updateActiveButton(btnDash);
+        loadDashboardFromServer();
+        loadRoomsFromServer();
     }
 
     @FXML

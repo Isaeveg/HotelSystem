@@ -6,6 +6,7 @@ import com.hotel.common.Amenity;
 import com.hotel.common.Booking;
 import com.hotel.common.Client;
 import com.hotel.common.Hotel;
+import com.hotel.common.DashboardData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.time.LocalDate;
 
 public class DatabaseHandler {
     private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
@@ -534,5 +536,55 @@ public class DatabaseHandler {
             logger.error("Błąd pobierania usług: {}", e.getMessage());
         }
         return list;
+    }
+
+    public static DashboardData getDashboardStats() {
+        int todayCount = 0;
+        double monthIncome = 0.0;
+        List<DashboardData.ActivityEntry> activities = new ArrayList<>();
+
+        String sqlCount = "SELECT COUNT(*) FROM bookings WHERE created_at::date = CURRENT_DATE";
+
+        String sqlIncome = "SELECT SUM(total_price) FROM bookings " +
+                "WHERE EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+                "AND EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+                "AND status != 'CANCELLED'";
+
+        String sqlActivity = "SELECT b.created_at, u.email, r.room_number, b.status " +
+                "FROM bookings b " +
+                "JOIN clients c ON b.client_id = c.id " +
+                "JOIN users u ON c.user_id = u.id " +
+                "JOIN rooms r ON b.room_id = r.id " +
+                "ORDER BY b.created_at DESC LIMIT 15";
+
+        try (Connection conn = getConnection()) {
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlCount)) {
+                if (rs.next())
+                    todayCount = rs.getInt(1);
+            }
+
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlIncome)) {
+                if (rs.next())
+                    monthIncome = rs.getDouble(1);
+            }
+
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlActivity)) {
+                while (rs.next()) {
+                    String time = rs.getTimestamp("created_at").toString();
+                    if (time.contains("."))
+                        time = time.substring(0, time.lastIndexOf(":"));
+
+                    String desc = "Rezerwacja: " + rs.getString("email") + " (Pokój " + rs.getString("room_number")
+                            + ")";
+                    String status = rs.getString("status");
+                    activities.add(new DashboardData.ActivityEntry(time, desc, status));
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error("Błąd pobierania dashboardu: {}", e.getMessage());
+        }
+
+        return new DashboardData(todayCount, monthIncome, activities);
     }
 }

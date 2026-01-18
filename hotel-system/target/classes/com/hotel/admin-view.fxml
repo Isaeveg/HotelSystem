@@ -53,11 +53,11 @@
                     <HBox spacing="20.0">
                         <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #007bff; -fx-border-width: 3 0 0 0;">
                             <Label text="REZERWACJE DZISIAJ" textFill="#777" />
-                            <Label text="12" styleClass="dashboard-number" />
+                            <Label fx:id="lblResToday" text="0" styleClass="dashboard-number" />
                         </VBox>
                         <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #28a745; -fx-border-width: 3 0 0 0;">
                             <Label text="PRZYCHÓD (MSC)" textFill="#777" />
-                            <Label text="45,200 zł" styleClass="dashboard-number" />
+                            <Label fx:id="lblIncomeMonth" text="0.00 zł" styleClass="dashboard-number" />
                         </VBox>
                     </HBox>
 

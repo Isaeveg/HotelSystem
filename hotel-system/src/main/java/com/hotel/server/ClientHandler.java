@@ -207,6 +207,11 @@ public class ClientHandler implements Runnable {
                     response = new Response(true, "Lista usług", amenities);
                     break;
 
+                case GET_DASHBOARD:
+                    DashboardData data = DatabaseHandler.getDashboardStats();
+                    response = new Response(true, "Dashboard data", data);
+                    break;
+
                 default:
                     response = new Response(false, "Nieznane zapytanie", null);
                     break;
