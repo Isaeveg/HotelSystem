@@ -49,6 +49,7 @@
                     <Label text="Dashboard" textFill="#2c3e50">
                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                     </Label>
+                    
                     <HBox spacing="20.0">
                         <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #007bff; -fx-border-width: 3 0 0 0;">
                             <Label text="REZERWACJE DZISIAJ" textFill="#777" />
@@ -57,6 +58,21 @@
                         <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #28a745; -fx-border-width: 3 0 0 0;">
                             <Label text="PRZYCHÓD (MSC)" textFill="#777" />
                             <Label text="45,200 zł" styleClass="dashboard-number" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20.0">
+                        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #e74c3c; -fx-border-width: 3 0 0 0;">
+                            <Label text="MAX CENA POKOJU" textFill="#777" />
+                            <Label fx:id="lblMaxPrice" text="0.00 zł" styleClass="dashboard-number" />
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #f1c40f; -fx-border-width: 3 0 0 0;">
+                            <Label text="MIN CENA POKOJU" textFill="#777" />
+                            <Label fx:id="lblMinPrice" text="0.00 zł" styleClass="dashboard-number" />
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" styleClass="stat-card" style="-fx-border-color: #9b59b6; -fx-border-width: 3 0 0 0;">
+                            <Label text="AVG CENA POKOJU" textFill="#777" />
+                            <Label fx:id="lblAvgPrice" text="0.00 zł" styleClass="dashboard-number" />
                         </VBox>
                     </HBox>
                     
@@ -79,24 +95,15 @@
                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                     </Label>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
-                        <TextField fx:id="searchRoomField" 
-                                promptText="Szukaj hotelu..." 
-                                maxWidth="300.0" 
-                                HBox.hgrow="ALWAYS" 
-                                style="-fx-background-color: transparent;" />
+                        <TextField fx:id="searchRoomField" promptText="Szukaj hotelu..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
                         <Button text="Szukaj" styleClass="btn-primary" onAction="#onSearchRoom" />
-
                         <HBox HBox.hgrow="ALWAYS" />
-
                         <HBox spacing="10.0" alignment="CENTER_RIGHT">
                             <Button text="Edytuj" onAction="#onEditRoomClick" styleClass="btn-action, btn-edit" />
                             <Button text="Usuń" onAction="#onDeleteRoomClick" styleClass="btn-action, btn-delete" />
                             <Button text="+ Dodaj" onAction="#onAddRoomClick" styleClass="btn-action, btn-add" />
                         </HBox>
                     </HBox>
-
-                    
-                    
                     <TableView fx:id="roomsTable" VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                         <columns>
@@ -120,14 +127,14 @@
                     </HBox>
                     <TableView VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
-                       <columns>
+                        <columns>
                            <TableColumn text="ID" />
                            <TableColumn text="Klient" />
                            <TableColumn text="Pokój" />
                            <TableColumn text="Data" />
                            <TableColumn text="Status" />
                            <TableColumn text="Akcja" />
-                       </columns>
+                        </columns>
                     </TableView>
                 </VBox>
 
@@ -136,26 +143,23 @@
                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                     </Label>
                     <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="search-box">
-                        <TextField fx:id="searchClientField" promptText="Imię, Nazwisko lub Email..." 
-                                maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
+                        <TextField fx:id="searchClientField" promptText="Imię, Nazwisko lub Email..." maxWidth="300.0" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;" />
                         <Button styleClass="btn-primary" text="Szukaj" onAction="#onSearchClient"/>
-                        
                         <HBox HBox.hgrow="ALWAYS" />
-
                         <HBox spacing="10.0" alignment="CENTER_RIGHT">
                             <Button text="Edytuj" onAction="#onEditClientClick" styleClass="btn-action, btn-edit" />
                             <Button text="Usuń" onAction="#onDeleteClientClick" styleClass="btn-action, btn-delete" />
                             <Button text="+ Dodaj" onAction="#onAddClientClick" styleClass="btn-action, btn-add" />
                         </HBox>
                     </HBox>
-                    
                     <TableView fx:id="clientsTable" VBox.vgrow="ALWAYS">
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                         <columns>
                            <TableColumn fx:id="colClientId" text="ID" />
                            <TableColumn fx:id="colClientFirstName" text="Imię" />
-                           <TableColumn fx:id="colClientLastName" text="Nazwisko" /> <TableColumn fx:id="colClientEmail" text="Email" />
-                           </columns>
+                           <TableColumn fx:id="colClientLastName" text="Nazwisko" />
+                           <TableColumn fx:id="colClientEmail" text="Email" />
+                        </columns>
                     </TableView>
                 </VBox>
             </StackPane>

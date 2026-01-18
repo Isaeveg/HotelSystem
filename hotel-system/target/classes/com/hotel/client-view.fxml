@@ -13,8 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="1000.0" 
-            styleClass="client-root" 
+<BorderPane prefHeight="700.0" prefWidth="1000.0" styleClass="client-root" 
             stylesheets="@css/global.css, @css/client.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="com.hotel.ClientController">
@@ -25,11 +24,8 @@
                 <Label text="BookingApp" textFill="WHITE">
                     <font><Font name="Segoe UI Bold" size="20.0" /></font>
                 </Label>
-                
                 <HBox HBox.hgrow="ALWAYS" />
-                
                 <Button text="👤 Mój Profil" onAction="#onOpenProfile" styleClass="btn-profile" />
-                        
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header-yellow">
@@ -37,9 +33,15 @@
                 <DatePicker prefWidth="150.0" promptText="Data od" />
                 <DatePicker prefWidth="150.0" promptText="Data do" />
                 <Button styleClass="btn-search" text="Szukaj" />
-                <Button onAction="#onOpenFilters" styleClass="btn-filter" text="Filtry" />
+                <Button onAction="#onOpenFilters" styleClass="btn-nav-action" text="Filtry" />
                 <HBox HBox.hgrow="ALWAYS" />
-                <Button text="Wyloguj" onAction="#onLogoutClick" styleClass="btn-filter" />
+                <Button text="Wyloguj się" onAction="#onLogoutClick" styleClass="btn-nav-action" />
+            </HBox>
+
+            <HBox alignment="CENTER" spacing="40.0" styleClass="client-toolbar">
+                <Button fx:id="btnMain" text="Główna Strona" onAction="#showMainTab" styleClass="toolbar-btn, toolbar-btn-active" />
+                <Button fx:id="btnFavs" text="Ulubione" onAction="#showFavsTab" styleClass="toolbar-btn" />
+                <Button fx:id="btnMyRes" text="Moje Rezerwacje" onAction="#showMyResTab" styleClass="toolbar-btn" />
             </HBox>
         </VBox>
     </top>
@@ -50,16 +52,7 @@
                 <content>
                     <VBox alignment="TOP_CENTER" style="-fx-padding: 30 0;">
                         <VBox maxWidth="1050.0" spacing="20.0" alignment="TOP_LEFT">
-                            <VBox fx:id="favSection" spacing="10.0" visible="false" managed="false">
-                                <Label text="Ulubione ⭐" textFill="#febb02">
-                                    <font><Font name="Segoe UI Bold" size="22.0" /></font>
-                                </Label>
-                                <FlowPane fx:id="favContainer" hgap="20.0" vgap="20.0" />
-                                <padding><Insets bottom="20"/></padding>
-                                <Label style="-fx-border-color: #ddd; -fx-border-width: 0 0 1 0;" maxWidth="Infinity" />
-                            </VBox>
-
-                            <Label text="Dostępne obiekty:" textFill="#333333">
+                            <Label fx:id="sectionTitle" text="Dostępne obiekty:" textFill="#333333">
                                 <font><Font name="Segoe UI Bold" size="22.0" /></font>
                             </Label>
                             <FlowPane fx:id="hotelsContainer" hgap="20.0" vgap="20.0" />

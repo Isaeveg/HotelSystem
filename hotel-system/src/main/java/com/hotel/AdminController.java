@@ -14,6 +14,10 @@ public class AdminController {
     @FXML
     private VBox viewDashboard, viewRooms, viewReservations, viewClients;
     @FXML
+    private Button btnDash, btnRooms, btnRes, btnClients;
+    @FXML
+    private Label lblMaxPrice, lblMinPrice, lblAvgPrice;
+    @FXML
     private TextField searchRoomField;
     @FXML
     private TableView<Room> roomsTable;
@@ -70,10 +74,21 @@ public class AdminController {
         if (resp.isSuccess()) {
             @SuppressWarnings("unchecked")
             List<Room> rooms = (List<Room>) resp.getData();
-
             masterRoomData.setAll(rooms);
             roomsTable.setItems(masterRoomData);
+            calculateStats(rooms);
         }
+    }
+
+    private void calculateStats(List<Room> rooms) {
+        if (rooms.isEmpty()) return;
+        double max = rooms.stream().mapToDouble(Room::getPrice).max().orElse(0);
+        double min = rooms.stream().mapToDouble(Room::getPrice).min().orElse(0);
+        double avg = rooms.stream().mapToDouble(Room::getPrice).average().orElse(0);
+
+        lblMaxPrice.setText(String.format("%.2f zł", max));
+        lblMinPrice.setText(String.format("%.2f zł", min));
+        lblAvgPrice.setText(String.format("%.2f zł", avg));
     }
 
     private void loadClientsFromServer() {
@@ -82,7 +97,6 @@ public class AdminController {
         if (resp.isSuccess()) {
             @SuppressWarnings("unchecked")
             List<Client> clients = (List<Client>) resp.getData();
-
             masterClientData.setAll(clients);
             clientsTable.setItems(masterClientData);
         } else {
@@ -93,7 +107,6 @@ public class AdminController {
     @FXML
     protected void onSearchRoom() {
         String query = searchRoomField.getText().toLowerCase().trim();
-
         if (query.isEmpty()) {
             roomsTable.setItems(masterRoomData);
         } else {
@@ -101,7 +114,6 @@ public class AdminController {
                     .filter(room -> room.getHotelName() != null &&
                             room.getHotelName().toLowerCase().contains(query))
                     .collect(Collectors.toCollection(FXCollections::observableArrayList));
-
             roomsTable.setItems(filteredList);
         }
     }
@@ -124,22 +136,34 @@ public class AdminController {
     @FXML
     protected void showDashboard() {
         switchView(viewDashboard);
+        updateActiveButton(btnDash);
     }
 
     @FXML
     protected void showRooms() {
         switchView(viewRooms);
+        updateActiveButton(btnRooms);
     }
 
     @FXML
     protected void showReservations() {
         switchView(viewReservations);
+        updateActiveButton(btnRes);
     }
 
     @FXML
     protected void showClients() {
         switchView(viewClients);
         loadClientsFromServer();
+        updateActiveButton(btnClients);
+    }
+
+    private void updateActiveButton(Button activeBtn) {
+        btnDash.getStyleClass().remove("menu-btn-active");
+        btnRooms.getStyleClass().remove("menu-btn-active");
+        btnRes.getStyleClass().remove("menu-btn-active");
+        btnClients.getStyleClass().remove("menu-btn-active");
+        activeBtn.getStyleClass().add("menu-btn-active");
     }
 
     @FXML
@@ -159,15 +183,11 @@ public class AdminController {
             showError("Wybierz pokój do usunięcia!");
             return;
         }
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Czy na pewno chcesz usunąć pokój " + selectedRoom.getNumber() + "?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć pokój " + selectedRoom.getNumber() + "?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
-
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_ROOM, String.valueOf(selectedRoom.getId()));
             Response resp = NetworkClient.sendRequest(req);
-
             if (resp.isSuccess()) {
                 loadRoomsFromServer();
             } else {
@@ -183,14 +203,12 @@ public class AdminController {
             showError("Wybierz pokój do edycji!");
             return;
         }
-
         try {
             SceneManager.openModal("admin-add-room.fxml", "Edytuj pokój", (AdminAddRoomController controller) -> {
                 controller.setRoomData(selectedRoom);
             });
             loadRoomsFromServer();
         } catch (Exception e) {
-            e.printStackTrace();
             showError("Nie udało się otworzyć edycji: " + e.getMessage());
         }
     }
@@ -229,12 +247,8 @@ public class AdminController {
             showError("Wybierz klienta do usunięcia!");
             return;
         }
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Czy usunąć klienta " + selected.getEmail() + "? \nTo usunie również konto użytkownika!",
-                ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Czy usunąć klienta " + selected.getEmail() + "? \nTo usunie również konto użytkownika!", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
-
         if (alert.getResult() == ButtonType.YES) {
             Request req = new Request(RequestType.DELETE_CLIENT, String.valueOf(selected.getId()));
             Response resp = NetworkClient.sendRequest(req);

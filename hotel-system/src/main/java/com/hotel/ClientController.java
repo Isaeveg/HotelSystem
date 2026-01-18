@@ -8,7 +8,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -20,88 +19,68 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientController {
 
-    @FXML
-    private FlowPane hotelsContainer;
-    @FXML
-    private FlowPane favContainer;
-    @FXML
-    private VBox favSection;
+    @FXML private FlowPane hotelsContainer;
+    @FXML private ScrollPane listView, detailsView;
+    @FXML private Label detailTitle, detailPrice, sectionTitle;
+    @FXML private VBox detailImageBox, detailRoomsContainer;
+    @FXML private Button btnMain, btnFavs, btnMyRes;
 
-    @FXML
-    private ScrollPane listView;
-    @FXML
-    private ScrollPane detailsView;
-
-    @FXML
-    private Label detailTitle;
-    @FXML
-    private Label detailPrice;
-    @FXML
-    private VBox detailImageBox;
-    @FXML
-    private VBox detailRoomsContainer;
+    private List<Room> allRooms = new ArrayList<>();
+    private List<Room> favoriteRooms = new ArrayList<>();
+    private List<Room> myReservations = new ArrayList<>();
 
     @FXML
     public void initialize() {
-        checkFavSectionVisibility();
         loadRooms();
     }
 
     private void loadRooms() {
         Request req = new Request(RequestType.GET_ROOMS, null);
         Response resp = NetworkClient.sendRequest(req);
-
         if (resp != null && resp.isSuccess()) {
-            List<Room> rooms = (List<Room>) resp.getData();
-            hotelsContainer.getChildren().clear();
+            allRooms = (List<Room>) resp.getData();
+            showMainTab();
+        }
+    }
 
-            for (Room room : rooms) {
-                String colorHex = room.getStatus().equals("FREE") ? "#e8f5e9" : "#f3e5f5";
-                addHotelCard(room, colorHex);
-            }
-        } else {
-            System.err.println("Błąd ładowania pokoi: " + (resp != null ? resp.getMessage() : "Brak połączenia"));
+    private void renderRooms(List<Room> rooms) {
+        hotelsContainer.getChildren().clear();
+        for (Room room : rooms) {
+            String colorHex = room.getStatus().equals("FREE") ? "#e8f5e9" : "#f3e5f5";
+            addHotelCard(room, colorHex);
         }
     }
 
     private void addHotelCard(Room room, String colorHex) {
-        String name = "Pokój " + room.getNumber() + " (" + room.getType() + ")";
-        String priceStr = room.getPrice() + " zł";
-
         VBox card = new VBox();
         card.setPrefWidth(300);
         card.setPrefHeight(340);
         card.getStyleClass().add("hotel-card");
 
-        VBox imagePlaceholder = new VBox();
-        imagePlaceholder.setPrefHeight(160);
-        imagePlaceholder.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 8 8 0 0;");
-        imagePlaceholder.setAlignment(Pos.CENTER);
-        imagePlaceholder.getChildren().add(new Label(room.getType()));
+        VBox img = new VBox();
+        img.setPrefHeight(160);
+        img.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 8 8 0 0;");
+        img.setAlignment(Pos.CENTER);
+        img.getChildren().add(new Label(room.getType()));
 
         VBox body = new VBox(5);
         body.setPadding(new Insets(15));
-        VBox.setVgrow(body, Priority.ALWAYS);
-
-        Label title = new Label(name);
+        
+        Label title = new Label("Pokój " + room.getNumber());
         title.setFont(Font.font("Segoe UI", FontWeight.BOLD, 18));
-        title.setTextFill(Color.web("#333333"));
-        title.setWrapText(true);
-
-        Label priceLabel = new Label(priceStr);
-        priceLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 22));
-        priceLabel.setTextFill(Color.web("#333333"));
+        
+        Label price = new Label(room.getPrice() + " zł");
+        price.setFont(Font.font("Segoe UI", FontWeight.BOLD, 22));
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         HBox actions = new HBox(10);
-        actions.setAlignment(Pos.CENTER_LEFT);
-
         Button viewBtn = new Button("Wybierz");
         viewBtn.getStyleClass().add("btn-card-action");
         viewBtn.setOnAction(e -> openDetails(room, colorHex));
@@ -111,121 +90,98 @@ public class ClientController {
 
         Button starBtn = new Button("★");
         starBtn.getStyleClass().add("btn-star");
+        if (favoriteRooms.contains(room)) starBtn.getStyleClass().add("btn-star-active");
 
         starBtn.setOnAction(e -> {
-            boolean isFav = starBtn.getStyleClass().contains("btn-star-active");
-            if (isFav) {
+            if (favoriteRooms.contains(room)) {
+                favoriteRooms.remove(room);
                 starBtn.getStyleClass().remove("btn-star-active");
-                favContainer.getChildren().remove(card);
-                hotelsContainer.getChildren().add(card);
             } else {
+                favoriteRooms.add(room);
                 starBtn.getStyleClass().add("btn-star-active");
-                hotelsContainer.getChildren().remove(card);
-                favContainer.getChildren().add(card);
             }
-            checkFavSectionVisibility();
         });
 
         actions.getChildren().addAll(viewBtn, hSpacer, starBtn);
-        body.getChildren().addAll(title, priceLabel, spacer, actions);
-        card.getChildren().addAll(imagePlaceholder, body);
+        body.getChildren().addAll(title, price, spacer, actions);
+        card.getChildren().addAll(img, body);
         hotelsContainer.getChildren().add(card);
     }
 
-    private void checkFavSectionVisibility() {
-        boolean hasFavorites = !favContainer.getChildren().isEmpty();
-        favSection.setVisible(hasFavorites);
-        favSection.setManaged(hasFavorites);
+    @FXML protected void showMainTab() {
+        sectionTitle.setText("Dostępne obiekty:");
+        renderRooms(allRooms);
+        updateToolbar(btnMain);
+    }
+
+    @FXML protected void showFavsTab() {
+        sectionTitle.setText("Twoje ulubione:");
+        renderRooms(favoriteRooms);
+        updateToolbar(btnFavs);
+    }
+
+    @FXML protected void showMyResTab() {
+        sectionTitle.setText("Twoje rezerwacje:");
+        renderRooms(myReservations);
+        updateToolbar(btnMyRes);
+    }
+
+    private void updateToolbar(Button active) {
+        btnMain.getStyleClass().remove("toolbar-btn-active");
+        btnFavs.getStyleClass().remove("toolbar-btn-active");
+        btnMyRes.getStyleClass().remove("toolbar-btn-active");
+        active.getStyleClass().add("toolbar-btn-active");
     }
 
     private void openDetails(Room room, String colorHex) {
         detailTitle.setText("Pokój " + room.getNumber());
         detailPrice.setText(room.getPrice() + " zł / noc");
         detailImageBox.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 4;");
-
         detailRoomsContainer.getChildren().clear();
-
-        addRoomVariant(room.getType(), room.getPrice() + " zł", "Status: " + room.getStatus());
-
+        addRoomVariant(room, colorHex);
         listView.setVisible(false);
         detailsView.setVisible(true);
     }
 
-    private void addRoomVariant(String type, String price, String desc) {
+    private void addRoomVariant(Room room, String colorHex) {
         HBox row = new HBox(10);
         row.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 4; -fx-padding: 15;");
         row.setAlignment(Pos.CENTER_LEFT);
-
+        
         VBox info = new VBox(5);
-        Label typeLbl = new Label(type);
+        Label typeLbl = new Label(room.getType());
         typeLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        Label descLbl = new Label(desc);
-        descLbl.setStyle("-fx-text-fill: #666; -fx-font-size: 12px;");
-        info.getChildren().addAll(typeLbl, descLbl);
+        info.getChildren().addAll(typeLbl, new Label("Status: " + room.getStatus()));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        VBox action = new VBox(5);
-        action.setAlignment(Pos.CENTER_RIGHT);
-        Label priceLbl = new Label(price);
-        priceLbl.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #333;");
-
-        Button bookBtn = new Button("Wybierz");
+        Button bookBtn = new Button("Rezerwuj");
         bookBtn.getStyleClass().add("btn-choose");
-        bookBtn.setOnAction(e -> openBookingModal(type, price));
+        bookBtn.setOnAction(e -> {
+            if (!myReservations.contains(room)) myReservations.add(room);
+            openBookingModal(room.getType(), String.valueOf(room.getPrice()));
+        });
 
-        action.getChildren().addAll(priceLbl, bookBtn);
-
-        row.getChildren().addAll(info, spacer, action);
-        detailRoomsContainer.getChildren().add(row);
+        row.getChildren().addAll(info, spacer, bookBtn);
+        detailRoomsContainer.add(row);
     }
 
     private void openBookingModal(String type, String price) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("booking-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 400, 550);
-
-            BookingController controller = fxmlLoader.getController();
-            controller.setRoomData(type, price);
-
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("booking-view.fxml"));
+            Scene scene = new Scene(loader.load(), 400, 550);
+            ((BookingController)loader.getController()).setRoomData(type, price);
             Stage stage = new Stage();
             stage.setTitle("Rezerwacja");
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
-    @FXML
-    protected void onBackToList() {
-        detailsView.setVisible(false);
-        listView.setVisible(true);
-    }
-
-    @FXML
-    protected void onLogoutClick(ActionEvent event) throws IOException {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        SceneManager.switchScene(stage, "login-view.fxml");
-    }
-
-    @FXML
-    protected void onOpenProfile() {
-        try {
-            SceneManager.openModal("user-profile.fxml", "Profil użytkownika");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    protected void onOpenFilters() {
-        try {
-            SceneManager.openModal("filter-view.fxml", "Filtry");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    @FXML protected void onBackToList() { detailsView.setVisible(false); listView.setVisible(true); }
+    @FXML protected void onLogoutClick(ActionEvent event) throws IOException { SceneManager.switchScene((Stage)((Node)event.getSource()).getScene().getWindow(), "login-view.fxml"); }
+    @FXML protected void onOpenProfile() { try { SceneManager.openModal("user-profile.fxml", "Profil użytkownika"); } catch (IOException e) { e.printStackTrace(); } }
+    @FXML protected void onOpenFilters() { try { SceneManager.openModal("filter-view.fxml", "Filtry"); } catch (IOException e) { e.printStackTrace(); } }
 }
