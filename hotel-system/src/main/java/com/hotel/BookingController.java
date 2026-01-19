@@ -82,7 +82,7 @@ public class BookingController {
     }
 
     @FXML
-    protected void onConfirmBooking() { 
+    protected void onConfirm() { 
         if (dateFrom.getValue() == null || dateTo.getValue() == null || phoneField.getText().isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Błąd", "Uzupełnij daty i numer telefonu!");
             return;
