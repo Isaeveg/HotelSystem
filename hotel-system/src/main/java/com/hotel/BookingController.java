@@ -26,7 +26,8 @@ public class BookingController {
     @FXML private CheckBox cbBreakfast;
     @FXML private CheckBox cbParking;
     @FXML private CheckBox cbSpa;
-
+    @FXML private CheckBox cbLateCheckOut, cbCrib;
+    
     private int currentRoomId;
     private int currentClientId;
     private BigDecimal roomPricePerNight;
@@ -65,20 +66,13 @@ public class BookingController {
 
         BigDecimal total = roomPricePerNight.multiply(new BigDecimal(days));
 
-        if (cbBreakfast.isSelected()) {
-            total = total.add(new BigDecimal("40").multiply(new BigDecimal(days)));
-        }
+    if (cbBreakfast.isSelected()) total = total.add(new BigDecimal("40").multiply(new BigDecimal(days)));
+    if (cbParking.isSelected()) total = total.add(new BigDecimal("25").multiply(new BigDecimal(days)));
+    if (cbSpa.isSelected()) total = total.add(new BigDecimal("100"));
+    if (cbLateCheckOut.isSelected()) total = total.add(new BigDecimal("50"));
 
-        if (cbParking.isSelected()) {
-            total = total.add(new BigDecimal("25").multiply(new BigDecimal(days)));
-        }
-
-        if (cbSpa.isSelected()) {
-            total = total.add(new BigDecimal("100"));
-        }
-
-        totalPriceLabel.setText(total.toString() + " PLN");
-        return total;
+    totalPriceLabel.setText(total.toString() + " PLN");
+    return total;
     }
 
     @FXML

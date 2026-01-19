@@ -1,54 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefWidth="420.0" spacing="15.0" style="-fx-background-color: white; -fx-padding: 30;" 
+<VBox prefWidth="480.0" spacing="15.0" style="-fx-background-color: white; -fx-padding: 25;"
       stylesheets="@css/global.css, @css/client.css" 
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.BookingController">
 
-    <Label text="Rezerwacja pokoju" textFill="#003580">
-        <font><Font name="Segoe UI Bold" size="22.0" /></font>
-    </Label>
+    <Label text="Szczegóły rezerwacji" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #003580;"/>
 
-    <VBox spacing="5.0">
-        <Label fx:id="roomInfoLabel" style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Nazwa pokoju" />
-        <Label fx:id="priceInfoLabel" text="Cena: 0 PLN / noc" textFill="#555" />
+    <VBox spacing="10.0" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5; -fx-padding: 15; -fx-background-color: #fafafa; -fx-background-radius: 5;">
+        <GridPane hgap="10" vgap="12">
+            <Label text="Pokój:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-weight: bold;"/>
+            <Label fx:id="roomInfoLabel" text="Nazwa pokoju" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Data zameldowania:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="dateFrom" prefWidth="250" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Data wymeldowania:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="dateTo" prefWidth="250" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Udogodnienia:" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+            <VBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <CheckBox fx:id="cbBreakfast" text="Śniadanie (+40 zł/d)" />
+                <CheckBox fx:id="cbParking" text="Parking Podziemny (+25 zł/d)" />
+                <CheckBox fx:id="cbSpa" text="Dostęp do SPA (+100 zł)" />
+                <CheckBox fx:id="cbLateCheckOut" text="Późne wymeldowanie (+50 zł)" />
+                <CheckBox fx:id="cbCrib" text="Łóżeczko dziecięce (+0 zł)" />
+            </VBox>
+
+            <Label text="Telefon:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <TextField fx:id="phoneField" promptText="np. 123456789" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        </GridPane>
     </VBox>
 
-    <Separator />
+    <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f1f8ff; -fx-padding: 15; -fx-background-radius: 5; -fx-border-color: #d0e3ff; -fx-border-radius: 5;">
+        <Label text="Do zapłaty:" style="-fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="totalPriceLabel" text="0.00 PLN" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #003580;"/>
+    </HBox>
 
-    <VBox spacing="10.0">
-        <Label style="-fx-font-weight: bold;" text="Termin pobytu:" />
-        <HBox spacing="10.0">
-            <DatePicker fx:id="dateFrom" promptText="Od" HBox.hgrow="ALWAYS" />
-            <DatePicker fx:id="dateTo" promptText="Do" HBox.hgrow="ALWAYS" />
-        </HBox>
-    </VBox>
-
-    <VBox spacing="10.0">
-        <Label style="-fx-font-weight: bold;" text="Usługi dodatkowe:" />
-        <CheckBox fx:id="cbBreakfast" text="Śniadanie (+ 40 PLN / dzień)" />
-        <CheckBox fx:id="cbParking" text="Parking (+ 25 PLN / dzień)" />
-        <CheckBox fx:id="cbSpa" text="Pakiet SPA (+ 100 PLN)" />
-    </VBox>
-
-    <VBox spacing="10.0">
-        <Label style="-fx-font-weight: bold;" text="Kontakt:" />
-        <TextField fx:id="phoneField" promptText="Numer telefonu" />
-    </VBox>
-
-    <VBox spacing="5.0" style="-fx-background-color: #f1f8ff; -fx-padding: 20; -fx-background-radius: 5; -fx-border-color: #d0e3ff; -fx-border-radius: 5;">
-        <HBox alignment="CENTER_LEFT">
-            <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Razem do zapłaty:" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Label fx:id="totalPriceLabel" text="0.00 PLN" textFill="#003580">
-                <font><Font name="Segoe UI Bold" size="22.0" /></font>
-            </Label>
-        </HBox>
-    </VBox>
-
-    <Button fx:id="confirmBtn" maxWidth="Infinity" onAction="#onConfirm" styleClass="btn-nav-action" text="Potwierdź rezerwację" />
-    <Button maxWidth="Infinity" onAction="#onCancel" style="-fx-background-color: transparent; -fx-text-fill: #777;" text="Anuluj" />
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Anuluj" onAction="#onCancel" style="-fx-background-color: #ccc; -fx-pref-width: 100;"/>
+        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirmBooking" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-pref-width: 120;"/>
+    </HBox>
 </VBox>
