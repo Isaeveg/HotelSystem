@@ -35,15 +35,12 @@
             <CheckBox fx:id="cbCrib" text="Łóżeczko dziecięce (0 zł)" />
         </VBox>
 
-        <Label text="Telefon kontaktowy:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <TextField fx:id="phoneField" prefWidth="250" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-
         <Label text="Suma do zapłaty:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
         <Label fx:id="totalPriceLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #003580;" text="0.00 PLN" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
     </GridPane>
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Anuluj" onAction="#onCancel" style="-fx-background-color: #ccc; -fx-pref-width: 100;"/>
-        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirm" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-pref-width: 120;"/>
+        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirm" style="-fx-background-color: #0004ff; -fx-text-fill: white; -fx-pref-width: 120;"/>
     </HBox>
 </VBox>

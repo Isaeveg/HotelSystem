@@ -97,7 +97,7 @@
 
 .btn-back-minimal {
     -fx-background-color: transparent;
-    -fx-text-fill: white;
+    -fx-text-fill: rgb(129, 129, 129);
     -fx-padding: 8 15;
     -fx-cursor: hand;
     -fx-background-radius: 4;
