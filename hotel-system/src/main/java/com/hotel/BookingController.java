@@ -3,7 +3,6 @@ package com.hotel;
 import com.hotel.common.Request;
 import com.hotel.common.RequestType;
 import com.hotel.common.Response;
-import com.hotel.common.Room;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -20,7 +19,6 @@ public class BookingController {
 
     @FXML private DatePicker dateFrom;
     @FXML private DatePicker dateTo;
-    @FXML private TextField phoneField;
     @FXML private Button confirmBtn;
 
     @FXML private CheckBox cbBreakfast;
@@ -78,43 +76,43 @@ public class BookingController {
 }
 
     @FXML
-    protected void onConfirm() { 
-        if (dateFrom.getValue() == null || dateTo.getValue() == null || phoneField.getText().isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Błąd", "Uzupełnij daty i numer telefonu!");
-            return;
-        }
-
-        BigDecimal finalPrice = calculateTotal();
-        if (finalPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            showAlert(Alert.AlertType.WARNING, "Błąd", "Sprawdź daty rezerwacji!");
-            return;
-        }
-
-        List<Integer> selectedAmenities = new ArrayList<>();
-        if (cbBreakfast.isSelected()) selectedAmenities.add(1);
-        if (cbParking.isSelected()) selectedAmenities.add(2);
-        if (cbSpa.isSelected()) selectedAmenities.add(3);
-
-        Object[] requestData = {
-                String.valueOf(currentClientId),
-                String.valueOf(currentRoomId),
-                dateFrom.getValue().toString(),
-                dateTo.getValue().toString(),
-                finalPrice.toString(),
-                selectedAmenities
-        };
-
-        Request req = new Request(RequestType.ADD_BOOKING, requestData);
-        Response resp = NetworkClient.sendRequest(req);
-
-        if (resp != null && resp.isSuccess()) {
-            showAlert(Alert.AlertType.INFORMATION, "Sukces", "Rezerwacja opłacona i potwierdzona!");
-            closeModal();
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Błąd",
-                    "Nie udało się utworzyć rezerwacji.\n" + (resp != null ? resp.getMessage() : "Brak połączenia"));
-        }
+protected void onConfirm() { 
+    if (dateFrom.getValue() == null || dateTo.getValue() == null) {
+        showAlert(Alert.AlertType.WARNING, "Błąd", "Uzupełnij daty rezerwacji!");
+        return;
     }
+
+    BigDecimal finalPrice = calculateTotal();
+    if (finalPrice.compareTo(BigDecimal.ZERO) <= 0) {
+        showAlert(Alert.AlertType.WARNING, "Błąd", "Sprawdź daty rezerwacji!");
+        return;
+    }
+
+    List<Integer> selectedAmenities = new ArrayList<>();
+    if (cbBreakfast.isSelected()) selectedAmenities.add(1);
+    if (cbParking.isSelected()) selectedAmenities.add(2);
+    if (cbSpa.isSelected()) selectedAmenities.add(3);
+
+    Object[] requestData = {
+            String.valueOf(currentClientId),
+            String.valueOf(currentRoomId),
+            dateFrom.getValue().toString(),
+            dateTo.getValue().toString(),
+            finalPrice.toString(),
+            selectedAmenities
+    };
+
+    Request req = new Request(RequestType.ADD_BOOKING, requestData);
+    Response resp = NetworkClient.sendRequest(req);
+
+    if (resp != null && resp.isSuccess()) {
+        showAlert(Alert.AlertType.INFORMATION, "Sukces", "Rezerwacja opłacona i potwierdzona!");
+        closeModal();
+    } else {
+        showAlert(Alert.AlertType.ERROR, "Błąd",
+                "Nie udało się utworzyć rezerwacji.\n" + (resp != null ? resp.getMessage() : "Brak połączenia"));
+    }
+}
 
     @FXML
     protected void onCancel() {
