@@ -224,17 +224,12 @@ protected void onOpenFilters() {
         double maxInDb = allRooms.stream()
                 .mapToDouble(r -> Double.parseDouble(r.getPrice()))
                 .max().orElse(1000.0);
-
-        SceneManager.openModal("filter-view.fxml", "Filtry", (FilterController controller) -> {
-            controller.setMaxPriceLimit(maxInDb + 200.0);
-            
-            Stage stage = (Stage) controller.getApplyBtn().getScene().getWindow();
-            stage.setOnHiding(event -> {
-                if (controller.isApplied()) {
-                    applyFiltering(controller.getSelectedMaxPrice());
-                }
-            });
-        }); 
+        FilterController controller = SceneManager.openModal("filter-view.fxml", "Filtry", (FilterController ctrl) -> {
+            ctrl.setMaxPriceLimit(maxInDb + 200.0);
+        });
+        if (controller != null && controller.isApplied()) {
+            applyFiltering(controller.getSelectedMaxPrice());
+        }
     } catch (IOException e) { 
         e.printStackTrace(); 
     } 

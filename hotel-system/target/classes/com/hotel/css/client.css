@@ -84,7 +84,7 @@
 
 
 .btn-choose {
-    -fx-background-color: #28a745;
+    -fx-background-color: #0026cf;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-padding: 8 20;
@@ -92,11 +92,11 @@
     -fx-background-radius: 4;
 }
 .btn-choose:hover {
-    -fx-background-color: #218838;
+    -fx-background-color: #0004ff;
 }
 
 .btn-back-minimal {
-    -fx-background-color: #6c757d;
+    -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-padding: 8 15;
     -fx-cursor: hand;
