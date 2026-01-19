@@ -58,51 +58,26 @@ public class DatabaseHandler {
     }
 
     public static boolean registerUser(String firstName, String lastName, String email, String phone, String password) {
-        String sqlUser = "INSERT INTO users (email, password, role) VALUES (?, ?, ?::user_role) RETURNING id";
-        String sqlClient = "INSERT INTO clients (user_id, first_name, last_name, phone) VALUES (?, ?, ?, ?)";
+        String sql = "CALL register_client(?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection()) {
-            conn.setAutoCommit(false);
+        try (Connection conn = getConnection();
+                java.sql.CallableStatement cstmt = conn.prepareCall(sql)) {
 
-            try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
-                String hashedPassword = PasswordHasher.hashPassword(password);
-                psUser.setString(1, email);
-                psUser.setString(2, hashedPassword);
-                psUser.setString(3, "CLIENT");
+            String hashedPassword = PasswordHasher.hashPassword(password);
 
-                int userId = -1;
-                try (ResultSet rs = psUser.executeQuery()) {
-                    if (rs.next()) {
-                        userId = rs.getInt("id");
-                    }
-                }
+            cstmt.setString(1, email);
+            cstmt.setString(2, hashedPassword);
+            cstmt.setString(3, firstName);
+            cstmt.setString(4, lastName);
+            cstmt.setString(5, phone);
 
-                if (userId == -1) {
-                    throw new SQLException("Nie udało się pobrać ID nowego użytkownika.");
-                }
+            cstmt.execute();
 
-                try (PreparedStatement psClient = conn.prepareStatement(sqlClient)) {
-                    psClient.setInt(1, userId);
-                    psClient.setString(2, firstName);
-                    psClient.setString(3, lastName);
-                    psClient.setString(4, phone);
+            logger.info("Rejestracja zakończona sukcesem (via procedure): {}", email);
+            return true;
 
-                    psClient.executeUpdate();
-                }
-
-                conn.commit();
-                logger.info("Rejestracja zakończona sukcesem: {} (id={})", email, userId);
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-                logger.error("Wycofanie transakcji. Błąd rejestracji {}: {}", email, e.getMessage());
-                return false;
-            } finally {
-                conn.setAutoCommit(true);
-            }
         } catch (SQLException e) {
-            logger.error("Błąd połączenia z DB: {}", e.getMessage());
+            logger.error("Błąd procedury rejestracji {}: {}", email, e.getMessage());
             return false;
         }
     }
@@ -545,10 +520,7 @@ public class DatabaseHandler {
 
         String sqlCount = "SELECT COUNT(*) FROM bookings WHERE created_at::date = CURRENT_DATE";
 
-        String sqlIncome = "SELECT SUM(total_price) FROM bookings " +
-                "WHERE EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-                "AND EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE) " +
-                "AND status != 'CANCELLED'";
+        String sqlIncomeFunc = "SELECT get_monthly_income(?, ?)";
 
         String sqlActivity = "SELECT b.created_at, u.email, r.room_number, b.status " +
                 "FROM bookings b " +
@@ -563,9 +535,16 @@ public class DatabaseHandler {
                     todayCount = rs.getInt(1);
             }
 
-            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlIncome)) {
-                if (rs.next())
-                    monthIncome = rs.getDouble(1);
+            try (PreparedStatement ps = conn.prepareStatement(sqlIncomeFunc)) {
+                LocalDate now = LocalDate.now();
+                ps.setInt(1, now.getMonthValue());
+                ps.setInt(2, now.getYear());
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        monthIncome = rs.getDouble(1);
+                    }
+                }
             }
 
             try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlActivity)) {
