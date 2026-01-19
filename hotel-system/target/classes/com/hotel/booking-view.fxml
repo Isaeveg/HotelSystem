@@ -44,6 +44,6 @@
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Anuluj" onAction="#onCancel" style="-fx-background-color: #ccc; -fx-pref-width: 100;"/>
-        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirmBooking" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-pref-width: 120;"/>
+        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirm" style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-pref-width: 120;"/>
     </HBox>
 </VBox>
