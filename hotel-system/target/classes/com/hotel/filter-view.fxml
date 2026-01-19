@@ -12,7 +12,7 @@
         <TextField fx:id="priceInput" prefWidth="250" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
         <Label text="Zakres ceny:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <Slider fx:id="priceSlider" max="2000.0" prefWidth="250" showTickLabels="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Slider styleClass="price-slider" fx:id="priceSlider" max="2000.0" prefWidth="250" showTickLabels="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
         <Label text="Udogodnienia:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
         <VBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="1">

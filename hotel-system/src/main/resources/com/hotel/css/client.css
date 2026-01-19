@@ -102,3 +102,30 @@
     -fx-cursor: hand;
     -fx-background-radius: 4;
 }
+
+.slider .track {
+    -fx-background-color: #dddddd;
+    -fx-pref-height: 4px;
+    -fx-background-radius: 5px;
+}
+
+.slider .thumb {
+    -fx-background-color: -color-primary; 
+    -fx-pref-width: 16px;
+    -fx-pref-height: 16px;
+    -fx-background-radius: 50%;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);
+}
+
+.slider .thumb:hover {
+    -fx-background-color: -color-primary-hover;
+    -fx-pref-width: 18px; 
+    -fx-pref-height: 18px;
+}
+
+.slider .axis {
+    -fx-tick-label-fill: #666666;
+    -fx-font-size: 11px;
+    -fx-font-family: 'Segoe UI';
+}
