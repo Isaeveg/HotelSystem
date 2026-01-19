@@ -26,20 +26,22 @@ public class BookingController {
     @FXML private CheckBox cbBreakfast;
     @FXML private CheckBox cbParking;
     @FXML private CheckBox cbSpa;
-    @FXML private CheckBox cbLateCheckOut, cbCrib;
-    
+    @FXML private CheckBox cbLateCheckOut;
+    @FXML private CheckBox cbCrib;
+
     private int currentRoomId;
     private int currentClientId;
     private BigDecimal roomPricePerNight;
-
     @FXML
     public void initialize() {
-        dateFrom.valueProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
-        dateTo.valueProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
-        cbBreakfast.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
-        cbParking.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
-        cbSpa.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
-    }
+    dateFrom.valueProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    dateTo.valueProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    cbBreakfast.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    cbParking.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    cbSpa.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    cbLateCheckOut.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+    cbCrib.selectedProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
+}
 
     public void setRoomData(int roomId, String roomName, String price, int clientId) {
         this.currentRoomId = roomId;
@@ -52,19 +54,19 @@ public class BookingController {
         calculateTotal();
     }
 
-    private BigDecimal calculateTotal() {
-        if (dateFrom.getValue() == null || dateTo.getValue() == null) {
-            totalPriceLabel.setText("0.00 PLN");
-            return BigDecimal.ZERO;
-        }
+   private BigDecimal calculateTotal() {
+    if (dateFrom.getValue() == null || dateTo.getValue() == null) {
+        totalPriceLabel.setText("0.00 PLN");
+        return BigDecimal.ZERO;
+    }
 
-        long days = ChronoUnit.DAYS.between(dateFrom.getValue(), dateTo.getValue());
-        if (days < 1) {
-            totalPriceLabel.setText("Błąd w datach!");
-            return BigDecimal.ZERO;
-        }
+    long days = ChronoUnit.DAYS.between(dateFrom.getValue(), dateTo.getValue());
+    if (days < 1) {
+        totalPriceLabel.setText("Błąd w datach!");
+        return BigDecimal.ZERO;
+    }
 
-        BigDecimal total = roomPricePerNight.multiply(new BigDecimal(days));
+    BigDecimal total = roomPricePerNight.multiply(new BigDecimal(days));
 
     if (cbBreakfast.isSelected()) total = total.add(new BigDecimal("40").multiply(new BigDecimal(days)));
     if (cbParking.isSelected()) total = total.add(new BigDecimal("25").multiply(new BigDecimal(days)));
@@ -73,7 +75,7 @@ public class BookingController {
 
     totalPriceLabel.setText(total.toString() + " PLN");
     return total;
-    }
+}
 
     @FXML
     protected void onConfirm() { 
