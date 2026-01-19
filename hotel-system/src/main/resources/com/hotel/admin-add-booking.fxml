@@ -37,6 +37,6 @@
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button text="Anuluj" onAction="#onCancel" style="-fx-background-color: #ccc;"/>
-        <Button text="Zapisz" onAction="#onSave" style="-fx-background-color: #28a745; -fx-text-fill: white;"/>
+        <Button text="Zapisz" onAction="#onSave" style="-fx-background-color: #0021da; -fx-text-fill: white;"/>
     </HBox>
 </VBox>

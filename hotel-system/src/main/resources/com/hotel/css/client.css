@@ -81,3 +81,24 @@
     -fx-font-size: 20px;
 }
 .btn-star-active { -fx-text-fill: #febb02; }
+
+
+.btn-choose {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+}
+.btn-choose:hover {
+    -fx-background-color: #218838;
+}
+
+.btn-back-minimal {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+}

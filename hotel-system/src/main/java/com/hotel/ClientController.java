@@ -218,21 +218,34 @@ public class ClientController {
             e.printStackTrace();
         }
     }
-
-    @FXML 
+@FXML 
 protected void onOpenFilters() { 
     try { 
         double maxInDb = allRooms.stream()
                 .mapToDouble(r -> Double.parseDouble(r.getPrice()))
                 .max().orElse(1000.0);
-        
-        double sliderLimit = maxInDb + 200.0;
 
         SceneManager.openModal("filter-view.fxml", "Filtry", (FilterController controller) -> {
-            controller.setMaxPriceLimit(sliderLimit);
+            controller.setMaxPriceLimit(maxInDb + 200.0);
+            
+            Stage stage = (Stage) controller.getApplyBtn().getScene().getWindow();
+            stage.setOnHiding(event -> {
+                if (controller.isApplied()) {
+                    applyFiltering(controller.getSelectedMaxPrice());
+                }
+            });
         }); 
     } catch (IOException e) { 
         e.printStackTrace(); 
     } 
+}
+
+private void applyFiltering(double maxPrice) {
+    List<Room> filtered = allRooms.stream()
+            .filter(r -> Double.parseDouble(r.getPrice()) <= maxPrice)
+            .toList();
+    
+    sectionTitle.setText("Wyniki filtrowania (do " + (int)maxPrice + " zł):");
+    renderRooms(filtered); 
 }
 }

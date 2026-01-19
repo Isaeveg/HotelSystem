@@ -1,5 +1,8 @@
 package com.hotel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -39,6 +42,32 @@ public class FilterController {
         priceSlider.setValue(max);
         priceInput.setText(String.format("%.0f", max));
     }
+    public Button getApplyBtn() {
+    return applyBtn;
+}
+    public double getSelectedMaxPrice() {
+    return priceSlider.getValue();
+}
+
+public List<String> getSelectedAmenities() {
+    List<String> selected = new ArrayList<>();
+    if (cbBreakfast.isSelected()) selected.add("Śniadanie");
+    if (cbParking.isSelected()) selected.add("Parking");
+    if (cbSpa.isSelected()) selected.add("SPA");
+    if (cbLateCheckOut.isSelected()) selected.add("Late Check-out");
+    if (cbCrib.isSelected()) selected.add("Łóżeczko");
+    return selected;
+}
+
+private boolean applied = false;
+public boolean isApplied() { return applied; }
+
+@FXML
+protected void onApplyFilters() {
+    applied = true;
+    Stage stage = (Stage) applyBtn.getScene().getWindow();
+    stage.close();
+}
 
     @FXML
     protected void onClearFilters() {
@@ -50,10 +79,4 @@ public class FilterController {
     cbCrib.setSelected(false);
 }
 
-    @FXML
-    protected void onApplyFilters() {
-        System.out.println("Zastosowano filtry. Max cena: " + priceInput.getText());
-        Stage stage = (Stage) applyBtn.getScene().getWindow();
-        stage.close();
-    }
 }
