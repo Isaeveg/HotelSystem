@@ -3,6 +3,7 @@ package com.hotel;
 import com.hotel.common.Request;
 import com.hotel.common.RequestType;
 import com.hotel.common.Response;
+import com.hotel.common.Room;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
@@ -13,28 +14,18 @@ import java.util.List;
 
 public class BookingController {
 
-    @FXML
-    private Label roomInfoLabel;
-    @FXML
-    private Label priceInfoLabel;
-    @FXML
-    private Label totalPriceLabel;
+    @FXML private Label roomInfoLabel; 
+    @FXML private Label priceInfoLabel; 
+    @FXML private Label totalPriceLabel; 
 
-    @FXML
-    private DatePicker dateFrom;
-    @FXML
-    private DatePicker dateTo;
-    @FXML
-    private TextField phoneField;
-    @FXML
-    private Button confirmBtn;
+    @FXML private DatePicker dateFrom;
+    @FXML private DatePicker dateTo;
+    @FXML private TextField phoneField;
+    @FXML private Button confirmBtn;
 
-    @FXML
-    private CheckBox cbBreakfast;
-    @FXML
-    private CheckBox cbParking;
-    @FXML
-    private CheckBox cbSpa;
+    @FXML private CheckBox cbBreakfast;
+    @FXML private CheckBox cbParking;
+    @FXML private CheckBox cbSpa;
 
     private int currentRoomId;
     private int currentClientId;
@@ -62,7 +53,7 @@ public class BookingController {
 
     private BigDecimal calculateTotal() {
         if (dateFrom.getValue() == null || dateTo.getValue() == null) {
-            totalPriceLabel.setText("Razem: 0.00 PLN");
+            totalPriceLabel.setText("0.00 PLN");
             return BigDecimal.ZERO;
         }
 
@@ -86,12 +77,12 @@ public class BookingController {
             total = total.add(new BigDecimal("100"));
         }
 
-        totalPriceLabel.setText("Razem: " + total.toString() + " PLN");
+        totalPriceLabel.setText(total.toString() + " PLN");
         return total;
     }
 
     @FXML
-    protected void onConfirm() {
+    protected void onConfirmBooking() { 
         if (dateFrom.getValue() == null || dateTo.getValue() == null || phoneField.getText().isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Błąd", "Uzupełnij daty i numer telefonu!");
             return;
@@ -104,12 +95,9 @@ public class BookingController {
         }
 
         List<Integer> selectedAmenities = new ArrayList<>();
-        if (cbBreakfast.isSelected())
-            selectedAmenities.add(1);
-        if (cbParking.isSelected())
-            selectedAmenities.add(2);
-        if (cbSpa.isSelected())
-            selectedAmenities.add(3);
+        if (cbBreakfast.isSelected()) selectedAmenities.add(1);
+        if (cbParking.isSelected()) selectedAmenities.add(2);
+        if (cbSpa.isSelected()) selectedAmenities.add(3);
 
         Object[] requestData = {
                 String.valueOf(currentClientId),
@@ -130,6 +118,11 @@ public class BookingController {
             showAlert(Alert.AlertType.ERROR, "Błąd",
                     "Nie udało się utworzyć rezerwacji.\n" + (resp != null ? resp.getMessage() : "Brak połączenia"));
         }
+    }
+
+    @FXML
+    protected void onCancel() {
+        closeModal();
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {

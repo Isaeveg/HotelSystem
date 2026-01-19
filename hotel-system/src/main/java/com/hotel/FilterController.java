@@ -2,23 +2,15 @@ package com.hotel;
 
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 public class FilterController {
 
-    @FXML private Button applyBtn;
     @FXML private Slider priceSlider;
     @FXML private TextField priceInput;
     
-    @FXML private CheckBox cbBreakfast;
-    @FXML private CheckBox cbParking;
-    @FXML private CheckBox cbPool;
-    @FXML private CheckBox cbWifi;
-    @FXML private CheckBox cbGood;
-    @FXML private CheckBox cbExcellent;
+    @FXML private CheckBox cbBreakfast, cbParking, cbPool, cbWifi;
+    @FXML private CheckBox cbGood, cbExcellent;
 
     @FXML
     public void initialize() {
@@ -42,21 +34,26 @@ public class FilterController {
         });
     }
 
-    @FXML
-    protected void onReset() {
-        priceSlider.setValue(priceSlider.getMax());
-        cbBreakfast.setSelected(false);
-        cbParking.setSelected(false);
-        cbPool.setSelected(false);
-        cbWifi.setSelected(false);
-        cbGood.setSelected(false);
-        cbExcellent.setSelected(false);
+    public void setMaxPriceLimit(double max) {
+        priceSlider.setMax(max);
+        priceSlider.setValue(max);
+        priceInput.setText(String.format("%.0f", max));
     }
 
     @FXML
-    protected void onApply() {
+    protected void onClearFilters() {
+        priceSlider.setValue(priceSlider.getMax());
+        cbBreakfast.setSelected(false);
+        cbParking.setSelected(false);
+        if (cbPool != null) cbPool.setSelected(false);
+        if (cbWifi != null) cbWifi.setSelected(false);
+        if (cbGood != null) cbGood.setSelected(false);
+        if (cbExcellent != null) cbExcellent.setSelected(false);
+    }
+
+    @FXML
+    protected void onApplyFilters() {
         System.out.println("Zastosowano filtry. Max cena: " + priceInput.getText());
-        Stage stage = (Stage) applyBtn.getScene().getWindow();
-        stage.close();
+        ((Stage) priceSlider.getScene().getWindow()).close();
     }
 }

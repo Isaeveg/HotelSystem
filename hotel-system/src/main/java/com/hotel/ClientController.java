@@ -219,12 +219,18 @@ public class ClientController {
         }
     }
 
-    @FXML
-    protected void onOpenFilters() {
-        try {
-            SceneManager.openModal("filter-view.fxml", "Filtry");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    @FXML 
+protected void onOpenFilters() { 
+    try { 
+        double maxRoomPrice = allRooms.stream()
+                .mapToDouble(r -> Double.parseDouble(r.getPrice()))
+                .max().orElse(1000.0) + 200.0;
+
+        SceneManager.openModal("filter-view.fxml", "Filtry", (FilterController controller) -> {
+            controller.setMaxPriceLimit(maxRoomPrice);
+        }); 
+    } catch (IOException e) { 
+        e.printStackTrace(); 
+    } 
+}
 }
