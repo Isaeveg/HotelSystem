@@ -10,7 +10,7 @@ public class FilterController {
     @FXML private Slider priceSlider;
     @FXML private TextField priceInput;
     
-    @FXML private CheckBox cbBreakfast, cbParking, cbPool, cbWifi, cbGood, cbExcellent;
+    @FXML private CheckBox cbBreakfast, cbParking, cbSpa, cbLateCheckOut, cbCrib;
 
     @FXML
     public void initialize() {
@@ -42,14 +42,13 @@ public class FilterController {
 
     @FXML
     protected void onClearFilters() {
-        priceSlider.setValue(priceSlider.getMax());
-        cbBreakfast.setSelected(false);
-        cbParking.setSelected(false);
-        cbPool.setSelected(false);
-        cbWifi.setSelected(false);
-        cbGood.setSelected(false);
-        cbExcellent.setSelected(false);
-    }
+    priceSlider.setValue(priceSlider.getMax());
+    cbBreakfast.setSelected(false);
+    cbParking.setSelected(false);
+    cbSpa.setSelected(false);
+    cbLateCheckOut.setSelected(false);
+    cbCrib.setSelected(false);
+}
 
     @FXML
     protected void onApplyFilters() {
