@@ -34,7 +34,7 @@
     -fx-border-width: 0 0 3 0;
 }
 
-.btn-nav-action {
+.btn-nav-action, .btn-search {
     -fx-background-color: #0071c2; 
     -fx-text-fill: white;
     -fx-font-weight: bold;
@@ -43,18 +43,12 @@
     -fx-background-radius: 4px;
     -fx-font-size: 14px;
     -fx-border-width: 0;
-}
-.btn-nav-action:hover {
-    -fx-background-color: #005bb5;
+    -fx-min-height: 42px;
+    -fx-max-height: 42px;
 }
 
-.btn-search {
-    -fx-background-color: #0071c2;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 10 25;
-    -fx-cursor: hand;
-    -fx-background-radius: 4px;
+.btn-nav-action:hover, .btn-search:hover {
+    -fx-background-color: #005bb5;
 }
 
 .btn-profile {

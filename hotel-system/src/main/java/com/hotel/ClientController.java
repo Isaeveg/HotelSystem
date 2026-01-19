@@ -222,12 +222,14 @@ public class ClientController {
     @FXML 
 protected void onOpenFilters() { 
     try { 
-        double maxRoomPrice = allRooms.stream()
+        double maxInDb = allRooms.stream()
                 .mapToDouble(r -> Double.parseDouble(r.getPrice()))
-                .max().orElse(1000.0) + 200.0;
+                .max().orElse(1000.0);
+        
+        double sliderLimit = maxInDb + 200.0;
 
         SceneManager.openModal("filter-view.fxml", "Filtry", (FilterController controller) -> {
-            controller.setMaxPriceLimit(maxRoomPrice);
+            controller.setMaxPriceLimit(sliderLimit);
         }); 
     } catch (IOException e) { 
         e.printStackTrace(); 

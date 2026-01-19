@@ -6,11 +6,11 @@ import javafx.scene.control.*;
 
 public class FilterController {
 
+    @FXML private Button applyBtn;
     @FXML private Slider priceSlider;
     @FXML private TextField priceInput;
     
-    @FXML private CheckBox cbBreakfast, cbParking, cbPool, cbWifi;
-    @FXML private CheckBox cbGood, cbExcellent;
+    @FXML private CheckBox cbBreakfast, cbParking, cbPool, cbWifi, cbGood, cbExcellent;
 
     @FXML
     public void initialize() {
@@ -45,15 +45,16 @@ public class FilterController {
         priceSlider.setValue(priceSlider.getMax());
         cbBreakfast.setSelected(false);
         cbParking.setSelected(false);
-        if (cbPool != null) cbPool.setSelected(false);
-        if (cbWifi != null) cbWifi.setSelected(false);
-        if (cbGood != null) cbGood.setSelected(false);
-        if (cbExcellent != null) cbExcellent.setSelected(false);
+        cbPool.setSelected(false);
+        cbWifi.setSelected(false);
+        cbGood.setSelected(false);
+        cbExcellent.setSelected(false);
     }
 
     @FXML
     protected void onApplyFilters() {
         System.out.println("Zastosowano filtry. Max cena: " + priceInput.getText());
-        ((Stage) priceSlider.getScene().getWindow()).close();
+        Stage stage = (Stage) applyBtn.getScene().getWindow();
+        stage.close();
     }
 }

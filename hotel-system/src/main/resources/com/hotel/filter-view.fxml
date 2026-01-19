@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefWidth="350.0" spacing="20.0" style="-fx-background-color: white; -fx-padding: 25;" 
+<VBox prefWidth="380.0" spacing="20.0" style="-fx-background-color: white; -fx-padding: 30;" 
       stylesheets="@css/global.css, @css/client.css" 
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.FilterController">
@@ -19,21 +13,31 @@
     </Label>
 
     <VBox spacing="10.0">
-        <Label text="Zakres cenowy (za noc):" style="-fx-font-weight: bold;" />
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label style="-fx-font-weight: bold;" text="Max cena (PLN):" />
+            <TextField fx:id="priceInput" prefWidth="80.0" />
+        </HBox>
         <Slider fx:id="priceSlider" max="2000.0" showTickLabels="true" showTickMarks="true" />
     </VBox>
 
     <VBox spacing="10.0">
-        <Label text="Udogodnienia:" style="-fx-font-weight: bold;" />
-        <CheckBox text="Śniadanie w cenie" />
-        <CheckBox text="Parking" />
-        <CheckBox text="Darmowe Wi-Fi" />
-        <CheckBox text="Basen / SPA" />
+        <Label style="-fx-font-weight: bold;" text="Udogodnienia:" />
+        <HBox spacing="20.0">
+            <VBox spacing="10.0">
+                <CheckBox fx:id="cbBreakfast" text="Śniadanie" />
+                <CheckBox fx:id="cbParking" text="Parking" />
+                <CheckBox fx:id="cbPool" text="Basen" />
+            </VBox>
+            <VBox spacing="10.0">
+                <CheckBox fx:id="cbWifi" text="Wi-Fi" />
+                <CheckBox fx:id="cbGood" text="Ocena 8+" />
+                <CheckBox fx:id="cbExcellent" text="Ocena 9+" />
+            </VBox>
+        </HBox>
     </VBox>
 
-    <HBox spacing="10.0">
+    <HBox alignment="CENTER" spacing="15.0">
         <Button maxWidth="Infinity" onAction="#onClearFilters" styleClass="btn-nav-action" text="Wyczyść" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" onAction="#onApplyFilters" styleClass="btn-nav-action" text="Zastosuj" HBox.hgrow="ALWAYS" />
+        <Button fx:id="applyBtn" maxWidth="Infinity" onAction="#onApplyFilters" styleClass="btn-nav-action" text="Zastosuj" HBox.hgrow="ALWAYS" />
     </HBox>
-
 </VBox>
