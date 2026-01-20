@@ -1,23 +1,39 @@
 package com.hotel.server;
 
-import com.hotel.common.Room;
-import com.hotel.common.User;
-import com.hotel.common.Amenity;
-import com.hotel.common.Booking;
-import com.hotel.common.Client;
-import com.hotel.common.Hotel;
-import com.hotel.common.DashboardData;
+import com.hotel.common.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.time.LocalDate;
 
 public class DatabaseHandler {
     private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
+
+    // --- SQL CONSTANTS ---
+    private static final String SQL_LOGIN = "SELECT id, email, password, role FROM users WHERE email = ?";
+    private static final String SQL_REGISTER_CALL = "CALL register_client(?, ?, ?, ?, ?)";
+    private static final String SQL_GET_HOTELS = "SELECT id, name, city FROM hotels";
+    private static final String SQL_GET_ROOMS = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
+            +
+            "FROM rooms r JOIN hotels h ON r.hotel_id = h.id";
+    private static final String SQL_ADD_ROOM = "INSERT INTO rooms (hotel_id, room_number, type, price_per_night, description, floor) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_DELETE_ROOM = "DELETE FROM rooms WHERE id = ?";
+    private static final String SQL_UPDATE_ROOM = "UPDATE rooms SET room_number=?, type=?, price_per_night=?, description=? WHERE id=?";
+
+    private static final String SQL_GET_CLIENTS = "SELECT c.id, c.first_name, c.last_name, c.phone, u.email FROM clients c JOIN users u ON c.user_id = u.id";
+
+    private static final String SQL_GET_BOOKINGS = "SELECT b.id, b.client_id, b.room_id, b.check_in_date, b.check_out_date, b.total_price, b.status, u.email, r.room_number, h.name as hotel_name, "
+            +
+            "(SELECT array_agg(amenity_id) FROM booking_amenities WHERE booking_id = b.id) as amenity_ids " +
+            "FROM bookings b " +
+            "JOIN clients c ON b.client_id = c.id JOIN users u ON c.user_id = u.id " +
+            "JOIN rooms r ON b.room_id = r.id JOIN hotels h ON r.hotel_id = h.id " +
+            "ORDER BY b.id DESC";
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
@@ -26,18 +42,17 @@ public class DatabaseHandler {
                 DatabaseConfig.getPassword());
     }
 
-    public static User loginUser(String email, String password) {
-        String sql = "SELECT id, email, password, role FROM users WHERE email = ?";
+    // USER
 
+    public static User loginUser(String email, String password) {
         try (Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(SQL_LOGIN)) {
 
             pstmt.setString(1, email);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     String hashedPassword = rs.getString("password");
-
                     if (PasswordHasher.verifyPassword(password, hashedPassword)) {
                         logger.info("Pomyślna autentykacja użytkownika: {}", email);
                         return new User(
@@ -58,10 +73,8 @@ public class DatabaseHandler {
     }
 
     public static boolean registerUser(String firstName, String lastName, String email, String phone, String password) {
-        String sql = "CALL register_client(?, ?, ?, ?, ?)";
-
         try (Connection conn = getConnection();
-                java.sql.CallableStatement cstmt = conn.prepareCall(sql)) {
+                CallableStatement cstmt = conn.prepareCall(SQL_REGISTER_CALL)) {
 
             String hashedPassword = PasswordHasher.hashPassword(password);
 
@@ -72,7 +85,6 @@ public class DatabaseHandler {
             cstmt.setString(5, phone);
 
             cstmt.execute();
-
             logger.info("Rejestracja zakończona sukcesem (via procedure): {}", email);
             return true;
 
@@ -82,17 +94,16 @@ public class DatabaseHandler {
         }
     }
 
+    // HOTELS AND ROOMS
+
     public static List<Hotel> getHotels() {
         List<Hotel> hotels = new ArrayList<>();
-        String sql = "SELECT id, name, city FROM hotels";
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(SQL_GET_HOTELS)) {
+
             while (rs.next()) {
-                hotels.add(new Hotel(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("city")));
+                hotels.add(new Hotel(rs.getInt("id"), rs.getString("name"), rs.getString("city")));
             }
         } catch (SQLException e) {
             logger.error("Błąd pobierania listy hoteli: {}", e.getMessage());
@@ -102,25 +113,12 @@ public class DatabaseHandler {
 
     public static List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
-                +
-                "FROM rooms r JOIN hotels h ON r.hotel_id = h.id";
-
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(SQL_GET_ROOMS)) {
 
             while (rs.next()) {
-                String fullHotelName = rs.getString("city") + " - " + rs.getString("hotel_name");
-                rooms.add(new Room(
-                        rs.getInt("id"),
-                        rs.getInt("hotel_id"),
-                        rs.getString("room_number"),
-                        rs.getString("type"),
-                        rs.getString("price_per_night"),
-                        rs.getString("status"),
-                        rs.getString("description"),
-                        fullHotelName));
+                rooms.add(mapToRoom(rs));
             }
         } catch (SQLException e) {
             logger.error("Błąd DB podczas pobierania listy pokoi: {}", e.getMessage(), e);
@@ -129,23 +127,15 @@ public class DatabaseHandler {
     }
 
     public static boolean addRoom(int hotelId, String number, String type, String price, String description) {
-        String sql = "INSERT INTO rooms (hotel_id, room_number, type, price_per_night, description, floor) VALUES (?, ?, ?, ?, ?, ?)";
-
-        int floor = 1;
-        try {
-            if (number.length() > 0 && Character.isDigit(number.charAt(0))) {
-                floor = Character.getNumericValue(number.charAt(0));
-            }
-        } catch (Exception e) {
-        }
+        int floor = calculateFloor(number);
 
         try (Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(SQL_ADD_ROOM)) {
 
             pstmt.setInt(1, hotelId);
             pstmt.setString(2, number);
             pstmt.setString(3, type);
-            pstmt.setBigDecimal(4, new java.math.BigDecimal(price));
+            pstmt.setBigDecimal(4, new BigDecimal(price));
             pstmt.setString(5, description);
             pstmt.setInt(6, floor);
 
@@ -160,27 +150,16 @@ public class DatabaseHandler {
     }
 
     public static boolean deleteRoom(int roomId) {
-        String sql = "DELETE FROM rooms WHERE id = ?";
-        try (Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, roomId);
-            int rows = pstmt.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            logger.error("Błąd usuwania pokoju {}: {}", roomId, e.getMessage());
-            return false;
-        }
+        return executeUpdate(SQL_DELETE_ROOM, roomId);
     }
 
     public static boolean updateRoom(int id, String number, String type, String price, String description) {
-        String sql = "UPDATE rooms SET room_number=?, type=?, price_per_night=?, description=? WHERE id=?";
         try (Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(SQL_UPDATE_ROOM)) {
 
             pstmt.setString(1, number);
             pstmt.setString(2, type);
-            pstmt.setBigDecimal(3, new java.math.BigDecimal(price));
+            pstmt.setBigDecimal(3, new BigDecimal(price));
             pstmt.setString(4, description);
             pstmt.setInt(5, id);
 
@@ -191,23 +170,16 @@ public class DatabaseHandler {
         }
     }
 
+    // CLIENTS
+
     public static List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
-        String sql = "SELECT c.id, c.first_name, c.last_name, c.phone, u.email " +
-                "FROM clients c " +
-                "JOIN users u ON c.user_id = u.id";
-
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(SQL_GET_CLIENTS)) {
 
             while (rs.next()) {
-                clients.add(new Client(
-                        rs.getInt("id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("email"),
-                        rs.getString("phone")));
+                clients.add(mapToClient(rs));
             }
         } catch (SQLException e) {
             logger.error("Błąd pobierania listy klientów: {}", e.getMessage());
@@ -223,45 +195,30 @@ public class DatabaseHandler {
             conn.setAutoCommit(false);
             try {
                 String hashedPassword = PasswordHasher.hashPassword(password);
-                int userId = -1;
+                int userId = insertUser(conn, sqlUser, email, hashedPassword);
 
-                try (PreparedStatement psUser = conn.prepareStatement(sqlUser)) {
-                    psUser.setString(1, email);
-                    psUser.setString(2, hashedPassword);
-                    psUser.setString(3, "CLIENT");
-
-                    try (ResultSet rs = psUser.executeQuery()) {
-                        if (rs.next()) {
-                            userId = rs.getInt("id");
-                        }
-                    }
-                }
-
-                if (userId == -1) {
-                    throw new SQLException("Nie udało się utworzyć użytkownika (brak ID).");
-                }
+                if (userId == -1)
+                    throw new SQLException("Brak ID użytkownika.");
 
                 try (PreparedStatement psClient = conn.prepareStatement(sqlClient)) {
                     psClient.setInt(1, userId);
                     psClient.setString(2, firstName);
                     psClient.setString(3, lastName);
                     psClient.setString(4, phone);
-
                     psClient.executeUpdate();
                 }
 
                 conn.commit();
                 return true;
-
             } catch (SQLException e) {
                 conn.rollback();
-                logger.error("Błąd dodawania klienta (transakcja wycofana): {}", e.getMessage());
+                logger.error("Błąd dodawania klienta: {}", e.getMessage());
                 return false;
             } finally {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            logger.error("Błąd połączenia z DB: {}", e.getMessage());
+            logger.error("Błąd połączenia: {}", e.getMessage());
             return false;
         }
     }
@@ -301,9 +258,9 @@ public class DatabaseHandler {
             conn.setAutoCommit(false);
             try {
                 int userId = -1;
-                try (PreparedStatement psGetId = conn.prepareStatement(getUserIdSql)) {
-                    psGetId.setInt(1, clientId);
-                    try (ResultSet rs = psGetId.executeQuery()) {
+                try (PreparedStatement ps = conn.prepareStatement(getUserIdSql)) {
+                    ps.setInt(1, clientId);
+                    try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next())
                             userId = rs.getInt("user_id");
                     }
@@ -314,25 +271,24 @@ public class DatabaseHandler {
                     return false;
                 }
 
-                try (PreparedStatement psClient = conn.prepareStatement(updateClientSql)) {
-                    psClient.setString(1, firstName);
-                    psClient.setString(2, lastName);
-                    psClient.setString(3, phone);
-                    psClient.setInt(4, clientId);
-                    psClient.executeUpdate();
+                try (PreparedStatement ps = conn.prepareStatement(updateClientSql)) {
+                    ps.setString(1, firstName);
+                    ps.setString(2, lastName);
+                    ps.setString(3, phone);
+                    ps.setInt(4, clientId);
+                    ps.executeUpdate();
                 }
 
-                try (PreparedStatement psUser = conn.prepareStatement(updateUserSql)) {
-                    psUser.setString(1, email);
-                    psUser.setInt(2, userId);
-                    psUser.executeUpdate();
+                try (PreparedStatement ps = conn.prepareStatement(updateUserSql)) {
+                    ps.setString(1, email);
+                    ps.setInt(2, userId);
+                    ps.executeUpdate();
                 }
 
                 conn.commit();
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
-                logger.error("Błąd podczas aktualizacji: {}", e.getMessage());
                 return false;
             } finally {
                 conn.setAutoCommit(true);
@@ -343,45 +299,16 @@ public class DatabaseHandler {
         }
     }
 
+    // BOOKINGS
+
     public static List<Booking> getAllBookings() {
         List<Booking> list = new ArrayList<>();
-        String sql = "SELECT b.id, b.client_id, b.room_id, b.check_in_date, b.check_out_date, " +
-                "b.total_price, b.status, u.email, r.room_number, h.name as hotel_name, " +
-                "(SELECT array_agg(amenity_id) FROM booking_amenities WHERE booking_id = b.id) as amenity_ids " +
-                "FROM bookings b " +
-                "JOIN clients c ON b.client_id = c.id " +
-                "JOIN users u ON c.user_id = u.id " +
-                "JOIN rooms r ON b.room_id = r.id " +
-                "JOIN hotels h ON r.hotel_id = h.id " +
-                "ORDER BY b.id DESC";
-
         try (Connection conn = getConnection();
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(SQL_GET_BOOKINGS)) {
 
             while (rs.next()) {
-                String fullRoomName = rs.getString("hotel_name") + " [" + rs.getString("room_number") + "]";
-
-                List<Integer> amIds = new ArrayList<>();
-                Array sqlArray = rs.getArray("amenity_ids");
-                if (sqlArray != null) {
-                    Integer[] arr = (Integer[]) sqlArray.getArray();
-                    if (arr != null) {
-                        Collections.addAll(amIds, arr);
-                    }
-                }
-
-                list.add(new Booking(
-                        rs.getInt("id"),
-                        rs.getInt("client_id"),
-                        rs.getInt("room_id"),
-                        rs.getString("email"),
-                        fullRoomName,
-                        rs.getString("check_in_date"),
-                        rs.getString("check_out_date"),
-                        rs.getString("total_price"),
-                        rs.getString("status"),
-                        amIds));
+                list.add(mapToBooking(rs));
             }
         } catch (SQLException e) {
             logger.error("Błąd pobierania rezerwacji: {}", e.getMessage());
@@ -395,58 +322,45 @@ public class DatabaseHandler {
                 +
                 "VALUES (?, ?, ?::date, ?::date, ?, ?::booking_status) RETURNING id";
 
-        String sqlAmenity = "INSERT INTO booking_amenities (booking_id, amenity_id) VALUES (?, ?)";
-
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
+            try {
+                int bookingId = -1;
+                try (PreparedStatement ps = conn.prepareStatement(sqlBooking)) {
+                    ps.setInt(1, clientId);
+                    ps.setInt(2, roomId);
+                    ps.setString(3, inDate);
+                    ps.setString(4, outDate);
+                    ps.setBigDecimal(5, new BigDecimal(price));
+                    ps.setString(6, status);
 
-            int bookingId = -1;
-            try (PreparedStatement ps = conn.prepareStatement(sqlBooking)) {
-                ps.setInt(1, clientId);
-                ps.setInt(2, roomId);
-                ps.setString(3, inDate);
-                ps.setString(4, outDate);
-                ps.setBigDecimal(5, new java.math.BigDecimal(price));
-                ps.setString(6, status);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        bookingId = rs.getInt("id");
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next())
+                            bookingId = rs.getInt("id");
                     }
                 }
-            }
 
-            if (bookingId != -1 && amenityIds != null && !amenityIds.isEmpty()) {
-                try (PreparedStatement psAm = conn.prepareStatement(sqlAmenity)) {
-                    for (Integer amId : amenityIds) {
-                        psAm.setInt(1, bookingId);
-                        psAm.setInt(2, amId);
-                        psAm.addBatch();
-                    }
-                    psAm.executeBatch();
+                if (bookingId != -1) {
+                    insertBookingAmenities(conn, bookingId, amenityIds);
                 }
+
+                conn.commit();
+                logger.info("Rezerwacja z usługami dodana, ID: {}", bookingId);
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+                logger.error("Błąd transakcji rezerwacji: {}", e.getMessage());
+                return false;
+            } finally {
+                conn.setAutoCommit(true);
             }
-
-            conn.commit();
-            logger.info("Rezerwacja z usługami dodana, ID: " + bookingId);
-            return true;
-
         } catch (SQLException e) {
-            logger.error("Błąd transakcji rezerwacji: {}", e.getMessage());
             return false;
         }
     }
 
     public static boolean deleteBooking(int id) {
-        String sql = "DELETE FROM bookings WHERE id = ?";
-        try (Connection conn = getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.error("Błąd usuwania rezerwacji {}: {}", id, e.getMessage());
-            return false;
-        }
+        return executeUpdate("DELETE FROM bookings WHERE id = ?", id);
     }
 
     public static boolean updateBooking(int id, int clientId, int roomId, String inDate, String outDate, String price,
@@ -455,45 +369,42 @@ public class DatabaseHandler {
                 +
                 "total_price=?, status=?::booking_status WHERE id=?";
         String sqlDeleteAm = "DELETE FROM booking_amenities WHERE booking_id = ?";
-        String sqlInsertAm = "INSERT INTO booking_amenities (booking_id, amenity_id) VALUES (?, ?)";
 
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
-
-            try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
-                ps.setInt(1, clientId);
-                ps.setInt(2, roomId);
-                ps.setString(3, inDate);
-                ps.setString(4, outDate);
-                ps.setBigDecimal(5, new java.math.BigDecimal(price));
-                ps.setString(6, status);
-                ps.setInt(7, id);
-                ps.executeUpdate();
-            }
-
-            try (PreparedStatement psDel = conn.prepareStatement(sqlDeleteAm)) {
-                psDel.setInt(1, id);
-                psDel.executeUpdate();
-            }
-
-            if (amenityIds != null && !amenityIds.isEmpty()) {
-                try (PreparedStatement psIns = conn.prepareStatement(sqlInsertAm)) {
-                    for (Integer amId : amenityIds) {
-                        psIns.setInt(1, id);
-                        psIns.setInt(2, amId);
-                        psIns.addBatch();
-                    }
-                    psIns.executeBatch();
+            try {
+                try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
+                    ps.setInt(1, clientId);
+                    ps.setInt(2, roomId);
+                    ps.setString(3, inDate);
+                    ps.setString(4, outDate);
+                    ps.setBigDecimal(5, new BigDecimal(price));
+                    ps.setString(6, status);
+                    ps.setInt(7, id);
+                    ps.executeUpdate();
                 }
-            }
 
-            conn.commit();
-            return true;
+                try (PreparedStatement psDel = conn.prepareStatement(sqlDeleteAm)) {
+                    psDel.setInt(1, id);
+                    psDel.executeUpdate();
+                }
+                insertBookingAmenities(conn, id, amenityIds);
+
+                conn.commit();
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+                logger.error("Błąd aktualizacji rezerwacji {}: {}", id, e.getMessage());
+                return false;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
-            logger.error("Błąd aktualizacji rezerwacji {}: {}", id, e.getMessage());
             return false;
         }
     }
+
+    // DASHBOARD
 
     public static List<Amenity> getAllAmenities() {
         List<Amenity> list = new ArrayList<>();
@@ -519,14 +430,10 @@ public class DatabaseHandler {
         List<DashboardData.ActivityEntry> activities = new ArrayList<>();
 
         String sqlCount = "SELECT COUNT(*) FROM bookings WHERE created_at::date = CURRENT_DATE";
-
         String sqlIncomeFunc = "SELECT get_monthly_income(?, ?)";
-
         String sqlActivity = "SELECT b.created_at, u.email, r.room_number, b.status " +
-                "FROM bookings b " +
-                "JOIN clients c ON b.client_id = c.id " +
-                "JOIN users u ON c.user_id = u.id " +
-                "JOIN rooms r ON b.room_id = r.id " +
+                "FROM bookings b JOIN clients c ON b.client_id = c.id " +
+                "JOIN users u ON c.user_id = u.id JOIN rooms r ON b.room_id = r.id " +
                 "ORDER BY b.created_at DESC LIMIT 15";
 
         try (Connection conn = getConnection()) {
@@ -539,31 +446,128 @@ public class DatabaseHandler {
                 LocalDate now = LocalDate.now();
                 ps.setInt(1, now.getMonthValue());
                 ps.setInt(2, now.getYear());
-
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
+                    if (rs.next())
                         monthIncome = rs.getDouble(1);
-                    }
                 }
             }
 
             try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sqlActivity)) {
                 while (rs.next()) {
-                    String time = rs.getTimestamp("created_at").toString();
-                    if (time.contains("."))
-                        time = time.substring(0, time.lastIndexOf(":"));
-
-                    String desc = "Rezerwacja: " + rs.getString("email") + " (Pokój " + rs.getString("room_number")
-                            + ")";
-                    String status = rs.getString("status");
-                    activities.add(new DashboardData.ActivityEntry(time, desc, status));
+                    activities.add(mapToActivityEntry(rs));
                 }
             }
-
         } catch (SQLException e) {
             logger.error("Błąd pobierania dashboardu: {}", e.getMessage());
         }
-
         return new DashboardData(todayCount, monthIncome, activities);
+    }
+
+    // HELPER
+
+    private static boolean executeUpdate(String sql, int id) {
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error("Błąd wykonania update/delete: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private static int insertUser(Connection conn, String sql, String email, String passwordHash) throws SQLException {
+        try (PreparedStatement psUser = conn.prepareStatement(sql)) {
+            psUser.setString(1, email);
+            psUser.setString(2, passwordHash);
+            psUser.setString(3, "CLIENT");
+            try (ResultSet rs = psUser.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt("id");
+            }
+        }
+        return -1;
+    }
+
+    private static void insertBookingAmenities(Connection conn, int bookingId, List<Integer> amenityIds)
+            throws SQLException {
+        if (amenityIds == null || amenityIds.isEmpty())
+            return;
+
+        String sql = "INSERT INTO booking_amenities (booking_id, amenity_id) VALUES (?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Integer amId : amenityIds) {
+                ps.setInt(1, bookingId);
+                ps.setInt(2, amId);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private static int calculateFloor(String number) {
+        try {
+            if (number != null && !number.isEmpty() && Character.isDigit(number.charAt(0))) {
+                return Character.getNumericValue(number.charAt(0));
+            }
+        } catch (Exception ignored) {
+        }
+        return 1;
+    }
+
+    // --- MAPPERS ---
+
+    private static Room mapToRoom(ResultSet rs) throws SQLException {
+        String fullHotelName = rs.getString("city") + " - " + rs.getString("hotel_name");
+        return new Room(
+                rs.getInt("id"),
+                rs.getInt("hotel_id"),
+                rs.getString("room_number"),
+                rs.getString("type"),
+                rs.getString("price_per_night"),
+                rs.getString("status"),
+                rs.getString("description"),
+                fullHotelName);
+    }
+
+    private static Client mapToClient(ResultSet rs) throws SQLException {
+        return new Client(
+                rs.getInt("id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("email"),
+                rs.getString("phone"));
+    }
+
+    private static Booking mapToBooking(ResultSet rs) throws SQLException {
+        String fullRoomName = rs.getString("hotel_name") + " [" + rs.getString("room_number") + "]";
+        List<Integer> amIds = new ArrayList<>();
+        Array sqlArray = rs.getArray("amenity_ids");
+        if (sqlArray != null) {
+            Integer[] arr = (Integer[]) sqlArray.getArray();
+            if (arr != null)
+                Collections.addAll(amIds, arr);
+        }
+        return new Booking(
+                rs.getInt("id"),
+                rs.getInt("client_id"),
+                rs.getInt("room_id"),
+                rs.getString("email"),
+                fullRoomName,
+                rs.getString("check_in_date"),
+                rs.getString("check_out_date"),
+                rs.getString("total_price"),
+                rs.getString("status"),
+                amIds);
+    }
+
+    private static DashboardData.ActivityEntry mapToActivityEntry(ResultSet rs) throws SQLException {
+        String time = rs.getTimestamp("created_at").toString();
+        if (time.contains("."))
+            time = time.substring(0, time.lastIndexOf(":"));
+
+        String desc = "Rezerwacja: " + rs.getString("email") + " (Pokój " + rs.getString("room_number") + ")";
+        String status = rs.getString("status");
+        return new DashboardData.ActivityEntry(time, desc, status);
     }
 }
