@@ -3,6 +3,7 @@ package com.hotel.server;
 import com.hotel.common.*;
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDate;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
@@ -31,7 +32,7 @@ public class ClientHandler implements Runnable {
                     User user = DatabaseHandler.loginUser(login, password);
 
                     if (user != null) {
-                        response = new Response(true, "Sukces", user.getRole());
+                        response = new Response(true, "Sukces", user);
                     } else {
                         response = new Response(false, "Błędny login lub hasło", null);
                     }
@@ -210,6 +211,45 @@ public class ClientHandler implements Runnable {
                 case GET_DASHBOARD:
                     DashboardData data = DatabaseHandler.getDashboardStats();
                     response = new Response(true, "Dashboard data", data);
+                    break;
+
+                case SEARCH_ROOMS:
+                    Object[] searchParams = (Object[]) request.getData();
+                    String city = (String) searchParams[0];
+                    String dFromStr = (String) searchParams[1];
+                    String dToStr = (String) searchParams[2];
+
+                    try {
+                        List<Room> searchResults = DatabaseHandler.searchFreeRooms(
+                                city,
+                                LocalDate.parse(dFromStr),
+                                LocalDate.parse(dToStr));
+                        response = new Response(true, "Wyniki wyszukiwania", searchResults);
+                    } catch (Exception e) {
+                        response = new Response(false, "Błąd daty lub serwera", null);
+                    }
+                    break;
+
+                case ADD_FAVORITE:
+                    Object[] favAdd = (Object[]) request.getData();
+                    int faClientId = (Integer) favAdd[0];
+                    int faRoomId = (Integer) favAdd[1];
+                    boolean faAdded = DatabaseHandler.addFavorite(faClientId, faRoomId);
+                    response = new Response(faAdded, faAdded ? "Dodano do ulubionych" : "Błąd dodawania", null);
+                    break;
+
+                case REMOVE_FAVORITE:
+                    Object[] favRem = (Object[]) request.getData();
+                    int frClientId = (Integer) favRem[0];
+                    int frRoomId = (Integer) favRem[1];
+                    boolean frRem = DatabaseHandler.removeFavorite(frClientId, frRoomId);
+                    response = new Response(frRem, frRem ? "Usunięto z ulubionych" : "Błąd usuwania", null);
+                    break;
+
+                case GET_FAVORITES:
+                    int fClientId = (Integer) request.getData();
+                    List<Room> favorites = DatabaseHandler.getFavorites(fClientId);
+                    response = new Response(true, "Ulubione", favorites);
                     break;
 
                 default:

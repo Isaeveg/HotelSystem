@@ -20,15 +20,16 @@
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header-yellow">
-                <TextField prefHeight="42.0" prefWidth="200.0" promptText="Dokąd jedziesz?" />
-                <DatePicker prefHeight="42.0" prefWidth="150.0" promptText="Data od" />
-                <DatePicker prefHeight="42.0" prefWidth="150.0" promptText="Data do" />
+                <TextField fx:id="searchCityField" prefHeight="42.0" prefWidth="200.0" promptText="Dokąd jedziesz?" />
                 
-                <Button styleClass="btn-nav-action" text="Szukaj" />
+                <DatePicker fx:id="searchDateFrom" prefHeight="42.0" prefWidth="150.0" promptText="Data od" />
+                <DatePicker fx:id="searchDateTo" prefHeight="42.0" prefWidth="150.0" promptText="Data do" />
+                
+                <Button onAction="#onSearchRooms" styleClass="btn-nav-action" text="Szukaj" />
+                <Button onAction="#onResetSearch" styleClass="btn-nav-action" text="Wyczyść" />
+                
                 <Button onAction="#onOpenFilters" styleClass="btn-nav-action" text="Filtry" />
-                
                 <HBox HBox.hgrow="ALWAYS" />
-                
                 <Button onAction="#onLogoutClick" styleClass="btn-nav-action" text="Wyloguj się" />
             </HBox>
 

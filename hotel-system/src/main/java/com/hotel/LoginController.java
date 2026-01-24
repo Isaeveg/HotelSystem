@@ -3,17 +3,21 @@ package com.hotel;
 import com.hotel.common.Request;
 import com.hotel.common.RequestType;
 import com.hotel.common.Response;
+import com.hotel.common.User;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField; 
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 public class LoginController {
 
-    @FXML private TextField loginField;
-    @FXML private PasswordField passwordField; 
+    @FXML
+    private TextField loginField;
+    @FXML
+    private PasswordField passwordField;
 
     @FXML
     protected void onLoginButtonClick() {
@@ -25,14 +29,17 @@ public class LoginController {
             return;
         }
 
-        Request req = new Request(RequestType.LOGIN, new String[]{login, password});
+        Request req = new Request(RequestType.LOGIN, new String[] { login, password });
         Response resp = NetworkClient.sendRequest(req);
 
         if (resp != null && resp.isSuccess()) {
-            String role = (String) resp.getData(); 
+            User user = (User) resp.getData();
+
+            Session.setCurrentUser(user);
+
             try {
                 Stage stage = (Stage) loginField.getScene().getWindow();
-                if ("ADMIN".equalsIgnoreCase(role)) {
+                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                     SceneManager.switchScene(stage, "admin-view.fxml");
                 } else {
                     SceneManager.switchScene(stage, "client-view.fxml");

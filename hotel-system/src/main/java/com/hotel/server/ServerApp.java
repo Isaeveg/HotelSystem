@@ -10,6 +10,7 @@ public class ServerApp {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server hotela został włączony na porcie " + PORT);
+            DatabaseHandler.checkAndVerifyBookings();
 
             while (true) {
                 Socket socket = serverSocket.accept();

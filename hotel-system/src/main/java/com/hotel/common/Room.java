@@ -55,4 +55,8 @@ public class Room implements Serializable {
     public String getHotelName() {
         return hotelName;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

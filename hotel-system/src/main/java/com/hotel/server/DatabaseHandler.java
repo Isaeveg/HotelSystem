@@ -15,7 +15,8 @@ public class DatabaseHandler {
     private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
     // --- SQL CONSTANTS ---
-    private static final String SQL_LOGIN = "SELECT id, email, password, role FROM users WHERE email = ?";
+    private static final String SQL_LOGIN = "SELECT u.id, u.email, u.password, u.role, c.id as client_id " +
+            "FROM users u LEFT JOIN clients c ON u.id = c.user_id WHERE u.email = ?";
     private static final String SQL_REGISTER_CALL = "CALL register_client(?, ?, ?, ?, ?)";
     private static final String SQL_GET_HOTELS = "SELECT id, name, city FROM hotels";
     private static final String SQL_GET_ROOMS = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
@@ -33,7 +34,17 @@ public class DatabaseHandler {
             "FROM bookings b " +
             "JOIN clients c ON b.client_id = c.id JOIN users u ON c.user_id = u.id " +
             "JOIN rooms r ON b.room_id = r.id JOIN hotels h ON r.hotel_id = h.id " +
+            "JOIN rooms r ON b.room_id = r.id JOIN hotels h ON r.hotel_id = h.id " +
             "ORDER BY b.id DESC";
+
+    private static final String SQL_ADD_FAVORITE = "INSERT INTO favorite_rooms (client_id, room_id) VALUES (?, ?) ON CONFLICT DO NOTHING";
+    private static final String SQL_REMOVE_FAVORITE = "DELETE FROM favorite_rooms WHERE client_id = ? AND room_id = ?";
+    private static final String SQL_GET_FAVORITES = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
+            +
+            "FROM favorite_rooms fr " +
+            "JOIN rooms r ON fr.room_id = r.id " +
+            "JOIN hotels h ON r.hotel_id = h.id " +
+            "WHERE fr.client_id = ?";
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
@@ -55,19 +66,23 @@ public class DatabaseHandler {
                     String hashedPassword = rs.getString("password");
                     if (PasswordHasher.verifyPassword(password, hashedPassword)) {
                         logger.info("Pomyślna autentykacja użytkownika: {}", email);
+
+                        int clientId = rs.getInt("client_id");
+
                         return new User(
                                 rs.getInt("id"),
+                                clientId,
                                 rs.getString("email"),
                                 rs.getString("role"));
                     } else {
-                        logger.warn("Nieprawidłowe hasło dla użytkownika: {}", email);
+                        logger.warn("Nieprawidłowe hasło для пользователя: {}", email);
                     }
                 } else {
-                    logger.warn("Użytkownik nie znaleziony: {}", email);
+                    logger.warn("Пользователь не найден: {}", email);
                 }
             }
         } catch (SQLException e) {
-            logger.error("Błąd DB podczas autentykacji użytkownika {}: {}", email, e.getMessage(), e);
+            logger.error("Ошибка БД при входе {}: {}", email, e.getMessage(), e);
         }
         return null;
     }
@@ -569,5 +584,95 @@ public class DatabaseHandler {
         String desc = "Rezerwacja: " + rs.getString("email") + " (Pokój " + rs.getString("room_number") + ")";
         String status = rs.getString("status");
         return new DashboardData.ActivityEntry(time, desc, status);
+    }
+
+    public static boolean addFavorite(int clientId, int roomId) {
+        return executeUpdate(SQL_ADD_FAVORITE, clientId, roomId);
+    }
+
+    public static boolean removeFavorite(int clientId, int roomId) {
+        return executeUpdate(SQL_REMOVE_FAVORITE, clientId, roomId);
+    }
+
+    public static List<Room> getFavorites(int clientId) {
+        List<Room> rooms = new ArrayList<>();
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(SQL_GET_FAVORITES)) {
+            pstmt.setInt(1, clientId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    rooms.add(mapToRoom(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Błąd pobierania ulubionych: {}", e.getMessage());
+        }
+        return rooms;
+    }
+
+    private static boolean executeUpdate(String sql, int p1, int p2) {
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, p1);
+            pstmt.setInt(2, p2);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error("Błąd executeUpdate (2 params): {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public static List<Room> searchFreeRooms(String city, LocalDate dateFrom, LocalDate dateTo) {
+        List<Room> rooms = new ArrayList<>();
+        String sql = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
+                +
+                "FROM rooms r " +
+                "JOIN hotels h ON r.hotel_id = h.id " +
+                "WHERE LOWER(h.city) LIKE LOWER(?) " +
+                "AND r.id NOT IN (" +
+                "    SELECT b.room_id FROM bookings b " +
+                "    WHERE b.status != 'CANCELLED' " +
+                "    AND NOT (b.check_out_date <= ? OR b.check_in_date >= ?)" +
+                ")";
+
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%" + city + "%");
+            pstmt.setDate(2, java.sql.Date.valueOf(dateFrom));
+            pstmt.setDate(3, java.sql.Date.valueOf(dateTo));
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Room r = mapToRoom(rs);
+                    r.setStatus("FREE");
+                    rooms.add(r);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Ошибка поиска комнат: {}", e.getMessage(), e);
+        }
+        return rooms;
+    }
+
+    public static void checkAndVerifyBookings() {
+        String resetOccupiedSql = "UPDATE rooms SET status = 'FREE' WHERE status = 'OCCUPIED' AND id NOT IN (" +
+                " SELECT room_id FROM bookings WHERE status != 'CANCELLED' " +
+                " AND CURRENT_DATE BETWEEN check_in_date AND check_out_date " +
+                ")";
+
+        String setOccupiedSql = "UPDATE rooms SET status = 'OCCUPIED' WHERE status != 'OCCUPIED' AND id IN (" +
+                " SELECT room_id FROM bookings WHERE status != 'CANCELLED' " +
+                " AND CURRENT_DATE BETWEEN check_in_date AND check_out_date " +
+                ")";
+
+        try (Connection conn = getConnection();
+                Statement stmt = conn.createStatement()) {
+            int freed = stmt.executeUpdate(resetOccupiedSql);
+            int occupied = stmt.executeUpdate(setOccupiedSql);
+            logger.info("Synchronizacja statusów: Zwolniono {}, Zajęto {}", freed, occupied);
+        } catch (SQLException e) {
+            logger.error("Błąd synchronizacji statusów: {}", e.getMessage());
+        }
     }
 }
