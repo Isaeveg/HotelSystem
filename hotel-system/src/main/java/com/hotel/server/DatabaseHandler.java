@@ -11,6 +11,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Handles all database interactions for the application.
+ * <p>
+ * This class provides static methods to perform CRUD operations on users,
+ * rooms, bookings,
+ * clients, and other entities in the database.
+ * </p>
+ */
 public class DatabaseHandler {
     private static final Logger logger = LogManager.getLogger(DatabaseHandler.class);
 
@@ -45,6 +53,12 @@ public class DatabaseHandler {
             "JOIN hotels h ON r.hotel_id = h.id " +
             "WHERE fr.client_id = ?";
 
+    /**
+     * Establishes a connection to the database.
+     *
+     * @return a {@link Connection} object
+     * @throws SQLException if a database access error occurs
+     */
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 DatabaseConfig.getUrl(),
@@ -54,6 +68,13 @@ public class DatabaseHandler {
 
     // USER
 
+    /**
+     * Authenticates a user with email and password.
+     *
+     * @param email    the user's email
+     * @param password the raw password
+     * @return a {@link User} object if authentication is successful, null otherwise
+     */
     public static User loginUser(String email, String password) {
         try (Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(SQL_LOGIN)) {
@@ -86,6 +107,16 @@ public class DatabaseHandler {
         return null;
     }
 
+    /**
+     * Registers a new user/client in the database.
+     *
+     * @param firstName the first name
+     * @param lastName  the last name
+     * @param email     the email address
+     * @param phone     the phone number
+     * @param password  the raw password
+     * @return true if registration was successful, false otherwise
+     */
     public static boolean registerUser(String firstName, String lastName, String email, String phone, String password) {
         try (Connection conn = getConnection();
                 CallableStatement cstmt = conn.prepareCall(SQL_REGISTER_CALL)) {
@@ -110,6 +141,11 @@ public class DatabaseHandler {
 
     // HOTELS AND ROOMS
 
+    /**
+     * Retrieves a list of all hotels.
+     *
+     * @return a list of {@link Hotel} objects
+     */
     public static List<Hotel> getHotels() {
         List<Hotel> hotels = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -125,6 +161,11 @@ public class DatabaseHandler {
         return hotels;
     }
 
+    /**
+     * Retrieves all rooms from the database.
+     *
+     * @return a list of {@link Room} objects
+     */
     public static List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -140,6 +181,16 @@ public class DatabaseHandler {
         return rooms;
     }
 
+    /**
+     * Adds a new room to the database.
+     *
+     * @param hotelId     the hotel ID
+     * @param number      the room number
+     * @param type        the room type
+     * @param price       the price per night
+     * @param description the room description
+     * @return true if added successfully, false otherwise
+     */
     public static boolean addRoom(int hotelId, String number, String type, String price, String description) {
         int floor = calculateFloor(number);
 
@@ -163,10 +214,26 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Deletes a room by its ID.
+     *
+     * @param roomId the room ID
+     * @return true if deleted successfully, false otherwise
+     */
     public static boolean deleteRoom(int roomId) {
         return executeUpdate(SQL_DELETE_ROOM, roomId);
     }
 
+    /**
+     * Updates an existing room's details.
+     *
+     * @param id          the room ID
+     * @param number      the new room number
+     * @param type        the new type
+     * @param price       the new price
+     * @param description the new description
+     * @return true if updated successfully, false otherwise
+     */
     public static boolean updateRoom(int id, String number, String type, String price, String description) {
         try (Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(SQL_UPDATE_ROOM)) {
@@ -186,6 +253,12 @@ public class DatabaseHandler {
 
     // CLIENTS
 
+    /**
+     * Retrieves details of a specific client.
+     *
+     * @param clientId the client ID
+     * @return a {@link Client} object or null if not found
+     */
     public static Client getClientDetails(int clientId) {
         Client client = null;
         String sql = "SELECT c.id, c.first_name, c.last_name, c.phone, u.email " +
@@ -206,6 +279,11 @@ public class DatabaseHandler {
         return client;
     }
 
+    /**
+     * Retrieves a list of all clients.
+     *
+     * @return a list of {@link Client} objects
+     */
     public static List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -221,6 +299,16 @@ public class DatabaseHandler {
         return clients;
     }
 
+    /**
+     * Adds a new client (and user) to the database.
+     *
+     * @param firstName the first name
+     * @param lastName  the last name
+     * @param email     the email
+     * @param password  the password
+     * @param phone     the phone number
+     * @return true if added successfully, false otherwise
+     */
     public static boolean addClient(String firstName, String lastName, String email, String password, String phone) {
         String sqlUser = "INSERT INTO users (email, password, role) VALUES (?, ?, ?::user_role) RETURNING id";
         String sqlClient = "INSERT INTO clients (user_id, first_name, last_name, phone) VALUES (?, ?, ?, ?)";
@@ -257,6 +345,12 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Deletes a client and their associated user account.
+     *
+     * @param clientId the client ID
+     * @return true if deleted successfully, false otherwise
+     */
     public static boolean deleteClient(int clientId) {
         String getUserIdSql = "SELECT user_id FROM clients WHERE id = ?";
         String deleteUserSql = "DELETE FROM users WHERE id = ?";
@@ -283,6 +377,16 @@ public class DatabaseHandler {
         return false;
     }
 
+    /**
+     * Updates client and user information.
+     *
+     * @param clientId  the client ID
+     * @param firstName the new first name
+     * @param lastName  the new last name
+     * @param email     the new email
+     * @param phone     the new phone number
+     * @return true if updated successfully, false otherwise
+     */
     public static boolean updateClient(int clientId, String firstName, String lastName, String email, String phone) {
         String getUserIdSql = "SELECT user_id FROM clients WHERE id = ?";
         String updateClientSql = "UPDATE clients SET first_name=?, last_name=?, phone=? WHERE id=?";
@@ -335,6 +439,11 @@ public class DatabaseHandler {
 
     // BOOKINGS
 
+    /**
+     * Retrieves all bookings.
+     *
+     * @return a list of {@link Booking} objects
+     */
     public static List<Booking> getAllBookings() {
         List<Booking> list = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -350,6 +459,18 @@ public class DatabaseHandler {
         return list;
     }
 
+    /**
+     * Adds a new booking.
+     *
+     * @param clientId   the client ID
+     * @param roomId     the room ID
+     * @param inDate     check-in date
+     * @param outDate    check-out date
+     * @param price      total price
+     * @param status     booking status
+     * @param amenityIds list of selected amenity IDs
+     * @return true if added successfully, false otherwise
+     */
     public static boolean addBooking(int clientId, int roomId, String inDate, String outDate, String price,
             String status, List<Integer> amenityIds) {
         String sqlBooking = "INSERT INTO bookings (client_id, room_id, check_in_date, check_out_date, total_price, status) "
@@ -393,10 +514,29 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Deletes a booking by ID.
+     *
+     * @param id the booking ID
+     * @return true if deleted successfully, false otherwise
+     */
     public static boolean deleteBooking(int id) {
         return executeUpdate("DELETE FROM bookings WHERE id = ?", id);
     }
 
+    /**
+     * Updates an existing booking.
+     *
+     * @param id         the booking ID
+     * @param clientId   the client ID
+     * @param roomId     the room ID
+     * @param inDate     check-in date
+     * @param outDate    check-out date
+     * @param price      total price
+     * @param status     status
+     * @param amenityIds list of amenity IDs
+     * @return true if updated successfully, false otherwise
+     */
     public static boolean updateBooking(int id, int clientId, int roomId, String inDate, String outDate, String price,
             String status, List<Integer> amenityIds) {
         String sqlUpdate = "UPDATE bookings SET client_id=?, room_id=?, check_in_date=?::date, check_out_date=?::date, "
@@ -440,6 +580,11 @@ public class DatabaseHandler {
 
     // DASHBOARD
 
+    /**
+     * Retrieves all amenities from the database.
+     *
+     * @return a list of {@link Amenity} objects
+     */
     public static List<Amenity> getAllAmenities() {
         List<Amenity> list = new ArrayList<>();
         String sql = "SELECT id, name, price FROM amenities";
@@ -458,6 +603,11 @@ public class DatabaseHandler {
         return list;
     }
 
+    /**
+     * Retrieves statistics for the dashboard.
+     *
+     * @return a {@link DashboardData} object containing stats
+     */
     public static DashboardData getDashboardStats() {
         int todayCount = 0;
         double monthIncome = 0.0;
@@ -499,6 +649,13 @@ public class DatabaseHandler {
 
     // HELPER
 
+    /**
+     * Helper method to execute an update or delete SQL statement.
+     *
+     * @param sql the SQL statement
+     * @param id  the integer parameter for the statement
+     * @return true if at least one row was affected
+     */
     private static boolean executeUpdate(String sql, int id) {
         try (Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -510,6 +667,16 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Inserts a user into the DB.
+     *
+     * @param conn         active connection
+     * @param sql          SQL statement
+     * @param email        user email
+     * @param passwordHash hashed password
+     * @return the generated user ID orn -1 on failure
+     * @throws SQLException if SQL error occurs
+     */
     private static int insertUser(Connection conn, String sql, String email, String passwordHash) throws SQLException {
         try (PreparedStatement psUser = conn.prepareStatement(sql)) {
             psUser.setString(1, email);
@@ -523,6 +690,14 @@ public class DatabaseHandler {
         return -1;
     }
 
+    /**
+     * Inserts amenities for a booking.
+     *
+     * @param conn       active connection
+     * @param bookingId  booking ID
+     * @param amenityIds list of amenity IDs
+     * @throws SQLException if SQL error occurs
+     */
     private static void insertBookingAmenities(Connection conn, int bookingId, List<Integer> amenityIds)
             throws SQLException {
         if (amenityIds == null || amenityIds.isEmpty())
@@ -539,6 +714,12 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Calculates the floor based on the first digit of the room number.
+     *
+     * @param number the room number
+     * @return the floor number
+     */
     private static int calculateFloor(String number) {
         try {
             if (number != null && !number.isEmpty() && Character.isDigit(number.charAt(0))) {
@@ -605,14 +786,34 @@ public class DatabaseHandler {
         return new DashboardData.ActivityEntry(time, desc, status);
     }
 
+    /**
+     * Adds a room to a client's favorites.
+     *
+     * @param clientId client ID
+     * @param roomId   room ID
+     * @return true if added, false otherwise
+     */
     public static boolean addFavorite(int clientId, int roomId) {
         return executeUpdate(SQL_ADD_FAVORITE, clientId, roomId);
     }
 
+    /**
+     * Removes a room from a client's favorites.
+     *
+     * @param clientId client ID
+     * @param roomId   room ID
+     * @return true if removed, false otherwise
+     */
     public static boolean removeFavorite(int clientId, int roomId) {
         return executeUpdate(SQL_REMOVE_FAVORITE, clientId, roomId);
     }
 
+    /**
+     * Retrieves a client's favorite rooms.
+     *
+     * @param clientId client ID
+     * @return list of favorite rooms
+     */
     public static List<Room> getFavorites(int clientId) {
         List<Room> rooms = new ArrayList<>();
         try (Connection conn = getConnection();
@@ -629,6 +830,14 @@ public class DatabaseHandler {
         return rooms;
     }
 
+    /**
+     * Helper to execute update with 2 params.
+     *
+     * @param sql SQL
+     * @param p1  param 1
+     * @param p2  param 2
+     * @return true if success
+     */
     private static boolean executeUpdate(String sql, int p1, int p2) {
         try (Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -641,6 +850,14 @@ public class DatabaseHandler {
         }
     }
 
+    /**
+     * Searches for available rooms matching criteria.
+     *
+     * @param city     city name
+     * @param dateFrom start date
+     * @param dateTo   end date
+     * @return list of available rooms
+     */
     public static List<Room> searchFreeRooms(String city, LocalDate dateFrom, LocalDate dateTo) {
         List<Room> rooms = new ArrayList<>();
         String sql = "SELECT r.id, r.hotel_id, r.room_number, r.type, r.price_per_night, r.status, r.description, h.name as hotel_name, h.city "
@@ -674,6 +891,13 @@ public class DatabaseHandler {
         return rooms;
     }
 
+    /**
+     * Checks bookings and updates room statuses.
+     * <p>
+     * Marks rooms as OCCUPIED if there is an active booking for today.
+     * Marks rooms as FREE if they are no longer occupied.
+     * </p>
+     */
     public static void checkAndVerifyBookings() {
         String resetOccupiedSql = "UPDATE rooms SET status = 'FREE' WHERE status = 'OCCUPIED' AND id NOT IN (" +
                 " SELECT room_id FROM bookings WHERE status != 'CANCELLED' " +

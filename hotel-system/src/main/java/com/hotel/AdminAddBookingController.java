@@ -13,6 +13,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for adding or editing a booking in the admin interface.
+ */
 public class AdminAddBookingController {
     @FXML
     private ComboBox<Client> clientCombo;
@@ -32,6 +35,9 @@ public class AdminAddBookingController {
 
     private Booking currentBooking;
 
+    /**
+     * Initializes the controller. Sets up UI components and loads initial data.
+     */
     @FXML
     public void initialize() {
         statusCombo.setItems(FXCollections.observableArrayList("PENDING", "CONFIRMED", "CANCELLED"));
@@ -131,6 +137,11 @@ public class AdminAddBookingController {
         }
     }
 
+    /**
+     * Sets the booking data for editing.
+     *
+     * @param booking the booking to edit
+     */
     public void setBookingData(Booking booking) {
         this.currentBooking = booking;
 

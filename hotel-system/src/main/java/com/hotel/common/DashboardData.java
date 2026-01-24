@@ -3,6 +3,9 @@ package com.hotel.common;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Container for dashboard statistics and recent activity.
+ */
 public class DashboardData implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -10,6 +13,13 @@ public class DashboardData implements Serializable {
     private double incomeMonth;
     private List<ActivityEntry> recentActivities;
 
+    /**
+     * Constructs a new DashboardData object.
+     *
+     * @param reservationsToday count of reservations made today
+     * @param incomeMonth       total income for the current month
+     * @param recentActivities  list of recent booking activities
+     */
     public DashboardData(int reservationsToday, double incomeMonth, List<ActivityEntry> recentActivities) {
         this.reservationsToday = reservationsToday;
         this.incomeMonth = incomeMonth;
@@ -28,6 +38,9 @@ public class DashboardData implements Serializable {
         return recentActivities;
     }
 
+    /**
+     * Represents a single activity entry (e.g., a booking event) for the dashboard.
+     */
     public static class ActivityEntry implements Serializable {
         private static final long serialVersionUID = 1L;
 

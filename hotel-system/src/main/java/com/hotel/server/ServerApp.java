@@ -14,6 +14,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Main application class for the Hotel System Server.
+ * <p>
+ * This class extends {@link Application} to provide a JavaFX-based GUI for the
+ * server.
+ * It manages the server lifecycle (start/stop) and displays a log of server
+ * activities.
+ * </p>
+ */
 public class ServerApp extends Application {
     private static final int PORT = 8189;
     private static final Logger logger = LogManager.getLogger(ServerApp.class);
@@ -22,10 +31,23 @@ public class ServerApp extends Application {
     private boolean isRunning = false;
     private TextArea logArea;
 
+    /**
+     * Entry point of the server application.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Starts the JavaFX application.
+     * <p>
+     * Initializes the UI components (buttons, log area) and sets up event handlers.
+     * </p>
+     *
+     * @param primaryStage the primary stage for this application
+     */
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Hotel System Server");
@@ -59,6 +81,14 @@ public class ServerApp extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Starts the server listening on the defined port.
+     * <p>
+     * This method runs in a separate thread to avoid freezing the UI.
+     * It accepts incoming client connections and delegates them to
+     * {@link ClientHandler}.
+     * </p>
+     */
     private void startServer() {
         if (isRunning)
             return;
@@ -88,6 +118,9 @@ public class ServerApp extends Application {
         }).start();
     }
 
+    /**
+     * Stops the server and closes the server socket.
+     */
     private void stopServer() {
         if (!isRunning)
             return;
@@ -104,6 +137,11 @@ public class ServerApp extends Application {
         log("Server stopped.");
     }
 
+    /**
+     * Logs a message to the UI and the application logger.
+     *
+     * @param message the message to log
+     */
     private void log(String message) {
 
         logger.info(message);

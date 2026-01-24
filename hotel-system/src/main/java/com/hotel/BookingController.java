@@ -13,6 +13,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for the room booking interface.
+ * <p>
+ * Handles booking creation, calculating total price including amenities,
+ * and sending the booking request to the server.
+ * </p>
+ */
 public class BookingController {
 
     @FXML
@@ -36,6 +43,9 @@ public class BookingController {
     private int currentClientId;
     private BigDecimal roomPricePerNight;
 
+    /**
+     * Initializes the controller. Sets up date listeners and loads amenities.
+     */
     @FXML
     public void initialize() {
         dateFrom.valueProperty().addListener((obs, oldVal, newVal) -> calculateTotal());
@@ -62,6 +72,14 @@ public class BookingController {
         }
     }
 
+    /**
+     * Sets the room data for the booking.
+     *
+     * @param roomId   the room ID
+     * @param roomName the room name/number
+     * @param price    the price per night
+     * @param clientId the client ID making the booking
+     */
     public void setRoomData(int roomId, String roomName, String price, int clientId) {
         this.currentRoomId = roomId;
         this.currentClientId = clientId;

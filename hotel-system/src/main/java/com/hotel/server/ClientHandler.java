@@ -8,14 +8,36 @@ import org.apache.logging.log4j.Logger;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Handles individual client connections in a separate thread.
+ * <p>
+ * This class implements {@link Runnable} and is responsible for processing
+ * requests
+ * sent by the client, interacting with the {@link DatabaseHandler} to perform
+ * necessary operations, and sending back responses.
+ * </p>
+ */
 public class ClientHandler implements Runnable {
     private Socket socket;
     private static final Logger logger = LogManager.getLogger(ClientHandler.class);
 
+    /**
+     * Constructs a new ClientHandler for a given socket.
+     *
+     * @param socket the client socket
+     */
     public ClientHandler(Socket socket) {
         this.socket = socket;
     }
 
+    /**
+     * Main execution loop for handling client requests.
+     * <p>
+     * Reads a {@link Request} object from the input stream, processes it based on
+     * its type,
+     * and writes a {@link Response} object to the output stream.
+     * </p>
+     */
     @Override
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());

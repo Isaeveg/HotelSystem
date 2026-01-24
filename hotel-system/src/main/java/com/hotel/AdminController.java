@@ -12,6 +12,15 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Controller for the main admin dashboard view.
+ * <p>
+ * Manages the different tabs (Dashboard, Rooms, Reservations, Clients) and
+ * their respective data tables.
+ * Handles navigation, data loading from the server, and CRUD operations for
+ * rooms, clients, and bookings.
+ * </p>
+ */
 public class AdminController {
     private static final Logger logger = LogManager.getLogger(AdminController.class);
     @FXML
@@ -84,6 +93,9 @@ public class AdminController {
 
     private ObservableList<Booking> masterBookingData = FXCollections.observableArrayList();
 
+    /**
+     * Initializes the controller. Sets up the tables and loads initial data.
+     */
     @FXML
     public void initialize() {
         setupRoomsTable();

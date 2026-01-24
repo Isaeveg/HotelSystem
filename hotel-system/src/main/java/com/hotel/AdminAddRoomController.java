@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 import javafx.scene.control.*;
 import java.util.List;
 
+/**
+ * Controller for adding or editing a room in the admin interface.
+ */
 public class AdminAddRoomController {
 
     @FXML
@@ -26,6 +29,9 @@ public class AdminAddRoomController {
 
     private Integer editingRoomId = null;
 
+    /**
+     * Initializes the controller. Loads hotel data and sets up room types.
+     */
     @FXML
     public void initialize() {
         loadHotels();
@@ -43,6 +49,11 @@ public class AdminAddRoomController {
         }
     }
 
+    /**
+     * Sets the room data for editing.
+     *
+     * @param room the room to edit
+     */
     public void setRoomData(com.hotel.common.Room room) {
         this.editingRoomId = room.getId();
         this.roomNumberField.setText(room.getNumber());

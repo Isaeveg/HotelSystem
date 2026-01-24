@@ -7,6 +7,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+/**
+ * Controller for viewing user profile details.
+ */
 public class UserProfileController {
 
     @FXML
@@ -16,6 +19,9 @@ public class UserProfileController {
     @FXML
     private Label phoneLabel;
 
+    /**
+     * Initializes the controller by loading client data.
+     */
     @FXML
     public void initialize() {
         loadClientData();
@@ -47,6 +53,11 @@ public class UserProfileController {
         phoneLabel.setText("Phone: " + client.getPhone());
     }
 
+    /**
+     * Closes the profile window.
+     *
+     * @param event the action event
+     */
     @FXML
     protected void onClose(ActionEvent event) {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

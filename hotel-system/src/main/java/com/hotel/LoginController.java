@@ -12,6 +12,14 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Controller for the login view.
+ * <p>
+ * Handles user authentication, switching to the registration view, and
+ * navigating
+ * to the appropriate dashboard (Admin or Client) upon successful login.
+ * </p>
+ */
 public class LoginController {
 
     @FXML
@@ -19,6 +27,14 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
+    /**
+     * Handles the login button click event.
+     * <p>
+     * Sends a login request to the server. If successful, sets the current user
+     * session
+     * and switches to the main application view based on the user's role.
+     * </p>
+     */
     @FXML
     protected void onLoginButtonClick() {
         String login = loginField.getText().trim();
@@ -52,6 +68,12 @@ public class LoginController {
         }
     }
 
+    /**
+     * Handles the register button click event.
+     * <p>
+     * Switches the scene to the registration view.
+     * </p>
+     */
     @FXML
     protected void onRegisterButtonClick() {
         try {

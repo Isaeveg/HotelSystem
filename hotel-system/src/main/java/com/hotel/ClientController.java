@@ -23,6 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for the client main dashboard.
+ * <p>
+ * Handles searching for rooms, viewing room details, managing favorites,
+ * and viewing user reservations.
+ * </p>
+ */
 public class ClientController {
 
     private static final Logger logger = LogManager.getLogger(ClientController.class);
@@ -48,6 +55,13 @@ public class ClientController {
     private List<Room> allRooms = new ArrayList<>();
     private List<Room> favoriteRooms = new ArrayList<>();
 
+    /**
+     * Initializes the client controller.
+     * <p>
+     * Loads favorites, sets default search dates, and performs an initial room
+     * search.
+     * </p>
+     */
     @FXML
     public void initialize() {
 
@@ -72,6 +86,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Resets search filters to default values.
+     */
     @FXML
     protected void onResetSearch() {
         searchCityField.clear();
@@ -83,6 +100,9 @@ public class ClientController {
         onSearchRooms();
     }
 
+    /**
+     * Searches for rooms based on city and date criteria.
+     */
     @FXML
     protected void onSearchRooms() {
         String city = searchCityField.getText();
@@ -233,6 +253,9 @@ public class ClientController {
         alert.showAndWait();
     }
 
+    /**
+     * Switches to the main view (all rooms).
+     */
     @FXML
     protected void showMainTab() {
         sectionTitle.setText("Available hotels:");
@@ -242,6 +265,9 @@ public class ClientController {
         detailsView.setVisible(false);
     }
 
+    /**
+     * Switches to the favorites view.
+     */
     @FXML
     protected void showFavsTab() {
         sectionTitle.setText("Your favorites:");
@@ -251,6 +277,9 @@ public class ClientController {
         detailsView.setVisible(false);
     }
 
+    /**
+     * Switches to the reservations' view.
+     */
     @FXML
     protected void showMyResTab() {
         sectionTitle.setText("Your reservations:");

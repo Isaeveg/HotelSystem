@@ -1,5 +1,8 @@
 package com.hotel.common;
 
+/**
+ * Enumeration of all possible request types in the system.
+ */
 public enum RequestType {
     LOGIN, GET_ROOMS, BOOK_ROOM, REGISTER, ADD_ROOM, DELETE_ROOM, UPDATE_ROOM, GET_HOTELS, GET_CLIENTS, ADD_CLIENT,
     DELETE_CLIENT, UPDATE_CLIENT, GET_BOOKINGS, ADD_BOOKING, DELETE_BOOKING, UPDATE_BOOKING, GET_AMENITIES,

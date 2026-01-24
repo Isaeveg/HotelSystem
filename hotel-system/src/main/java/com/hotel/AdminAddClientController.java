@@ -11,6 +11,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+/**
+ * Controller for adding or editing a client in the admin interface.
+ */
 public class AdminAddClientController {
 
     @FXML
@@ -28,6 +31,11 @@ public class AdminAddClientController {
 
     private Integer editingClientId = null;
 
+    /**
+     * Sets the client data for editing.
+     *
+     * @param client the client to edit
+     */
     public void setClientData(Client client) {
         this.editingClientId = client.getId();
         firstNameField.setText(client.getFirstName());

@@ -2,6 +2,9 @@ package com.hotel.common;
 
 import java.io.Serializable;
 
+/**
+ * Represents a hotel room.
+ */
 public class Room implements Serializable {
     private int id;
     private int hotelId;
@@ -12,6 +15,18 @@ public class Room implements Serializable {
     private String description;
     private String hotelName;
 
+    /**
+     * Constructs a new Room.
+     *
+     * @param id          the room ID
+     * @param hotelId     the hotel ID
+     * @param number      the room number
+     * @param type        the room type (e.g., Single, Double)
+     * @param price       the price per night
+     * @param status      the current status of the room (e.g., FREE, OCCUPIED)
+     * @param description a description of the room
+     * @param hotelName   the name of the hotel including city
+     */
     public Room(int id, int hotelId, String number, String type, String price, String status, String description,
             String hotelName) {
         this.id = id;

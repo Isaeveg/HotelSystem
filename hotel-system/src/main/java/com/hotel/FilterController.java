@@ -7,6 +7,12 @@ import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
 
+/**
+ * Controller for filtering room searches.
+ * <p>
+ * Allows users to specify price range and required amenities.
+ * </p>
+ */
 public class FilterController {
 
     @FXML
@@ -19,6 +25,12 @@ public class FilterController {
     @FXML
     private CheckBox cbBreakfast, cbParking, cbSpa, cbLateCheckOut, cbCrib;
 
+    private boolean applied = false;
+
+    /**
+     * Initializes the controller. Sets up listeners for price slider and input
+     * synchronization.
+     */
     @FXML
     public void initialize() {
         priceSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -43,6 +55,11 @@ public class FilterController {
         });
     }
 
+    /**
+     * Sets the maximum price limit for the slider.
+     *
+     * @param max the maximum price
+     */
     public void setMaxPriceLimit(double max) {
         priceSlider.setMax(max);
         priceSlider.setValue(max);
@@ -57,6 +74,11 @@ public class FilterController {
         return priceSlider.getValue();
     }
 
+    /**
+     * Gets the list of selected amenities for filtering.
+     *
+     * @return list of amenity names
+     */
     public List<String> getSelectedAmenities() {
         List<String> selected = new ArrayList<>();
         if (cbBreakfast.isSelected())
@@ -71,8 +93,6 @@ public class FilterController {
             selected.add("Crib");
         return selected;
     }
-
-    private boolean applied = false;
 
     public boolean isApplied() {
         return applied;

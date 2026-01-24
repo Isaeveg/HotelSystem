@@ -10,6 +10,14 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * Controller for the user registration view.
+ * <p>
+ * Handles collecting user input, validating data locally, and sending a
+ * registration
+ * request to the server.
+ * </p>
+ */
 public class RegisterController {
 
     @FXML
@@ -23,6 +31,12 @@ public class RegisterController {
     @FXML
     private PasswordField passField;
 
+    /**
+     * Handles the registration confirmation.
+     * <p>
+     * Validates input fields and sends a registration request.
+     * </p>
+     */
     @FXML
     protected void onRegisterConfirm() {
         String firstName = firstNameField.getText();
@@ -64,6 +78,11 @@ public class RegisterController {
         }
     }
 
+    /**
+     * Handles the back button click.
+     *
+     * @throws IOException if navigation fails
+     */
     @FXML
     protected void onBackClick() throws IOException {
         goBackToLogin();
