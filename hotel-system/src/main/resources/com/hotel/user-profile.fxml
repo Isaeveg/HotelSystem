@@ -11,22 +11,22 @@
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.UserProfileController">
 
-    <Label text="Twój Profil" textFill="#003580">
+    <Label text="Your Profile" textFill="#003580">
         <font><Font name="Segoe UI Bold" size="24.0" /></font>
     </Label>
 
     <VBox alignment="CENTER" spacing="10.0">
         <Label text="👤" style="-fx-font-size: 60px; -fx-text-fill: #003580; -fx-padding: 15; -fx-border-color: #003580; -fx-border-radius: 60; -fx-border-width: 2;" />
-        <Label text="Dane Użytkownika" style="-fx-font-weight: bold; -fx-font-size: 18px;" />
+        <Label text="User Data" style="-fx-font-weight: bold; -fx-font-size: 18px;" />
     </VBox>
 
-    <VBox spacing="10.0" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #eee; -fx-border-width: 1;">
-        <Label fx:id="lblName" text="Imię i Nazwisko: Jan Kowalski" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
-        <Label fx:id="lblEmail" text="Email: guest@example.com" style="-fx-font-size: 14px;" />
-        <Label fx:id="lblPhone" text="Telefon: +48 600 700 800" style="-fx-font-size: 14px;" />
+    <VBox spacing="10.0" styleClass="booking-card" style="-fx-background-color: #f8f9fa; -fx-background-radius: 8; -fx-border-color: #eee; -fx-border-width: 1;">
+        <Label fx:id="nameLabel" text="Loading..." style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <Label fx:id="emailLabel" text="Email: ..." style="-fx-font-size: 14px;" />
+        <Label fx:id="phoneLabel" text="Phone: ..." style="-fx-font-size: 14px;" />
     </VBox>
 
     <VBox VBox.vgrow="ALWAYS" />
-    <Button fx:id="closeBtn" maxWidth="Infinity" onAction="#onClose" styleClass="btn-nav-action" text="Zamknij" />
+    <Button fx:id="closeBtn" maxWidth="Infinity" onAction="#onClose" styleClass="btn-nav-action" text="Close" />
 
 </VBox>

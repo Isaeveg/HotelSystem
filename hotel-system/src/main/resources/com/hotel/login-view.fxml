@@ -30,21 +30,21 @@
             </VBox.margin>
         </TextField>
 
-        <PasswordField fx:id="passwordField" promptText="Hasło">
+        <PasswordField fx:id="passwordField" promptText="Password">
             <VBox.margin>
                 <Insets bottom="20.0" />
             </VBox.margin>
         </PasswordField>
 
-        <Button maxWidth="Infinity" onAction="#onLoginButtonClick" styleClass="btn-primary" text="Zaloguj się" />
+        <Button maxWidth="Infinity" onAction="#onLoginButtonClick" styleClass="btn-primary" text="Log in" />
 
-        <Button maxWidth="Infinity" onAction="#onRegisterButtonClick" styleClass="btn-link" text="Załóż konto">
+        <Button maxWidth="Infinity" onAction="#onRegisterButtonClick" styleClass="btn-link" text="Create account">
             <VBox.margin>
                 <Insets top="10.0" />
             </VBox.margin>
         </Button>
 
-        <Label text="Admin: admin | Każdy inny: Gość" textFill="#aaaaaa">
+        <Label text="Admin: admin | Others: Guest" textFill="#aaaaaa">
             <VBox.margin>
                 <Insets top="15.0" />
             </VBox.margin>

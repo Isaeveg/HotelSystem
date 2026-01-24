@@ -15,34 +15,34 @@
 
     <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" spacing="15.0" styleClass="auth-card" style="-fx-min-width: 450;">
 
-        <Label text="Rejestracja" styleClass="header-label">
+        <Label text="Registration" styleClass="header-label">
             <VBox.margin>
                 <Insets bottom="10.0" />
             </VBox.margin>
         </Label>
 
-        <Label text="Imię" />
-        <TextField fx:id="firstNameField" promptText="Jan" />
+        <Label text="First Name" />
+        <TextField fx:id="firstNameField" promptText="John" />
 
-        <Label text="Nazwisko" />
-        <TextField fx:id="lastNameField" promptText="Kowalski" />
+        <Label text="Last Name" />
+        <TextField fx:id="lastNameField" promptText="Doe" />
 
         <Label text="Email" />
-        <TextField fx:id="emailField" promptText="jan@example.com" />
+        <TextField fx:id="emailField" promptText="john@example.com" />
 
-        <Label text="Telefon" />
+        <Label text="Phone" />
         <TextField fx:id="phoneField" promptText="+48 123 456 789" />
 
-        <Label text="Hasło" />
+        <Label text="Password" />
         <PasswordField fx:id="passField" promptText="******" />
 
-        <Button maxWidth="Infinity" onAction="#onRegisterConfirm" styleClass="btn-primary" text="Zarejestruj się">
+        <Button maxWidth="Infinity" onAction="#onRegisterConfirm" styleClass="btn-primary" text="Register">
             <VBox.margin>
                 <Insets top="10.0" />
             </VBox.margin>
         </Button>
 
-        <Button maxWidth="Infinity" onAction="#onBackClick" styleClass="btn-link" text="Wróć do logowania" />
+        <Button maxWidth="Infinity" onAction="#onBackClick" styleClass="btn-link" text="Back to Login" />
 
     </VBox>
 </StackPane>

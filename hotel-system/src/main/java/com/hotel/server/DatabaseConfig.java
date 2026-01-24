@@ -23,16 +23,16 @@ public class DatabaseConfig {
                 .getResourceAsStream(CONFIG_FILE)) {
 
             if (input == null) {
-                logger.warn("Plik konfiguracji {} nie znaleziony, używane wartości domyślne", CONFIG_FILE);
+                logger.warn("Configuration file {} not found, using default values", CONFIG_FILE);
                 setDefaultProperties();
                 return;
             }
 
             properties.load(input);
-            logger.info("Konfiguracja bazy danych załadowana pomyślnie");
+            logger.info("Database configuration loaded successfully");
 
         } catch (IOException e) {
-            logger.error("Błąd ładowania konfiguracji: {}", e.getMessage());
+            logger.error("Error loading configuration: {}", e.getMessage());
             setDefaultProperties();
         }
     }

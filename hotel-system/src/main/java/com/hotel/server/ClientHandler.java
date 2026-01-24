@@ -3,11 +3,14 @@ package com.hotel.server;
 import com.hotel.common.*;
 import java.io.*;
 import java.net.Socket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
+    private static final Logger logger = LogManager.getLogger(ClientHandler.class);
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -27,26 +30,26 @@ public class ClientHandler implements Runnable {
                     String login = credentials[0];
                     String password = credentials[1];
 
-                    System.out.println("Próba logowania: " + login);
+                    logger.info("Login attempt: {}", login);
 
                     User user = DatabaseHandler.loginUser(login, password);
 
                     if (user != null) {
-                        response = new Response(true, "Sukces", user);
+                        response = new Response(true, "Success", user);
                     } else {
-                        response = new Response(false, "Błędny login lub hasło", null);
+                        response = new Response(false, "Invalid login or password", null);
                     }
                     break;
 
                 case GET_ROOMS:
                     List<Room> rooms = DatabaseHandler.getAllRooms();
-                    response = new Response(true, "Lista pobrana", rooms);
+                    response = new Response(true, "List fetched", rooms);
                     break;
 
                 case REGISTER:
                     String[] regData = (String[]) request.getData();
                     if (regData.length < 5) {
-                        response = new Response(false, "Niekompletne dane", null);
+                        response = new Response(false, "Incomplete data", null);
                         break;
                     }
 
@@ -59,15 +62,15 @@ public class ClientHandler implements Runnable {
                     boolean isRegistered = DatabaseHandler.registerUser(regFirst, regLast, regEmail, regPhone, regPass);
 
                     if (isRegistered) {
-                        response = new Response(true, "Konto utworzone pomyślnie!", null);
+                        response = new Response(true, "Account created successfully!", null);
                     } else {
-                        response = new Response(false, "Błąd rejestracji (email zajęty?)", null);
+                        response = new Response(false, "Registration error (email taken?)", null);
                     }
                     break;
 
                 case GET_HOTELS:
                     List<Hotel> hotels = DatabaseHandler.getHotels();
-                    response = new Response(true, "Lista hoteli", hotels);
+                    response = new Response(true, "Hotel list", hotels);
                     break;
 
                 case ADD_ROOM:
@@ -79,12 +82,12 @@ public class ClientHandler implements Runnable {
                                 roomData[4]);
 
                         if (success) {
-                            response = new Response(true, "Pokój utworzony!", null);
+                            response = new Response(true, "Room created!", null);
                         } else {
-                            response = new Response(false, "Błąd: numer może być zajęty w tym hotelu", null);
+                            response = new Response(false, "Error: number might be taken in this hotel", null);
                         }
                     } catch (NumberFormatException e) {
-                        response = new Response(false, "Nieprawidłowe ID hotelu", null);
+                        response = new Response(false, "Invalid Hotel ID", null);
                     }
                     break;
 
@@ -94,12 +97,12 @@ public class ClientHandler implements Runnable {
                         int roomId = Integer.parseInt(idStr);
                         boolean deleted = DatabaseHandler.deleteRoom(roomId);
                         if (deleted) {
-                            response = new Response(true, "Pokój usunięty", null);
+                            response = new Response(true, "Room deleted", null);
                         } else {
-                            response = new Response(false, "Nie udało się usunąć pokoju", null);
+                            response = new Response(false, "Failed to delete room", null);
                         }
                     } catch (NumberFormatException e) {
-                        response = new Response(false, "Błędne ID pokoju", null);
+                        response = new Response(false, "Invalid Room ID", null);
                     }
                     break;
 
@@ -110,31 +113,31 @@ public class ClientHandler implements Runnable {
                         boolean updated = DatabaseHandler.updateRoom(rId, updateData[1], updateData[2], updateData[3],
                                 updateData[4]);
                         if (updated) {
-                            response = new Response(true, "Pokój zaktualizowany!", null);
+                            response = new Response(true, "Room updated!", null);
                         } else {
-                            response = new Response(false, "Błąd aktualizacji", null);
+                            response = new Response(false, "Update error", null);
                         }
                     } catch (Exception e) {
-                        response = new Response(false, "Błąd danych: " + e.getMessage(), null);
+                        response = new Response(false, "Data error: " + e.getMessage(), null);
                     }
                     break;
 
                 case GET_CLIENTS:
                     List<Client> clients = DatabaseHandler.getAllClients();
-                    response = new Response(true, "Lista klientów", clients);
+                    response = new Response(true, "Client list", clients);
                     break;
 
                 case ADD_CLIENT:
                     String[] addCData = (String[]) request.getData();
                     boolean added = DatabaseHandler.addClient(addCData[0], addCData[1], addCData[2], addCData[4],
                             addCData[3]);
-                    response = new Response(added, added ? "Klient dodany" : "Błąd dodawania (email zajęty?)", null);
+                    response = new Response(added, added ? "Client added" : "Adding error (email taken?)", null);
                     break;
 
                 case DELETE_CLIENT:
                     int idToDelete = Integer.parseInt((String) request.getData());
                     boolean deletedC = DatabaseHandler.deleteClient(idToDelete);
-                    response = new Response(deletedC, deletedC ? "Klient usunięty" : "Błąd usuwania", null);
+                    response = new Response(deletedC, deletedC ? "Client deleted" : "Deleting error", null);
                     break;
 
                 case UPDATE_CLIENT:
@@ -142,12 +145,12 @@ public class ClientHandler implements Runnable {
                     boolean updatedC = DatabaseHandler.updateClient(
                             Integer.parseInt(updCData[0]),
                             updCData[1], updCData[2], updCData[3], updCData[4]);
-                    response = new Response(updatedC, updatedC ? "Dane zaktualizowane" : "Błąd aktualizacji", null);
+                    response = new Response(updatedC, updatedC ? "Data updated" : "Update error", null);
                     break;
 
                 case GET_BOOKINGS:
                     List<Booking> bookings = DatabaseHandler.getAllBookings();
-                    response = new Response(true, "Lista rezerwacji", bookings);
+                    response = new Response(true, "Booking list", bookings);
                     break;
 
                 case ADD_BOOKING:
@@ -173,13 +176,13 @@ public class ClientHandler implements Runnable {
                             bStatus,
                             amenityIds);
 
-                    response = new Response(bAdded, bAdded ? "Rezerwacja dodana" : "Błąd dodawania", null);
+                    response = new Response(bAdded, bAdded ? "Booking added" : "Adding error", null);
                     break;
 
                 case DELETE_BOOKING:
                     int bIdDel = Integer.parseInt((String) request.getData());
                     boolean bDel = DatabaseHandler.deleteBooking(bIdDel);
-                    response = new Response(bDel, bDel ? "Rezerwacja usunięta" : "Błąd usuwania", null);
+                    response = new Response(bDel, bDel ? "Booking deleted" : "Deleting error", null);
                     break;
 
                 case UPDATE_BOOKING:
@@ -199,13 +202,13 @@ public class ClientHandler implements Runnable {
                     boolean bUpdated = DatabaseHandler.updateBooking(
                             uId, uClientId, uRoomId, uIn, uOut, uPrice, uStatus, uAmIds);
 
-                    response = new Response(bUpdated, bUpdated ? "Rezerwacja zaktualizowana" : "Błąd aktualizacji",
+                    response = new Response(bUpdated, bUpdated ? "Booking updated" : "Update error",
                             null);
                     break;
 
                 case GET_AMENITIES:
                     List<Amenity> amenities = DatabaseHandler.getAllAmenities();
-                    response = new Response(true, "Lista usług", amenities);
+                    response = new Response(true, "Amenities list", amenities);
                     break;
 
                 case GET_DASHBOARD:
@@ -224,9 +227,9 @@ public class ClientHandler implements Runnable {
                                 city,
                                 LocalDate.parse(dFromStr),
                                 LocalDate.parse(dToStr));
-                        response = new Response(true, "Wyniki wyszukiwania", searchResults);
+                        response = new Response(true, "Search results", searchResults);
                     } catch (Exception e) {
-                        response = new Response(false, "Błąd daty lub serwera", null);
+                        response = new Response(false, "Date error or server error", null);
                     }
                     break;
 
@@ -235,7 +238,7 @@ public class ClientHandler implements Runnable {
                     int faClientId = (Integer) favAdd[0];
                     int faRoomId = (Integer) favAdd[1];
                     boolean faAdded = DatabaseHandler.addFavorite(faClientId, faRoomId);
-                    response = new Response(faAdded, faAdded ? "Dodano do ulubionych" : "Błąd dodawania", null);
+                    response = new Response(faAdded, faAdded ? "Added to favorites" : "Adding error", null);
                     break;
 
                 case REMOVE_FAVORITE:
@@ -243,17 +246,27 @@ public class ClientHandler implements Runnable {
                     int frClientId = (Integer) favRem[0];
                     int frRoomId = (Integer) favRem[1];
                     boolean frRem = DatabaseHandler.removeFavorite(frClientId, frRoomId);
-                    response = new Response(frRem, frRem ? "Usunięto z ulubionych" : "Błąd usuwania", null);
+                    response = new Response(frRem, frRem ? "Removed from favorites" : "Removal error", null);
                     break;
 
                 case GET_FAVORITES:
                     int fClientId = (Integer) request.getData();
                     List<Room> favorites = DatabaseHandler.getFavorites(fClientId);
-                    response = new Response(true, "Ulubione", favorites);
+                    response = new Response(true, "Favorites", favorites);
+                    break;
+
+                case GET_CLIENT_DETAILS:
+                    int dClientId = (Integer) request.getData();
+                    Client dClient = DatabaseHandler.getClientDetails(dClientId);
+                    if (dClient != null) {
+                        response = new Response(true, "Client data", dClient);
+                    } else {
+                        response = new Response(false, "Data not found", null);
+                    }
                     break;
 
                 default:
-                    response = new Response(false, "Nieznane zapytanie", null);
+                    response = new Response(false, "Unknown request", null);
                     break;
             }
 
@@ -261,12 +274,12 @@ public class ClientHandler implements Runnable {
             out.flush();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error in client handler: ", e);
         } finally {
             try {
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error closing socket: ", e);
             }
         }
     }

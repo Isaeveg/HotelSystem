@@ -1,27 +1,55 @@
 package com.hotel;
 
+import com.hotel.common.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.stage.Stage;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 public class UserProfileController {
 
-    @FXML private Button closeBtn;
-    @FXML private Label lblName;
-    @FXML private Label lblEmail;
-    @FXML private Label lblPhone;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label emailLabel;
+    @FXML
+    private Label phoneLabel;
 
     @FXML
     public void initialize() {
-        lblName.setText("Imię i Nazwisko: (Zalogowany użytkownik)");
-        lblEmail.setText("Email: guest@example.com");
-        lblPhone.setText("Telefon: +48 000 000 000");
+        loadClientData();
+    }
+
+    private void loadClientData() {
+        int clientId = Session.getClientId();
+        if (clientId == 0) {
+            nameLabel.setText("Error: You are not logged in");
+            return;
+        }
+
+        Request req = new Request(RequestType.GET_CLIENT_DETAILS, clientId);
+        Response resp = NetworkClient.sendRequest(req);
+
+        if (resp != null && resp.isSuccess()) {
+            Client client = (Client) resp.getData();
+            updateUI(client);
+        } else {
+            nameLabel.setText("Error fetching data");
+        }
+    }
+
+    private void updateUI(Client client) {
+        if (client == null)
+            return;
+        nameLabel.setText("Name : " + client.getFirstName() + " " + client.getLastName());
+        emailLabel.setText("Email: " + client.getEmail());
+        phoneLabel.setText("Phone: " + client.getPhone());
     }
 
     @FXML
-    protected void onClose() {
-        Stage stage = (Stage) closeBtn.getScene().getWindow();
+    protected void onClose(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
 }

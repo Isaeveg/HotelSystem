@@ -22,7 +22,7 @@ public class SceneManager {
 
         URL resource = App.class.getResource(fxmlFile);
         if (resource == null) {
-            throw new IOException("Plik nie znaleziony w zasobach: " + fxmlFile);
+            throw new IOException("File not found in resources: " + fxmlFile);
         }
 
         FXMLLoader fxmlLoader = new FXMLLoader(resource);
@@ -34,35 +34,35 @@ public class SceneManager {
 
     public static void switchScene(String fxmlFile) throws IOException {
         if (primaryStage == null) {
-            throw new IllegalStateException("Primary stage nie został ustawiony. Najpierw wywołaj setPrimaryStage().");
+            throw new IllegalStateException("Primary stage not set. Call setPrimaryStage() first.");
         }
         switchScene(primaryStage, fxmlFile);
     }
 
-public static <T> T openModal(String fxmlFile, String title) throws IOException {
-    return openModal(fxmlFile, title, null);
-}
-
-public static <T> T openModal(String fxmlFile, String title, Consumer<T> controllerSetup) throws IOException {
-    URL resource = App.class.getResource(fxmlFile);
-    if (resource == null)
-        throw new IOException("Plik nie znaleziony: " + fxmlFile);
-
-    FXMLLoader fxmlLoader = new FXMLLoader(resource);
-    Parent root = fxmlLoader.load();
-
-    T controller = fxmlLoader.getController();
-    if (controllerSetup != null) {
-        controllerSetup.accept(controller);
+    public static <T> T openModal(String fxmlFile, String title) throws IOException {
+        return openModal(fxmlFile, title, null);
     }
 
-    Stage modalStage = new Stage();
-    modalStage.setTitle(title);
-    modalStage.initModality(Modality.APPLICATION_MODAL);
-    modalStage.initOwner(primaryStage);
-    modalStage.setScene(new Scene(root));
-    modalStage.showAndWait(); 
+    public static <T> T openModal(String fxmlFile, String title, Consumer<T> controllerSetup) throws IOException {
+        URL resource = App.class.getResource(fxmlFile);
+        if (resource == null)
+            throw new IOException("File not found: " + fxmlFile);
 
-    return controller; 
-}
+        FXMLLoader fxmlLoader = new FXMLLoader(resource);
+        Parent root = fxmlLoader.load();
+
+        T controller = fxmlLoader.getController();
+        if (controllerSetup != null) {
+            controllerSetup.accept(controller);
+        }
+
+        Stage modalStage = new Stage();
+        modalStage.setTitle(title);
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.initOwner(primaryStage);
+        modalStage.setScene(new Scene(root));
+        modalStage.showAndWait();
+
+        return controller;
+    }
 }

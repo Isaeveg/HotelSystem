@@ -58,7 +58,7 @@ public class AdminAddRoomController {
             }
         }
 
-        this.saveBtn.setText("Zapisz zmiany");
+        this.saveBtn.setText("Save changes");
     }
 
     @FXML
@@ -66,7 +66,7 @@ public class AdminAddRoomController {
         if (roomNumberField.getText().isEmpty() || hotelCombo.getValue() == null
                 || roomPriceField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Wybierz hotel, numer i cenę!");
+            alert.setContentText("Select hotel, number and price!");
             alert.showAndWait();
             return;
         }
@@ -103,12 +103,12 @@ public class AdminAddRoomController {
 
         if (resp != null && resp.isSuccess()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Sukces: " + resp.getMessage());
+            alert.setContentText("Success: " + resp.getMessage());
             alert.showAndWait();
             closeModal();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("Błąd: " + (resp != null ? resp.getMessage() : "Brak połączenia"));
+            alert.setContentText("Error: " + (resp != null ? resp.getMessage() : "No connection"));
             alert.showAndWait();
         }
     }

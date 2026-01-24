@@ -35,14 +35,14 @@ public class AdminAddClientController {
         emailField.setText(client.getEmail());
         phoneField.setText(client.getPhone());
 
-        passwordField.setPromptText("Pozostaw puste, aby nie zmieniać");
-        saveBtn.setText("Zapisz zmiany");
+        passwordField.setPromptText("Leave empty to keep unchanged");
+        saveBtn.setText("Save changes");
     }
 
     @FXML
     protected void onSave() {
         if (firstNameField.getText().isEmpty() || emailField.getText().isEmpty()) {
-            showAlert("Błąd", "Imię i Email są wymagane!");
+            showAlert("Error", "First Name and Email are required!");
             return;
         }
 
@@ -55,7 +55,7 @@ public class AdminAddClientController {
         Request req;
         if (editingClientId == null) {
             if (pass.isEmpty()) {
-                showAlert("Błąd", "Podaj hasło dla nowego użytkownika!");
+                showAlert("Error", "Enter password for new user!");
                 return;
             }
             String[] data = { fName, lName, email, phone, pass };
@@ -67,10 +67,10 @@ public class AdminAddClientController {
 
         Response resp = NetworkClient.sendRequest(req);
         if (resp.isSuccess()) {
-            showAlert("Sukces", resp.getMessage());
+            showAlert("Success", resp.getMessage());
             closeModal();
         } else {
-            showAlert("Błąd", resp.getMessage());
+            showAlert("Error", resp.getMessage());
         }
     }
 

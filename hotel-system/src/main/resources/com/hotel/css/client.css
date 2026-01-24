@@ -27,18 +27,23 @@
     -fx-cursor: hand;
     -fx-padding: 5 15;
 }
-.toolbar-btn:hover { -fx-text-fill: -color-primary; }
+
+.toolbar-btn:hover {
+    -fx-text-fill: -color-primary;
+}
+
 .toolbar-btn-active {
     -fx-text-fill: -color-primary;
     -fx-border-color: transparent transparent -color-primary transparent;
     -fx-border-width: 0 0 3 0;
 }
 
-.btn-nav-action, .btn-search {
-    -fx-background-color: #0071c2; 
+.btn-nav-action,
+.btn-search {
+    -fx-background-color: #0071c2;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 25; 
+    -fx-padding: 10 25;
     -fx-cursor: hand;
     -fx-background-radius: 4px;
     -fx-font-size: 14px;
@@ -47,7 +52,8 @@
     -fx-max-height: 42px;
 }
 
-.btn-nav-action:hover, .btn-search:hover {
+.btn-nav-action:hover,
+.btn-search:hover {
     -fx-background-color: #005bb5;
 }
 
@@ -60,27 +66,34 @@
     -fx-background-radius: 20px;
 }
 
+/* --- REFACTORED CARD STYLES --- */
+
 .hotel-card {
     -fx-background-color: white;
     -fx-background-radius: 8;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+    -fx-padding: 0;
 }
 
 .btn-card-action {
     -fx-background-color: -color-primary;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 20px; 
+    -fx-background-radius: 20px;
     -fx-padding: 8 20;
     -fx-cursor: hand;
 }
 
 .btn-star {
     -fx-background-color: transparent;
-    -fx-text-fill: #cccccc; 
+    -fx-text-fill: #cccccc;
     -fx-font-size: 20px;
+    -fx-cursor: hand;
 }
-.btn-star-active { -fx-text-fill: #febb02; }
+
+.btn-star-active {
+    -fx-text-fill: #febb02;
+}
 
 
 .btn-choose {
@@ -91,6 +104,7 @@
     -fx-cursor: hand;
     -fx-background-radius: 4;
 }
+
 .btn-choose:hover {
     -fx-background-color: #0004ff;
 }
@@ -110,17 +124,17 @@
 }
 
 .slider .thumb {
-    -fx-background-color: -color-primary; 
+    -fx-background-color: -color-primary;
     -fx-pref-width: 16px;
     -fx-pref-height: 16px;
     -fx-background-radius: 50%;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
 }
 
 .slider .thumb:hover {
     -fx-background-color: -color-primary-hover;
-    -fx-pref-width: 18px; 
+    -fx-pref-width: 18px;
     -fx-pref-height: 18px;
 }
 
@@ -128,4 +142,164 @@
     -fx-tick-label-fill: #666666;
     -fx-font-size: 11px;
     -fx-font-family: 'Segoe UI';
+}
+
+/* --- NEW COMPONENT CLASSES --- */
+
+/* Card Content */
+.card-image-area {
+    -fx-background-radius: 8 8 0 0;
+    -fx-alignment: center;
+    -fx-pref-height: 140px;
+}
+
+.card-image-free {
+    -fx-background-color: #e8f5e9;
+}
+
+.card-image-occupied {
+    -fx-background-color: #ffebee;
+}
+
+.card-type-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+}
+
+.card-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+
+.card-room-number {
+    -fx-text-fill: #777;
+    -fx-font-size: 12px;
+}
+
+.card-description {
+    -fx-text-fill: #666;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+    -fx-pref-height: 40px;
+}
+
+.card-price {
+    -fx-font-family: "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: #003580;
+}
+
+.status-label {
+    -fx-font-weight: bold;
+}
+
+.status-free {
+    -fx-text-fill: #2e7d32;
+}
+
+.status-occupied {
+    -fx-text-fill: #c62828;
+}
+
+/* Dialog */
+.dialog-root {
+    -fx-background-color: white;
+    -fx-padding: 30;
+}
+
+.dialog-header-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.dialog-sub-header {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}
+
+.dialog-status-label {
+    -fx-background-color: #eee;
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+}
+
+.dialog-label-bold {
+    -fx-font-weight: bold;
+}
+
+.dialog-price-value {
+    -fx-font-size: 24px;
+    -fx-text-fill: #003580;
+    -fx-font-weight: bold;
+}
+
+.dialog-button-secondary {
+    -fx-base: #eee;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-pref-width: 150px;
+}
+
+.dialog-button-primary {
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-color: #003580;
+    -fx-text-fill: white;
+    -fx-pref-width: 150px;
+}
+
+/* --- NEW REFACTORED CLASSES --- */
+
+.booking-card {
+    -fx-padding: 15;
+}
+
+.booking-price {
+    -fx-font-size: 18px;
+}
+
+.dialog-img-placeholder {
+    -fx-background-radius: 8;
+}
+
+.dialog-hotel-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.dialog-room-number {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555;
+}
+
+.dialog-status {
+    -fx-background-color: #eee;
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+}
+
+.dialog-section-label {
+    -fx-font-weight: bold;
+}
+
+.dialog-price-val {
+    -fx-font-size: 24px;
+    -fx-text-fill: #003580;
+    -fx-font-weight: bold;
+}
+
+.dialog-btn-close {
+    -fx-base: #eee;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+}
+
+.dialog-btn-book {
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-color: #003580;
+    -fx-text-fill: white;
 }

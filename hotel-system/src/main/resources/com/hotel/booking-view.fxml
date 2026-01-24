@@ -6,7 +6,7 @@
 <VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.BookingController" style="-fx-padding: 20; -fx-background-color: white;">
     
-    <Label text="Szczegóły rezerwacji" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label text="Booking Details" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <GridPane hgap="10" vgap="10">
         <columnConstraints>
@@ -14,33 +14,29 @@
             <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
 
-        <Label text="Pokój:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="Room:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <Label fx:id="roomInfoLabel" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Cena za noc:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label text="Price per night:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <Label fx:id="priceInfoLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Data zameldowania:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label text="Check-in Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
         <DatePicker fx:id="dateFrom" prefWidth="250" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <Label text="Data wymeldowania:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label text="Check-out Date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <DatePicker fx:id="dateTo" prefWidth="250" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <Label text="Udogodnienia:" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
-        <VBox spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1">
-            <CheckBox fx:id="cbBreakfast" text="Śniadanie (40 zł/d)" />
-            <CheckBox fx:id="cbParking" text="Parking Podziemny (25 zł/d)" />
-            <CheckBox fx:id="cbSpa" text="Dostęp do SPA (100 zł)" />
-            <CheckBox fx:id="cbLateCheckOut" text="Późne wymeldowanie (50 zł)" />
-            <CheckBox fx:id="cbCrib" text="Łóżeczko dziecięce (0 zł)" />
+        <Label text="Amenities:" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+        <VBox fx:id="amenitiesContainer" spacing="5" GridPane.rowIndex="4" GridPane.columnIndex="1">
+            <!-- Dynamic content -->
         </VBox>
 
-        <Label text="Suma do zapłaty:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <Label text="Total to pay:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
         <Label fx:id="totalPriceLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #003580;" text="0.00 PLN" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
     </GridPane>
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Anuluj" onAction="#onCancel" style="-fx-background-color: #ccc; -fx-pref-width: 100;"/>
-        <Button fx:id="confirmBtn" text="Zapisz" onAction="#onConfirm" style="-fx-background-color: #0004ff; -fx-text-fill: white; -fx-pref-width: 120;"/>
+        <Button text="Cancel" onAction="#onCancel" style="-fx-background-color: #ccc; -fx-pref-width: 100;"/>
+        <Button fx:id="confirmBtn" text="Confirm" onAction="#onConfirm" style="-fx-background-color: #0004ff; -fx-text-fill: white; -fx-pref-width: 120;"/>
     </HBox>
 </VBox>

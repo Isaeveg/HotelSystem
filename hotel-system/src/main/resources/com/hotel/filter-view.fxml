@@ -5,27 +5,27 @@
 <VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.hotel.FilterController" style="-fx-padding: 20; -fx-background-color: white;">
     
-    <Label text="Filtry wyszukiwania" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label text="Search Filters" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <GridPane hgap="10" vgap="10">
-        <Label text="Max cena (PLN):" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="Max Price (PLN):" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="priceInput" prefWidth="250" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Zakres ceny:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label text="Price Range:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <Slider styleClass="price-slider" fx:id="priceSlider" max="2000.0" prefWidth="250" showTickLabels="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Udogodnienia:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+        <Label text="Amenities:" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
         <VBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="1">
-            <CheckBox fx:id="cbBreakfast" text="Śniadanie" />
-            <CheckBox fx:id="cbParking" text="Parking Podziemny" />
-            <CheckBox fx:id="cbSpa" text="Dostęp do SPA" />
-            <CheckBox fx:id="cbLateCheckOut" text="Późne wymeldowanie" />
-            <CheckBox fx:id="cbCrib" text="Łóżeczko dziecięce" />
+            <CheckBox fx:id="cbBreakfast" text="Breakfast" />
+            <CheckBox fx:id="cbParking" text="Underground Parking" />
+            <CheckBox fx:id="cbSpa" text="SPA Access" />
+            <CheckBox fx:id="cbLateCheckOut" text="Late Check-out" />
+            <CheckBox fx:id="cbCrib" text="Crib" />
         </VBox>
     </GridPane>
 
     <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Wyczyść" onAction="#onClearFilters" style="-fx-background-color: #ccc;"/>
-        <Button fx:id="applyBtn" text="Zastosuj" onAction="#onApplyFilters" style="-fx-background-color: #0032bd; -fx-text-fill: white;"/>
+        <Button text="Clear" onAction="#onClearFilters" style="-fx-background-color: #ccc;"/>
+        <Button fx:id="applyBtn" text="Apply" onAction="#onApplyFilters" style="-fx-background-color: #0032bd; -fx-text-fill: white;"/>
     </HBox>
 </VBox>

@@ -9,11 +9,15 @@ import javafx.scene.control.*;
 
 public class FilterController {
 
-    @FXML private Button applyBtn;
-    @FXML private Slider priceSlider;
-    @FXML private TextField priceInput;
-    
-    @FXML private CheckBox cbBreakfast, cbParking, cbSpa, cbLateCheckOut, cbCrib;
+    @FXML
+    private Button applyBtn;
+    @FXML
+    private Slider priceSlider;
+    @FXML
+    private TextField priceInput;
+
+    @FXML
+    private CheckBox cbBreakfast, cbParking, cbSpa, cbLateCheckOut, cbCrib;
 
     @FXML
     public void initialize() {
@@ -30,10 +34,12 @@ public class FilterController {
             try {
                 if (!newVal.isEmpty()) {
                     double val = Double.parseDouble(newVal);
-                    if (val > priceSlider.getMax()) val = priceSlider.getMax();
+                    if (val > priceSlider.getMax())
+                        val = priceSlider.getMax();
                     priceSlider.setValue(val);
                 }
-            } catch (NumberFormatException e) { }
+            } catch (NumberFormatException e) {
+            }
         });
     }
 
@@ -42,41 +48,51 @@ public class FilterController {
         priceSlider.setValue(max);
         priceInput.setText(String.format("%.0f", max));
     }
+
     public Button getApplyBtn() {
-    return applyBtn;
-}
+        return applyBtn;
+    }
+
     public double getSelectedMaxPrice() {
-    return priceSlider.getValue();
-}
+        return priceSlider.getValue();
+    }
 
-public List<String> getSelectedAmenities() {
-    List<String> selected = new ArrayList<>();
-    if (cbBreakfast.isSelected()) selected.add("Śniadanie");
-    if (cbParking.isSelected()) selected.add("Parking");
-    if (cbSpa.isSelected()) selected.add("SPA");
-    if (cbLateCheckOut.isSelected()) selected.add("Late Check-out");
-    if (cbCrib.isSelected()) selected.add("Łóżeczko");
-    return selected;
-}
+    public List<String> getSelectedAmenities() {
+        List<String> selected = new ArrayList<>();
+        if (cbBreakfast.isSelected())
+            selected.add("Breakfast");
+        if (cbParking.isSelected())
+            selected.add("Parking");
+        if (cbSpa.isSelected())
+            selected.add("SPA");
+        if (cbLateCheckOut.isSelected())
+            selected.add("Late Check-out");
+        if (cbCrib.isSelected())
+            selected.add("Crib");
+        return selected;
+    }
 
-private boolean applied = false;
-public boolean isApplied() { return applied; }
+    private boolean applied = false;
 
-@FXML
-protected void onApplyFilters() {
-    applied = true;
-    Stage stage = (Stage) applyBtn.getScene().getWindow();
-    stage.close();
-}
+    public boolean isApplied() {
+        return applied;
+    }
+
+    @FXML
+    protected void onApplyFilters() {
+        applied = true;
+        Stage stage = (Stage) applyBtn.getScene().getWindow();
+        stage.close();
+    }
 
     @FXML
     protected void onClearFilters() {
-    priceSlider.setValue(priceSlider.getMax());
-    cbBreakfast.setSelected(false);
-    cbParking.setSelected(false);
-    cbSpa.setSelected(false);
-    cbLateCheckOut.setSelected(false);
-    cbCrib.setSelected(false);
-}
+        priceSlider.setValue(priceSlider.getMax());
+        cbBreakfast.setSelected(false);
+        cbParking.setSelected(false);
+        cbSpa.setSelected(false);
+        cbLateCheckOut.setSelected(false);
+        cbCrib.setSelected(false);
+    }
 
 }

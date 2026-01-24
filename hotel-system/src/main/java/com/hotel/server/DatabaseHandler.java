@@ -34,7 +34,6 @@ public class DatabaseHandler {
             "FROM bookings b " +
             "JOIN clients c ON b.client_id = c.id JOIN users u ON c.user_id = u.id " +
             "JOIN rooms r ON b.room_id = r.id JOIN hotels h ON r.hotel_id = h.id " +
-            "JOIN rooms r ON b.room_id = r.id JOIN hotels h ON r.hotel_id = h.id " +
             "ORDER BY b.id DESC";
 
     private static final String SQL_ADD_FAVORITE = "INSERT INTO favorite_rooms (client_id, room_id) VALUES (?, ?) ON CONFLICT DO NOTHING";
@@ -65,7 +64,7 @@ public class DatabaseHandler {
                 if (rs.next()) {
                     String hashedPassword = rs.getString("password");
                     if (PasswordHasher.verifyPassword(password, hashedPassword)) {
-                        logger.info("Pomyślna autentykacja użytkownika: {}", email);
+                        logger.info("Successful user authentication: {}", email);
 
                         int clientId = rs.getInt("client_id");
 
@@ -75,14 +74,14 @@ public class DatabaseHandler {
                                 rs.getString("email"),
                                 rs.getString("role"));
                     } else {
-                        logger.warn("Nieprawidłowe hasło для пользователя: {}", email);
+                        logger.warn("Invalid password for user: {}", email);
                     }
                 } else {
-                    logger.warn("Пользователь не найден: {}", email);
+                    logger.warn("User not found: {}", email);
                 }
             }
         } catch (SQLException e) {
-            logger.error("Ошибка БД при входе {}: {}", email, e.getMessage(), e);
+            logger.error("DB login error {}: {}", email, e.getMessage(), e);
         }
         return null;
     }
@@ -100,11 +99,11 @@ public class DatabaseHandler {
             cstmt.setString(5, phone);
 
             cstmt.execute();
-            logger.info("Rejestracja zakończona sukcesem (via procedure): {}", email);
+            logger.info("Registration successful (via procedure): {}", email);
             return true;
 
         } catch (SQLException e) {
-            logger.error("Błąd procedury rejestracji {}: {}", email, e.getMessage());
+            logger.error("Registration procedure error {}: {}", email, e.getMessage());
             return false;
         }
     }
@@ -121,7 +120,7 @@ public class DatabaseHandler {
                 hotels.add(new Hotel(rs.getInt("id"), rs.getString("name"), rs.getString("city")));
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania listy hoteli: {}", e.getMessage());
+            logger.error("Error fetching hotel list: {}", e.getMessage());
         }
         return hotels;
     }
@@ -136,7 +135,7 @@ public class DatabaseHandler {
                 rooms.add(mapToRoom(rs));
             }
         } catch (SQLException e) {
-            logger.error("Błąd DB podczas pobierania listy pokoi: {}", e.getMessage(), e);
+            logger.error("DB error fetching room list: {}", e.getMessage(), e);
         }
         return rooms;
     }
@@ -156,10 +155,10 @@ public class DatabaseHandler {
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error("Błąd SQL podczas dodawania pokoju: {}", e.getMessage());
+            logger.error("SQL error adding room: {}", e.getMessage());
             return false;
         } catch (NumberFormatException e) {
-            logger.error("Błąd formatu ceny: {}", price);
+            logger.error("Price format error: {}", price);
             return false;
         }
     }
@@ -180,12 +179,32 @@ public class DatabaseHandler {
 
             return pstmt.executeUpdate() > 0;
         } catch (Exception e) {
-            logger.error("Błąd aktualizacji pokoju {}: {}", id, e.getMessage());
+            logger.error("Error updating room {}: {}", id, e.getMessage());
             return false;
         }
     }
 
     // CLIENTS
+
+    public static Client getClientDetails(int clientId) {
+        Client client = null;
+        String sql = "SELECT c.id, c.first_name, c.last_name, c.phone, u.email " +
+                "FROM clients c JOIN users u ON c.user_id = u.id " +
+                "WHERE c.id = ?";
+        try (Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, clientId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    client = mapToClient(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error fetching client details {}: {}", clientId, e.getMessage());
+        }
+        return client;
+    }
 
     public static List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
@@ -197,7 +216,7 @@ public class DatabaseHandler {
                 clients.add(mapToClient(rs));
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania listy klientów: {}", e.getMessage());
+            logger.error("Error fetching client list: {}", e.getMessage());
         }
         return clients;
     }
@@ -213,7 +232,7 @@ public class DatabaseHandler {
                 int userId = insertUser(conn, sqlUser, email, hashedPassword);
 
                 if (userId == -1)
-                    throw new SQLException("Brak ID użytkownika.");
+                    throw new SQLException("No user ID.");
 
                 try (PreparedStatement psClient = conn.prepareStatement(sqlClient)) {
                     psClient.setInt(1, userId);
@@ -227,13 +246,13 @@ public class DatabaseHandler {
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
-                logger.error("Błąd dodawania klienta: {}", e.getMessage());
+                logger.error("Error adding client: {}", e.getMessage());
                 return false;
             } finally {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            logger.error("Błąd połączenia: {}", e.getMessage());
+            logger.error("Connection error: {}", e.getMessage());
             return false;
         }
     }
@@ -259,7 +278,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Błąd usuwania klienta {}: {}", clientId, e.getMessage());
+            logger.error("Error deleting client {}: {}", clientId, e.getMessage());
         }
         return false;
     }
@@ -309,7 +328,7 @@ public class DatabaseHandler {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            logger.error("Błąd połączenia: {}", e.getMessage());
+            logger.error("Connection error: {}", e.getMessage());
             return false;
         }
     }
@@ -326,7 +345,7 @@ public class DatabaseHandler {
                 list.add(mapToBooking(rs));
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania rezerwacji: {}", e.getMessage());
+            logger.error("Error fetching bookings: {}", e.getMessage());
         }
         return list;
     }
@@ -360,11 +379,11 @@ public class DatabaseHandler {
                 }
 
                 conn.commit();
-                logger.info("Rezerwacja z usługami dodana, ID: {}", bookingId);
+                logger.info("Booking with amenities added, ID: {}", bookingId);
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
-                logger.error("Błąd transakcji rezerwacji: {}", e.getMessage());
+                logger.error("Booking transaction error: {}", e.getMessage());
                 return false;
             } finally {
                 conn.setAutoCommit(true);
@@ -409,7 +428,7 @@ public class DatabaseHandler {
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
-                logger.error("Błąd aktualizacji rezerwacji {}: {}", id, e.getMessage());
+                logger.error("Error updating booking {}: {}", id, e.getMessage());
                 return false;
             } finally {
                 conn.setAutoCommit(true);
@@ -434,7 +453,7 @@ public class DatabaseHandler {
                         rs.getBigDecimal("price").doubleValue()));
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania usług: {}", e.getMessage());
+            logger.error("Error fetching amenities: {}", e.getMessage());
         }
         return list;
     }
@@ -473,7 +492,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania dashboardu: {}", e.getMessage());
+            logger.error("Error fetching dashboard: {}", e.getMessage());
         }
         return new DashboardData(todayCount, monthIncome, activities);
     }
@@ -486,7 +505,7 @@ public class DatabaseHandler {
             pstmt.setInt(1, id);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error("Błąd wykonania update/delete: {}", e.getMessage());
+            logger.error("Error executing update/delete: {}", e.getMessage());
             return false;
         }
     }
@@ -581,7 +600,7 @@ public class DatabaseHandler {
         if (time.contains("."))
             time = time.substring(0, time.lastIndexOf(":"));
 
-        String desc = "Rezerwacja: " + rs.getString("email") + " (Pokój " + rs.getString("room_number") + ")";
+        String desc = "Booking: " + rs.getString("email") + " (Room " + rs.getString("room_number") + ")";
         String status = rs.getString("status");
         return new DashboardData.ActivityEntry(time, desc, status);
     }
@@ -605,7 +624,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Błąd pobierania ulubionych: {}", e.getMessage());
+            logger.error("Error fetching favorites: {}", e.getMessage());
         }
         return rooms;
     }
@@ -617,7 +636,7 @@ public class DatabaseHandler {
             pstmt.setInt(2, p2);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error("Błąd executeUpdate (2 params): {}", e.getMessage());
+            logger.error("Error executeUpdate (2 params): {}", e.getMessage());
             return false;
         }
     }
@@ -650,7 +669,7 @@ public class DatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("Ошибка поиска комнат: {}", e.getMessage(), e);
+            logger.error("Error searching rooms: {}", e.getMessage(), e);
         }
         return rooms;
     }
@@ -670,9 +689,9 @@ public class DatabaseHandler {
                 Statement stmt = conn.createStatement()) {
             int freed = stmt.executeUpdate(resetOccupiedSql);
             int occupied = stmt.executeUpdate(setOccupiedSql);
-            logger.info("Synchronizacja statusów: Zwolniono {}, Zajęto {}", freed, occupied);
+            logger.info("Status synchronization: Freed {}, Occupied {}", freed, occupied);
         } catch (SQLException e) {
-            logger.error("Błąd synchronizacji statusów: {}", e.getMessage());
+            logger.error("Error synchronizing statuses: {}", e.getMessage());
         }
     }
 }

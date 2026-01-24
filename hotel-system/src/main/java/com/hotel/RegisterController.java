@@ -32,7 +32,17 @@ public class RegisterController {
         String password = passField.getText();
 
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-            showAlert("Uzupełnij wszystkie dane!");
+            showAlert("Fill in all fields!");
+            return;
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            showAlert("Invalid email format!");
+            return;
+        }
+
+        if (!phone.matches("^\\+?[0-9]{9,15}$")) {
+            showAlert("Invalid phone number! (e.g. +48123456789 or 123456789)");
             return;
         }
 
@@ -42,15 +52,15 @@ public class RegisterController {
         Response response = NetworkClient.sendRequest(request);
 
         if (response != null && response.isSuccess()) {
-            showAlert("Sukces! " + response.getMessage());
+            showAlert("Success! " + response.getMessage());
             try {
                 goBackToLogin();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            String errorMsg = (response != null) ? response.getMessage() : "Błąd połączenia";
-            showAlert("Błąd rejestracji: " + errorMsg);
+            String errorMsg = (response != null) ? response.getMessage() : "Connection error";
+            showAlert("Registration error: " + errorMsg);
         }
     }
 

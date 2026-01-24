@@ -1,6 +1,8 @@
 package com.hotel;
 
 import com.hotel.common.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ClientController {
+
+    private static final Logger logger = LogManager.getLogger(ClientController.class);
 
     @FXML
     private FlowPane hotelsContainer;
@@ -46,7 +50,7 @@ public class ClientController {
 
     @FXML
     public void initialize() {
-        // Load favorites FIRST
+
         loadFavorites();
 
         searchDateFrom.setValue(LocalDate.now());
@@ -74,7 +78,7 @@ public class ClientController {
         searchDateFrom.setValue(LocalDate.now());
         searchDateTo.setValue(LocalDate.now().plusDays(1));
 
-        sectionTitle.setText("Dostępne obiekty:");
+        sectionTitle.setText("Available hotels:");
 
         onSearchRooms();
     }
@@ -86,7 +90,7 @@ public class ClientController {
         LocalDate to = searchDateTo.getValue();
 
         if (from == null || to == null || !to.isAfter(from)) {
-            showAlert("Błąd", "Data 'Do' musi być późniejsza niż 'Od'!");
+            showAlert("Error", "Date 'To' must be after 'From'!");
             return;
         }
 
@@ -104,21 +108,21 @@ public class ClientController {
             this.allRooms = results;
 
             if (city.isEmpty()) {
-                sectionTitle.setText("Wyniki wyszukiwania (wszystkie miasta): " + results.size());
+                sectionTitle.setText("Search results (all cities): " + results.size());
             } else {
-                sectionTitle.setText("Wyniki dla '" + city + "': " + results.size());
+                sectionTitle.setText("Results for '" + city + "': " + results.size());
             }
 
             renderRooms(results);
         } else {
-            showAlert("Info", "Nie znaleziono pokoi lub błąd serwera.");
+            showAlert("Info", "No rooms found or server error.");
         }
     }
 
     private void renderRooms(List<Room> rooms) {
         hotelsContainer.getChildren().clear();
         if (rooms.isEmpty()) {
-            hotelsContainer.getChildren().add(new Label("Brak dostępnych pokoi."));
+            hotelsContainer.getChildren().add(new Label("No rooms available."));
             return;
         }
         for (Room room : rooms) {
@@ -129,59 +133,49 @@ public class ClientController {
 
     private void addHotelCard(Room room, String colorHex) {
         VBox card = new VBox();
-        card.setPrefWidth(320); // Slightly wider
-        card.setPrefHeight(400); // Taller for description
+        card.setPrefWidth(320);
+        card.setPrefHeight(400);
         card.getStyleClass().add("hotel-card");
 
-        // --- IMAGE AREA ---
         VBox img = new VBox();
-        img.setPrefHeight(140);
-        img.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 8 8 0 0;");
-        img.setAlignment(Pos.CENTER);
+        img.getStyleClass().add("card-image-area");
+
+        boolean isFree = "FREE".equals(room.getStatus());
+        img.getStyleClass().add(isFree ? "card-image-free" : "card-image-occupied");
 
         Label typeLabel = new Label(room.getType());
-        typeLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #555;");
+        typeLabel.getStyleClass().add("card-type-label");
         img.getChildren().add(typeLabel);
 
-        // --- BODY AREA ---
         VBox body = new VBox(8);
         body.setPadding(new Insets(15));
         VBox.setVgrow(body, Priority.ALWAYS);
 
-        // Hotel Name
         Label hotelName = new Label(room.getHotelName());
         hotelName.setWrapText(true);
-        hotelName.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333;");
+        hotelName.getStyleClass().add("card-title");
 
-        // Room Number
-        Label roomNr = new Label("Pokój nr " + room.getNumber());
-        roomNr.setStyle("-fx-text-fill: #777; -fx-font-size: 12px;");
+        Label roomNr = new Label("Room no. " + room.getNumber());
+        roomNr.getStyleClass().add("card-room-number");
 
-        // Description (Truncated)
-        String descText = room.getDescription() != null ? room.getDescription() : "Brak opisu.";
+        String descText = room.getDescription() != null ? room.getDescription() : "No description.";
         if (descText.length() > 80)
             descText = descText.substring(0, 77) + "...";
         Label desc = new Label(descText);
         desc.setWrapText(true);
-        desc.setStyle("-fx-text-fill: #666; -fx-font-size: 12px; -fx-font-style: italic;");
-        desc.setPrefHeight(40); // Fixed height for consistency
+        desc.getStyleClass().add("card-description");
 
-        // Price
-        Label price = new Label(room.getPrice() + " zł / noc");
-        price.setFont(Font.font("Segoe UI", FontWeight.BOLD, 22));
-        price.setStyle("-fx-text-fill: #003580;");
+        Label price = new Label(room.getPrice() + " PLN / night");
+        price.getStyleClass().add("card-price");
 
-        // Status
-        boolean isFree = "FREE".equals(room.getStatus());
-        Label statusLbl = new Label(isFree ? "Dostępny" : "Zajęty");
-        statusLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: " + (isFree ? "#2e7d32" : "#c62828") + ";");
+        Label statusLbl = new Label(isFree ? "Available" : "Occupied");
+        statusLbl.getStyleClass().addAll("status-label", isFree ? "status-free" : "status-occupied");
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // --- ACTIONS ---
         HBox actions = new HBox(10);
-        Button viewBtn = new Button("Szczegóły / Rezerwuj");
+        Button viewBtn = new Button("Details / Book");
         viewBtn.getStyleClass().add("btn-card-action");
         viewBtn.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(viewBtn, Priority.ALWAYS);
@@ -241,7 +235,7 @@ public class ClientController {
 
     @FXML
     protected void showMainTab() {
-        sectionTitle.setText("Dostępne obiekty:");
+        sectionTitle.setText("Available hotels:");
         renderRooms(allRooms);
         updateToolbar(btnMain);
         listView.setVisible(true);
@@ -250,7 +244,7 @@ public class ClientController {
 
     @FXML
     protected void showFavsTab() {
-        sectionTitle.setText("Twoje ulubione:");
+        sectionTitle.setText("Your favorites:");
         renderRooms(favoriteRooms);
         updateToolbar(btnFavs);
         listView.setVisible(true);
@@ -259,7 +253,7 @@ public class ClientController {
 
     @FXML
     protected void showMyResTab() {
-        sectionTitle.setText("Twoje rezerwacje:");
+        sectionTitle.setText("Your reservations:");
         loadReservations();
         updateToolbar(btnMyRes);
         listView.setVisible(true);
@@ -282,7 +276,7 @@ public class ClientController {
             renderBookings(myBookings);
         } else {
             hotelsContainer.getChildren().clear();
-            hotelsContainer.getChildren().add(new Label("Nie udało się pobrać rezerwacji."));
+            hotelsContainer.getChildren().add(new Label("Failed to load reservations."));
         }
     }
 
@@ -290,27 +284,28 @@ public class ClientController {
         hotelsContainer.getChildren().clear();
 
         if (bookings.isEmpty()) {
-            hotelsContainer.getChildren().add(new Label("Brak rezerwacji."));
+            hotelsContainer.getChildren().add(new Label("No reservations."));
             return;
         }
 
         for (Booking b : bookings) {
             VBox card = new VBox(10);
             card.setPrefWidth(300);
-            card.setStyle(
-                    "-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);");
+            card.getStyleClass().add("hotel-card");
 
-            Label title = new Label(b.getRoomNumber()); // Contains hotel name + room nr
-            title.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+            card.getStyleClass().add("booking-card");
 
-            Label dateLbl = new Label("Od: " + b.getCheckInDate() + "\nDo: " + b.getCheckOutDate());
-            Label priceLbl = new Label("Cena: " + b.getTotalPrice() + " PLN");
+            Label title = new Label(b.getRoomNumber());
+            title.getStyleClass().add("card-title");
+
+            Label dateLbl = new Label("From: " + b.getCheckInDate() + "\nTo: " + b.getCheckOutDate());
+
+            Label priceLbl = new Label("Price: " + b.getTotalPrice() + " PLN");
+            priceLbl.getStyleClass().add("card-price");
+
             Label statusLbl = new Label("Status: " + b.getStatus());
-            if ("CONFIRMED".equals(b.getStatus()) || "PAID".equals(b.getStatus())) {
-                statusLbl.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
-            } else {
-                statusLbl.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-            }
+            boolean isConfirmed = "CONFIRMED".equals(b.getStatus()) || "PAID".equals(b.getStatus());
+            statusLbl.getStyleClass().addAll("status-label", isConfirmed ? "status-free" : "status-occupied");
 
             card.getChildren().addAll(title, dateLbl, priceLbl, statusLbl);
             hotelsContainer.getChildren().add(card);
@@ -327,63 +322,70 @@ public class ClientController {
     private void openDetailsDialog(Room room, String colorHex) {
         Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.setTitle("Szczegóły pokoju - " + room.getNumber());
+        dialog.setTitle("Room details - " + room.getNumber());
 
         VBox root = new VBox(20);
         root.setPadding(new Insets(30));
-        root.setStyle("-fx-background-color: white;");
+
+        root.getStyleClass().add("dialog-root");
         root.setPrefWidth(500);
 
-        // Header
         HBox header = new HBox(20);
         header.setAlignment(Pos.CENTER_LEFT);
 
         VBox imgPlaceholder = new VBox();
         imgPlaceholder.setPrefSize(100, 100);
-        imgPlaceholder.setStyle("-fx-background-color: " + colorHex + "; -fx-background-radius: 8;");
+
+        imgPlaceholder.setStyle("-fx-background-color: " + colorHex + ";");
+        imgPlaceholder.getStyleClass().add("dialog-img-placeholder");
         imgPlaceholder.setAlignment(Pos.CENTER);
         imgPlaceholder.getChildren().add(new Label(room.getType()));
 
         VBox titleBox = new VBox(5);
         Label hName = new Label(room.getHotelName());
-        hName.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-        Label rNr = new Label("Pokój " + room.getNumber());
-        rNr.setStyle("-fx-font-size: 14px; -fx-text-fill: #555;");
+
+        hName.getStyleClass().add("dialog-hotel-name");
+        Label rNr = new Label("Room " + room.getNumber());
+
+        rNr.getStyleClass().add("dialog-room-number");
 
         Label status = new Label("Status: " + room.getStatus());
-        status.setStyle("-fx-background-color: #eee; -fx-padding: 5 10; -fx-background-radius: 15;");
+
+        status.getStyleClass().add("dialog-status");
 
         titleBox.getChildren().addAll(hName, rNr, status);
         header.getChildren().addAll(imgPlaceholder, titleBox);
 
-        // Details
         VBox content = new VBox(10);
-        Label descLbl = new Label("Opis:");
-        descLbl.setStyle("-fx-font-weight: bold;");
-        Label fullDesc = new Label(room.getDescription() != null ? room.getDescription() : "Brak szczegółowego opisu.");
+        Label descLbl = new Label("Description:");
+
+        descLbl.getStyleClass().add("dialog-section-label");
+        Label fullDesc = new Label(room.getDescription() != null ? room.getDescription() : "No detailed description.");
         fullDesc.setWrapText(true);
 
-        Label priceLbl = new Label("Cena za dobę:");
-        priceLbl.setStyle("-fx-font-weight: bold;");
+        Label priceLbl = new Label("Price per night:");
+
+        priceLbl.getStyleClass().add("dialog-section-label");
         Label priceVal = new Label(room.getPrice() + " PLN");
-        priceVal.setStyle("-fx-font-size: 24px; -fx-text-fill: #003580; -fx-font-weight: bold;");
+
+        priceVal.getStyleClass().add("dialog-price-val");
 
         content.getChildren().addAll(descLbl, fullDesc, new Separator(), priceLbl, priceVal);
 
-        // Actions
         HBox actions = new HBox(15);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
-        Button closeBtn = new Button("Zamknij");
+        Button closeBtn = new Button("Close");
         closeBtn.setOnAction(e -> dialog.close());
         closeBtn.setPrefWidth(150);
-        closeBtn.setStyle("-fx-base: #eee; -fx-font-size: 14px; -fx-padding: 10 20;");
 
-        Button bookBtn = new Button("Rezerwuj teraz");
-        bookBtn.getStyleClass().add("btn-choose"); // Reuse existing style
+        closeBtn.getStyleClass().add("dialog-btn-close");
+
+        Button bookBtn = new Button("Book Now");
+        bookBtn.getStyleClass().add("btn-choose");
         bookBtn.setPrefWidth(150);
-        bookBtn.setStyle(
-                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-color: #003580; -fx-text-fill: white;");
+
+        bookBtn.getStyleClass().add("dialog-btn-book");
         bookBtn.setOnAction(e -> {
             openBookingModal(room);
             dialog.close();
@@ -392,7 +394,7 @@ public class ClientController {
         actions.getChildren().addAll(closeBtn, bookBtn);
 
         root.getChildren().addAll(header, new Separator(), content, new Region(), actions);
-        VBox.setVgrow(root.getChildren().get(3), Priority.ALWAYS); // Spacer
+        VBox.setVgrow(root.getChildren().get(3), Priority.ALWAYS);
 
         Scene scene = new Scene(root);
         dialog.setScene(scene);
@@ -407,7 +409,7 @@ public class ClientController {
             int realClientId = Session.getClientId();
 
             if (realClientId == 0) {
-                System.err.println("Error: Attempting to make a reservation without a customer ID!");
+                logger.error("Error: Attempting to make a reservation without a customer ID!");
                 return;
             }
 
@@ -415,12 +417,12 @@ public class ClientController {
             controller.setRoomData(room.getId(), room.getType(), room.getPrice(), realClientId);
 
             Stage stage = new Stage();
-            stage.setTitle("Rezerwacja - " + room.getType());
+            stage.setTitle("Booking - " + room.getType());
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error opening booking modal: ", e);
         }
     }
 
@@ -439,9 +441,9 @@ public class ClientController {
     @FXML
     protected void onOpenProfile() {
         try {
-            SceneManager.openModal("user-profile.fxml", "Profil użytkownika");
+            SceneManager.openModal("user-profile.fxml", "User Profile");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error opening user profile: ", e);
         }
     }
 
@@ -451,7 +453,7 @@ public class ClientController {
             double maxInDb = allRooms.stream()
                     .mapToDouble(r -> Double.parseDouble(r.getPrice()))
                     .max().orElse(1000.0);
-            FilterController controller = SceneManager.openModal("filter-view.fxml", "Filtry",
+            FilterController controller = SceneManager.openModal("filter-view.fxml", "Filters",
                     (FilterController ctrl) -> {
                         ctrl.setMaxPriceLimit(maxInDb + 200.0);
                     });
@@ -459,7 +461,7 @@ public class ClientController {
                 applyFiltering(controller.getSelectedMaxPrice());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error opening filters: ", e);
         }
     }
 
@@ -468,7 +470,7 @@ public class ClientController {
                 .filter(r -> Double.parseDouble(r.getPrice()) <= maxPrice)
                 .collect(Collectors.toList());
 
-        sectionTitle.setText("Wyniki filtrowania (do " + (int) maxPrice + " zł):");
+        sectionTitle.setText("Filter results (up to " + (int) maxPrice + " PLN):");
         renderRooms(filtered);
     }
 }

@@ -9,8 +9,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AdminController {
+    private static final Logger logger = LogManager.getLogger(AdminController.class);
     @FXML
     private VBox viewDashboard, viewRooms, viewReservations, viewClients;
     @FXML
@@ -96,7 +99,7 @@ public class AdminController {
         colTime.setCellValueFactory(new PropertyValueFactory<>("time"));
         colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        dashboardTable.setPlaceholder(new Label("Brak ostatniej aktywności"));
+        dashboardTable.setPlaceholder(new Label("No recent activity"));
     }
 
     private void setupRoomsTable() {
@@ -136,14 +139,14 @@ public class AdminController {
                 lblResToday.setText(String.valueOf(data.getReservationsToday()));
             }
             if (lblIncomeMonth != null) {
-                lblIncomeMonth.setText(String.format("%,.2f zł", data.getIncomeMonth()));
+                lblIncomeMonth.setText(String.format("%,.2f PLN", data.getIncomeMonth()));
             }
 
             if (dashboardTable != null) {
                 dashboardTable.setItems(FXCollections.observableArrayList(data.getRecentActivities()));
             }
         } else {
-            System.err.println("Błąd pobierania danych dashboardu: " + resp.getMessage());
+            logger.error("Error fetching dashboard data: {}", resp.getMessage());
         }
     }
 
@@ -168,7 +171,7 @@ public class AdminController {
             masterClientData.setAll(clients);
             clientsTable.setItems(masterClientData);
         } else {
-            showError("Nie udało się pobrać listy klientów: " + resp.getMessage());
+            showError("Failed to fetch client list: " + resp.getMessage());
         }
     }
 
@@ -181,15 +184,15 @@ public class AdminController {
             masterBookingData.setAll(list);
             bookingsTable.setItems(masterBookingData);
         } else {
-            showError("Nie udało się pobrać rezerwacji.");
+            showError("Failed to fetch bookings.");
         }
     }
 
     private void calculateStats(List<Room> rooms) {
         if (rooms.isEmpty()) {
-            lblMaxPrice.setText("0.00 zł");
-            lblMinPrice.setText("0.00 zł");
-            lblAvgPrice.setText("0.00 zł");
+            lblMaxPrice.setText("0.00 PLN");
+            lblMinPrice.setText("0.00 PLN");
+            lblAvgPrice.setText("0.00 PLN");
             return;
         }
 
@@ -197,9 +200,9 @@ public class AdminController {
         double min = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).min().orElse(0);
         double avg = rooms.stream().mapToDouble(r -> Double.parseDouble(r.getPrice())).average().orElse(0);
 
-        lblMaxPrice.setText(String.format("%.2f zł", max));
-        lblMinPrice.setText(String.format("%.2f zł", min));
-        lblAvgPrice.setText(String.format("%.2f zł", avg));
+        lblMaxPrice.setText(String.format("%.2f PLN", max));
+        lblMinPrice.setText(String.format("%.2f PLN", min));
+        lblAvgPrice.setText(String.format("%.2f PLN", avg));
     }
 
     @FXML
@@ -295,17 +298,17 @@ public class AdminController {
         try {
             SceneManager.switchScene("login-view.fxml");
         } catch (Exception e) {
-            showError("Błąd: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 
     @FXML
     protected void onAddRoomClick() {
         try {
-            SceneManager.openModal("admin-add-room.fxml", "Dodaj nowy pokój");
+            SceneManager.openModal("admin-add-room.fxml", "Add New Room");
             loadRoomsFromServer();
         } catch (Exception e) {
-            showError("Nie udało się otworzyć okna: " + e.getMessage());
+            showError("Failed to open window: " + e.getMessage());
         }
     }
 
@@ -313,10 +316,10 @@ public class AdminController {
     protected void onDeleteRoomClick() {
         Room selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
         if (selectedRoom == null) {
-            showError("Wybierz pokój!");
+            showError("Select a room!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć pokój " + selectedRoom.getNumber() + "?",
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete room " + selectedRoom.getNumber() + "?",
                 ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
@@ -332,26 +335,26 @@ public class AdminController {
     protected void onEditRoomClick() {
         Room selectedRoom = roomsTable.getSelectionModel().getSelectedItem();
         if (selectedRoom == null) {
-            showError("Wybierz pokój!");
+            showError("Select a room!");
             return;
         }
         try {
-            SceneManager.openModal("admin-add-room.fxml", "Edytuj pokój", (AdminAddRoomController controller) -> {
+            SceneManager.openModal("admin-add-room.fxml", "Edit Room", (AdminAddRoomController controller) -> {
                 controller.setRoomData(selectedRoom);
             });
             loadRoomsFromServer();
         } catch (Exception e) {
-            showError("Błąd edycji: " + e.getMessage());
+            showError("Editing error: " + e.getMessage());
         }
     }
 
     @FXML
     protected void onAddClientClick() {
         try {
-            SceneManager.openModal("admin-add-client.fxml", "Dodaj klienta");
+            SceneManager.openModal("admin-add-client.fxml", "Add Client");
             loadClientsFromServer();
         } catch (Exception e) {
-            showError("Błąd: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 
@@ -359,16 +362,16 @@ public class AdminController {
     protected void onEditClientClick() {
         Client selected = clientsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz klienta!");
+            showError("Select a client!");
             return;
         }
         try {
-            SceneManager.openModal("admin-add-client.fxml", "Edytuj klienta", (AdminAddClientController controller) -> {
+            SceneManager.openModal("admin-add-client.fxml", "Edit Client", (AdminAddClientController controller) -> {
                 controller.setClientData(selected);
             });
             loadClientsFromServer();
         } catch (Exception e) {
-            showError("Błąd: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 
@@ -376,10 +379,10 @@ public class AdminController {
     protected void onDeleteClientClick() {
         Client selected = clientsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz klienta!");
+            showError("Select a client!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć klienta " + selected.getEmail() + "?",
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete client " + selected.getEmail() + "?",
                 ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
@@ -394,10 +397,10 @@ public class AdminController {
     @FXML
     protected void onAddBookingClick() {
         try {
-            SceneManager.openModal("admin-add-booking.fxml", "Dodaj rezerwację");
+            SceneManager.openModal("admin-add-booking.fxml", "Add Booking");
             loadBookingsFromServer();
         } catch (Exception e) {
-            showError("Błąd: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 
@@ -405,17 +408,17 @@ public class AdminController {
     protected void onEditBookingClick() {
         Booking selected = bookingsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz rezerwację!");
+            showError("Select a booking!");
             return;
         }
         try {
-            SceneManager.openModal("admin-add-booking.fxml", "Edytuj rezerwację",
+            SceneManager.openModal("admin-add-booking.fxml", "Edit Booking",
                     (AdminAddBookingController controller) -> {
                         controller.setBookingData(selected);
                     });
             loadBookingsFromServer();
         } catch (Exception e) {
-            showError("Błąd: " + e.getMessage());
+            showError("Error: " + e.getMessage());
         }
     }
 
@@ -423,10 +426,10 @@ public class AdminController {
     protected void onDeleteBookingClick() {
         Booking selected = bookingsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showError("Wybierz rezerwację!");
+            showError("Select a booking!");
             return;
         }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Usunąć rezerwację #" + selected.getId() + "?",
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete booking #" + selected.getId() + "?",
                 ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {

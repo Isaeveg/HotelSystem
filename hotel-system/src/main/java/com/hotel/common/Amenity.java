@@ -27,6 +27,6 @@ public class Amenity implements Serializable {
 
     @Override
     public String toString() {
-        return name + " (" + price + " zł)";
+        return name + " (" + price + " PLN)";
     }
 }

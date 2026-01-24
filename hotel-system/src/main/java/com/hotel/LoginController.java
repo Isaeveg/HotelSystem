@@ -25,7 +25,7 @@ public class LoginController {
         String password = passwordField.getText().trim();
 
         if (login.isEmpty() || password.isEmpty()) {
-            showAlert("Błąd", "Wpisz login i hasło!");
+            showAlert("Error", "Enter login and password!");
             return;
         }
 
@@ -48,7 +48,7 @@ public class LoginController {
                 e.printStackTrace();
             }
         } else {
-            showAlert("Błąd", resp != null ? resp.getMessage() : "Brak połączenia z serwerem");
+            showAlert("Error", resp != null ? resp.getMessage() : "No connection to server");
         }
     }
 
@@ -59,7 +59,7 @@ public class LoginController {
             SceneManager.switchScene(stage, "register-view.fxml");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Błąd", "Nie udało się załadować okna rejestracji");
+            showAlert("Error", "Failed to load registration window");
         }
     }
 

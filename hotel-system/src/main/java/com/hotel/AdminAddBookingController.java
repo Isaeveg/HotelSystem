@@ -78,7 +78,7 @@ public class AdminAddBookingController {
                     if (empty || item == null)
                         setText(null);
                     else
-                        setText(item.getNumber() + " - " + item.getType() + " (" + item.getPrice() + " zł)");
+                        setText(item.getNumber() + " - " + item.getType() + " (" + item.getPrice() + " PLN)");
                 }
             });
             roomCombo.setButtonCell(roomCombo.getCellFactory().call(null));
@@ -90,7 +90,7 @@ public class AdminAddBookingController {
             amenitiesContainer.getChildren().clear();
 
             for (Amenity amenity : ams) {
-                CheckBox cb = new CheckBox(amenity.getName() + " (+" + amenity.getPrice() + " zł)");
+                CheckBox cb = new CheckBox(amenity.getName() + " (+" + amenity.getPrice() + " PLN)");
                 cb.setUserData(amenity);
 
                 cb.selectedProperty().addListener((obs, wasSelected, isSelected) -> calculateTotalPrice());
@@ -186,7 +186,7 @@ public class AdminAddBookingController {
         }
 
         if (selectedClient == null || selectedRoom == null || in == null || out == null || price.isEmpty()) {
-            showAlert("Wypełnij wszystkie pola!");
+            showAlert("Fill in all fields!");
             return;
         }
 
@@ -221,7 +221,7 @@ public class AdminAddBookingController {
         if (resp.isSuccess()) {
             ((Stage) priceField.getScene().getWindow()).close();
         } else {
-            showAlert("Błąd: " + resp.getMessage());
+            showAlert("Error: " + resp.getMessage());
         }
     }
 
@@ -232,7 +232,7 @@ public class AdminAddBookingController {
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Informacja");
+        alert.setTitle("Information");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

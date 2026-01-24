@@ -16,27 +16,27 @@
                     <font><Font name="Segoe UI Bold" size="20.0" /></font>
                 </Label>
                 <HBox HBox.hgrow="ALWAYS" />
-                <Button onAction="#onOpenProfile" styleClass="btn-profile" text="👤 Mój Profil" />
+                <Button onAction="#onOpenProfile" styleClass="btn-profile" text="👤 My Profile" />
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="header-yellow">
-                <TextField fx:id="searchCityField" prefHeight="42.0" prefWidth="200.0" promptText="Dokąd jedziesz?" />
+                <TextField fx:id="searchCityField" prefHeight="42.0" prefWidth="200.0" promptText="Where are you going?" />
                 
-                <DatePicker fx:id="searchDateFrom" prefHeight="42.0" prefWidth="150.0" promptText="Data od" />
-                <DatePicker fx:id="searchDateTo" prefHeight="42.0" prefWidth="150.0" promptText="Data do" />
+                <DatePicker fx:id="searchDateFrom" prefHeight="42.0" prefWidth="150.0" promptText="Date from" />
+                <DatePicker fx:id="searchDateTo" prefHeight="42.0" prefWidth="150.0" promptText="Date to" />
                 
-                <Button onAction="#onSearchRooms" styleClass="btn-nav-action" text="Szukaj" />
-                <Button onAction="#onResetSearch" styleClass="btn-nav-action" text="Wyczyść" />
+                <Button onAction="#onSearchRooms" styleClass="btn-nav-action" text="Search" />
+                <Button onAction="#onResetSearch" styleClass="btn-nav-action" text="Clear" />
                 
-                <Button onAction="#onOpenFilters" styleClass="btn-nav-action" text="Filtry" />
+                <Button onAction="#onOpenFilters" styleClass="btn-nav-action" text="Filters" />
                 <HBox HBox.hgrow="ALWAYS" />
-                <Button onAction="#onLogoutClick" styleClass="btn-nav-action" text="Wyloguj się" />
+                <Button onAction="#onLogoutClick" styleClass="btn-nav-action" text="Logout" />
             </HBox>
 
             <HBox alignment="CENTER" spacing="40.0" styleClass="client-toolbar">
-                <Button fx:id="btnMain" onAction="#showMainTab" styleClass="toolbar-btn, toolbar-btn-active" text="Główna Strona" />
-                <Button fx:id="btnFavs" onAction="#showFavsTab" styleClass="toolbar-btn" text="Ulubione" />
-                <Button fx:id="btnMyRes" onAction="#showMyResTab" styleClass="toolbar-btn" text="Moje Rezerwacje" />
+                <Button fx:id="btnMain" onAction="#showMainTab" styleClass="toolbar-btn, toolbar-btn-active" text="Main Page" />
+                <Button fx:id="btnFavs" onAction="#showFavsTab" styleClass="toolbar-btn" text="Favorites" />
+                <Button fx:id="btnMyRes" onAction="#showMyResTab" styleClass="toolbar-btn" text="My Reservations" />
             </HBox>
         </VBox>
     </top>
@@ -47,7 +47,7 @@
                 <content>
                     <VBox alignment="TOP_CENTER" style="-fx-padding: 30 0;">
                         <VBox alignment="TOP_LEFT" maxWidth="1050.0" spacing="20.0">
-                            <Label fx:id="sectionTitle" text="Dostępne obiekty:" textFill="#333333">
+                            <Label fx:id="sectionTitle" text="Available hotels:" textFill="#333333">
                                 <font><Font name="Segoe UI Bold" size="22.0" /></font>
                             </Label>
                             <FlowPane fx:id="hotelsContainer" hgap="20.0" vgap="20.0" />
@@ -60,7 +60,7 @@
                 <content>
                     <VBox alignment="TOP_CENTER" style="-fx-padding: 30 0;">
                         <VBox alignment="TOP_LEFT" maxWidth="1050.0" spacing="20.0">
-                            <Button onAction="#onBackToList" styleClass="btn-back-minimal" text="← Wróć do listy" />
+                            <Button onAction="#onBackToList" styleClass="btn-back-minimal" text="← Back to list" />
                             <HBox spacing="30.0" style="-fx-padding: 30;" styleClass="hotel-card">
                                 <VBox fx:id="detailImageBox" alignment="CENTER" prefHeight="250.0" prefWidth="400.0" style="-fx-background-color: #eee; -fx-background-radius: 4;">
                                     <Label text="Icon" textFill="#999" />
@@ -69,10 +69,10 @@
                                     <Label fx:id="detailTitle" text="Hotel Name" textFill="#003580" wrapText="true">
                                         <font><Font name="Segoe UI Bold" size="28.0" /></font>
                                     </Label>
-                                    <Label fx:id="detailPrice" text="350 zł" textFill="#333">
+                                    <Label fx:id="detailPrice" text="350 PLN" textFill="#333">
                                         <font><Font name="Segoe UI Bold" size="24.0" /></font>
                                     </Label>
-                                    <Label style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;" text="Wybierz pokój:" />
+                                    <Label style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;" text="Choose room:" />
                                     <VBox fx:id="detailRoomsContainer" spacing="10.0" />
                                 </VBox>
                             </HBox>

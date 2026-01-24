@@ -24,42 +24,42 @@
       <VBox spacing="5.0">
          <children>
             <Label text="Hotel:" />
-            <ComboBox fx:id="hotelCombo" prefWidth="300.0" promptText="Wybierz hotel..." />
+            <ComboBox fx:id="hotelCombo" prefWidth="300.0" promptText="Select hotel..." />
          </children>
       </VBox>
 
       <VBox spacing="5.0">
          <children>
-            <Label text="Numer pokoju:" />
-            <TextField fx:id="roomNumberField" promptText="np. 101" />
+            <Label text="Room Number:" />
+            <TextField fx:id="roomNumberField" promptText="e.g. 101" />
          </children>
       </VBox>
 
       <VBox spacing="5.0">
          <children>
-            <Label text="Typ:" />
+            <Label text="Type:" />
             <ComboBox fx:id="roomTypeCombo" prefWidth="300.0" promptText="Standard / Suite..." />
          </children>
       </VBox>
 
       <VBox spacing="5.0">
          <children>
-            <Label text="Cena za noc (PLN):" />
-            <TextField fx:id="roomPriceField" promptText="np. 250.00" />
+            <Label text="Price per night (PLN):" />
+            <TextField fx:id="roomPriceField" promptText="e.g. 250.00" />
          </children>
       </VBox>
 
       <VBox spacing="5.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label text="Opis (opcjonalnie):" />
-            <TextArea fx:id="descriptionField" prefHeight="100.0" prefWidth="300.0" promptText="Widok na morze, cicha okolica itp." wrapText="true" />
+            <Label text="Description (optional):" />
+            <TextArea fx:id="descriptionField" prefHeight="100.0" prefWidth="300.0" promptText="Sea view, quiet area etc." wrapText="true" />
          </children>
       </VBox>
 
       <HBox alignment="CENTER" spacing="15.0">
          <children>
-            <Button onAction="#onCancel" text="Anuluj" />
-            <Button fx:id="saveBtn" defaultButton="true" onAction="#onSave" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Zapisz" />
+            <Button onAction="#onCancel" text="Cancel" />
+            <Button fx:id="saveBtn" defaultButton="true" onAction="#onSave" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Save" />
          </children>
          <VBox.margin>
             <Insets top="10.0" />
